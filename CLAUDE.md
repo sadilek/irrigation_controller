@@ -24,7 +24,7 @@ enclosure) and places every order himself.
 - **No private data.** No IP addresses, Wi-Fi names, credentials, document IDs, personal names,
   home directory paths or garden layout beyond what the design needs. Firmware secrets go through
   ESPHome `!secret` and stay out of git. Before committing, run
-  `git grep -n -I -e '/Users/' -e '192\.168' -e '@gmail'` and expect no hits.
+  `git grep -n -I -e '/Users/' -e '192\.168' -e '@gmail'` and expect no hit except this line.
 - **Only the owner orders.** Never upload to or order from JLCPCB or any shop.
 - **Hold points.** A board's next stage does not start before the owner signed off the previous
   one. Each hold point shows the reasoning, not just the result; the hard part of this project is
