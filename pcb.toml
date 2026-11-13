@@ -1,0 +1,3 @@
+[workspace]
+repository = "github.com/sadilek/irrigation_controller"
+pcb-version = "0.4"

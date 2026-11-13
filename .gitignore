@@ -1,0 +1,24 @@
+# Toolchain and environments (scripts/setup.sh recreates them)
+.tools/
+.venv/
+.pcb/
+__pycache__/
+
+# Generated outputs (one make target each; see docs/toolchain.md)
+build/
+
+# KiCad temporary and per-user files
+*-backups/
+*.kicad_prl
+*.lck
+_autosave-*
+fp-info-cache
+**/.history/
+*.dsn
+*.ses
+*.net
+layout.log
+*layout.json
+
+.DS_Store
+.obeya/run/

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# KiCad's bundled Python (the only interpreter that can `import pcbnew`), with tools/ on the path.
+# wxWidgets debug chatter on stderr is dropped unless KIPYTHON_VERBOSE is set.
+here="$(cd "$(dirname "$0")" && pwd)"
+py="${KICAD_PYTHON:-/Applications/KiCad/KiCad.app/Contents/Frameworks/Python.framework/Versions/Current/bin/python3}"
+export PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}" PYTHONDONTWRITEBYTECODE=1
+exec "$py" "$@"

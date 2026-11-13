@@ -1,0 +1,31 @@
+"""
+Board configuration for the JLCPCB standard two-layer process (1.6 mm FR-4, 1 oz copper).
+
+The numbers are deliberately coarser than JLCPCB's published minimums (0.127 mm track and
+space, 0.3 mm via drill) so a board never sits on the limit. Check them against the current
+capability page before an order; Zener's own defaults (0.09 mm) target a finer process.
+"""
+
+load("@stdlib/board_config.zen", "BoardConfig", "Constraints", "Copper", "DesignRules", "Holes", "NetClass")
+
+JLCPCB_2L = BoardConfig(
+    design_rules=DesignRules(
+        constraints=Constraints(
+            copper=Copper(
+                minimum_clearance=0.15,
+                minimum_track_width=0.15,
+                minimum_via_diameter=0.6,
+                minimum_annular_width=0.13,
+                copper_to_hole_clearance=0.25,
+                copper_to_edge_clearance=0.3,
+            ),
+            holes=Holes(
+                minimum_through_hole=0.3,
+                hole_to_hole_clearance=0.5,
+            ),
+        ),
+        netclasses=[
+            NetClass(name="Default", clearance=0.2, track_width=0.3, via_diameter=0.6, via_drill=0.3),
+        ],
+    ),
+)

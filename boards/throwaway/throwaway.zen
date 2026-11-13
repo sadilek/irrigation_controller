@@ -1,0 +1,39 @@
+"""
+Toolchain test board: 5 V in, AMS1117-3.3, power LED. Never fabricated.
+
+It exists to exercise every step from this file to fabrication data and the
+enclosure collision check (docs/toolchain.md). Keep it as the smoke test.
+"""
+
+load("../../lib/jlcpcb.zen", "JLCPCB_2L")
+
+Resistor = Module("@stdlib/generics/Resistor.zen")
+Capacitor = Module("@stdlib/generics/Capacitor.zen")
+Led = Module("@stdlib/generics/Led.zen")
+PinHeader = Module("@stdlib/generics/PinHeader.zen")
+MountingHole = Module("@stdlib/generics/MountingHole.zen")
+
+VIN = Power("VIN", voltage="5V")
+V3V3 = Power("V3V3", voltage="3.3V")
+GND = Ground("GND")
+LED_A = Net("LED_A")
+
+PinHeader(name="J1", pins=2, mount="THT", mpn="B-2100S02P-A110", manufacturer="Ckmtw", P1=VIN, P2=GND)
+
+Component(
+    name="U1",
+    symbol=Symbol(library="../../lib/lcsc/lcsc.kicad_sym", name="AMS1117-3.3"),
+    footprint=File("../../lib/lcsc/lcsc.pretty/SOT-223-3_L6.5-W3.4-P2.30-LS7.0-BR.kicad_mod"),
+    pins={"VIN": VIN, "GND": GND, "VOUT": V3V3},
+    part=Part(mpn="AMS1117-3.3", manufacturer="Advanced Monolithic Systems"),
+)
+
+Capacitor(name="C1", value="10uF", package="0805", voltage="25V", mpn="CL21A106KAYNNNE", manufacturer="Samsung Electro-Mechanics", P1=VIN, P2=GND)
+Capacitor(name="C2", value="22uF", package="0805", voltage="25V", mpn="CL21A226MAQNNNE", manufacturer="Samsung Electro-Mechanics", P1=V3V3, P2=GND)
+Resistor(name="R1", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=V3V3, P2=LED_A)
+Led(name="D1", package="0603", color="green", mpn="19-217/GHC-YR1S2/3T", manufacturer="Everlight", A=LED_A, K=GND)
+
+MountingHole(name="H1", diameter="M3", plating="Mechanical")
+MountingHole(name="H2", diameter="M3", plating="Mechanical")
+
+Board(name="throwaway", path="eda", layers=2, config=JLCPCB_2L, copper_finish="HAL lead-free", schematic=True)

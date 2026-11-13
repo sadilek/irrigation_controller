@@ -1,0 +1,7 @@
+[board]
+name = "throwaway"
+path = "throwaway.zen"
+description = "Toolchain test board: 5 V in, 3.3 V regulator, power LED. Never fabricated."
+
+[dependencies]
+"github.com/sadilek/irrigation_controller/lib" = "0.1.0"

@@ -1,0 +1,6 @@
+{
+  "_comment": "Mechanical interface between enclosure.py and layout.py. Millimetres. Origin: top-left board corner, x right, y down (KiCad). STEP exports use the same origin with y up.",
+  "board": {"width": 40.0, "height": 25.0, "corner_radius": 2.0, "thickness": 1.6},
+  "mounting_holes": {"H1": [4.0, 4.0], "H2": [36.0, 21.0]},
+  "clearance_to_enclosure": 0.5
+}

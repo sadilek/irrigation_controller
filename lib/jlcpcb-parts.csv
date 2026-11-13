@@ -1,0 +1,7 @@
+mpn,manufacturer,lcsc,class,assembly,rotation_offset,note
+AMS1117-3.3,Advanced Monolithic Systems,C6186,basic,smt,0,
+CL21A106KAYNNNE,Samsung Electro-Mechanics,C15850,unverified,smt,0,10 uF 25 V X5R 0805
+CL21A226MAQNNNE,Samsung Electro-Mechanics,C45783,unverified,smt,0,22 uF 25 V X5R 0805
+0603WAF1001T5E,UNI-ROYAL,C21190,unverified,smt,0,1 k 1 % 0603
+19-217/GHC-YR1S2/3T,Everlight,C72043,extended,smt,0,green LED 0603
+B-2100S02P-A110,Ckmtw,C124375,extended,none,0,pin header 1x2; soldered by hand
