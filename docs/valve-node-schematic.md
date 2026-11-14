@@ -3,7 +3,7 @@
 The second of three hold points for the valve node. The layout does not start before the owner
 signed this page off, together with the schematic PDF and the bill of materials.
 
-Status: proposal, 2026-11-14, not signed off.
+Status: signed off by the owner on 2026-11-14. The next stage is the layout and enclosure.
 
 The circuit and the reason for every part are in [`valve-node-spec.md`](valve-node-spec.md). This
 page says what the schematic adds to it, where it deviates, what was checked and what is handed

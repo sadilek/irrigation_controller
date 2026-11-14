@@ -16,10 +16,10 @@ in files; the owner reviews each board at three hold points (specification, sche
 enclosure) and places every order himself.
 
 **Status:** toolchain proven on a throwaway board. The valve node has a signed-off specification
-([`docs/valve-node-spec.md`](docs/valve-node-spec.md)) and a schematic with bill of materials
-([`docs/valve-node-schematic.md`](docs/valve-node-schematic.md)) that waits for the owner's sign-off.
-It has no layout yet, so `make all` and `make verify` do not run for it; use
-`make apply erc schematic bom BOARD=valve-node`. No real board exists yet.
+([`docs/valve-node-spec.md`](docs/valve-node-spec.md)) and a signed-off schematic with bill of
+materials ([`docs/valve-node-schematic.md`](docs/valve-node-schematic.md)). Its next stage is the
+layout and enclosure, the third hold point. It has no layout yet, so `make all` and `make verify`
+do not run for it; use `make apply erc schematic bom BOARD=valve-node`. No real board exists yet.
 
 ## Rules that are not negotiable
 
