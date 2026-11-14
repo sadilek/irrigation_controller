@@ -65,6 +65,8 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
 | Question | File |
 |---|---|
 | How does the chain work, what does each command produce, where is it weak? | [`docs/toolchain.md`](docs/toolchain.md) |
+| What is on the bus: wiring, addresses, registers, timing? | [`docs/bus-protocol.md`](docs/bus-protocol.md) |
+| What does the installed system look like, what are its weaknesses, what is still unknown? | [`docs/existing-system.md`](docs/existing-system.md) |
 | Why Zener and not KiCad files? | [`docs/toolchain.md`](docs/toolchain.md) "Schematic format" |
 | How do I add a part and map it to an LCSC number? | [`lib/README.md`](lib/README.md) |
 | Which license covers what, and what blocks publication? | [`docs/license.md`](docs/license.md) |

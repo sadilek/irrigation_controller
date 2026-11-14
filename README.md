@@ -25,6 +25,8 @@ KiCad 10 without any of the tools above.
 ## Documentation
 
 - [`docs/toolchain.md`](docs/toolchain.md): the chain, every command, tool choices, known weaknesses
+- [`docs/bus-protocol.md`](docs/bus-protocol.md): cable, addresses, registers and timing of the RS485/Modbus bus
+- [`docs/existing-system.md`](docs/existing-system.md): the installation being replaced, valve data, known weaknesses, open points
 - [`lib/README.md`](lib/README.md): part libraries and the JLCPCB part mapping
 - [`docs/license.md`](docs/license.md): which license covers what, and what must be settled before publishing
 - [`CLAUDE.md`](CLAUDE.md): rules and conventions for agents and contributors
