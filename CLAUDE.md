@@ -30,6 +30,8 @@ It has no layout yet, so `make all` and `make verify` do not run for it; use
   ESPHome `!secret` and stay out of git. Before committing, run
   `git grep -n -I -e '/Users/' -e '192\.168' -e '@gmail'` and expect no hit except this line.
 - **Only the owner orders.** Never upload to or order from JLCPCB or any shop.
+- **Print, don't buy.** Mechanical parts (enclosures, seals, inserts, holders) are 3D-printed by the
+  owner in TPU or PETG wherever practical. Buy one only when printing cannot do the job.
 - **Hold points.** A board's next stage does not start before the owner signed off the previous
   one. Each hold point shows the reasoning, not just the result; the hard part of this project is
   switching 24 VAC and surviving surges on a long buried cable, not routing.
