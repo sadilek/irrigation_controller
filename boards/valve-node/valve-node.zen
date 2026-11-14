@@ -5,7 +5,6 @@ Specification with the reasoning for every part: docs/valve-node-spec.md.
 What changed between specification and schematic: docs/valve-node-schematic.md.
 
 Population options (parts marked DNP in the schematic are footprints without parts):
-  moisture sensor    protection network populated, terminal J_MOIST not populated
   termination, bias  not populated (R_TERM, R_BIAS_A, R_BIAS_B), jumper JP_TERM open
   UPDI header        not populated
 """
@@ -50,13 +49,11 @@ XDIR = Net("XDIR")
 UPDI = Net("UPDI")
 LED = Net("LED")
 LED_A = Net("LED_A")
-MOIST = Net("MOIST")
-MOIST_IN = Net("MOIST_IN")
 ADDR = [Net("ADDR%d" % i) for i in (1, 2, 3, 4)]
 DRIVE = [Net("DRIVE%d" % (i + 1)) for i in range(OUTPUTS)]
 MON = [Net("MON%d" % (i + 1)) for i in range(OUTPUTS)]
 VALVE = [Net("VALVE%d" % (i + 1)) for i in range(OUTPUTS)]
-FREE = {pin: Net(pin) for pin in ("PA3", "PB1", "PB4", "PB5")}  # unused pins, on test pads
+FREE = {pin: Net(pin) for pin in ("PA1", "PA3", "PB1", "PB4", "PB5")}  # unused pins, on test pads
 
 # --- Bus jacks ----------------------------------------------------------------------------------
 # T568B: 1 orange/white, 2 orange, 3 green/white, 4 blue, 5 blue/white, 6 green, 7 brown/white, 8 brown.
@@ -199,7 +196,7 @@ Component(
         "VCC": V5,
         "GND": GND,
         "~{RESET}/PA0": UPDI,
-        "PA1": MOIST,  # ADC0 AIN1
+        "PA1": FREE["PA1"],
         "PA2": LED,
         "PA3": FREE["PA3"],
         "PA4": DRIVE[0],
@@ -238,31 +235,6 @@ Component(
 Resistor(name="R_LED", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=LED, P2=LED_A)
 Led(name="D_STATUS", package="0603", color="green", mpn="19-217/GHC-YR1S2/3T", manufacturer="Everlight", A=LED_A, K=GND)
 
-# --- Moisture sensor input ----------------------------------------------------------------------
-# The protection network is populated on every board; the terminal is not.
-
-Component(
-    name="J_MOIST",
-    prefix="J",
-    symbol=Symbol(SYM + "Screw_Terminal_01x03.kicad_sym"),
-    footprint=File(FP + "PhoenixContact_MC_1,5_3-G-3.81_1x03_P3.81mm_Horizontal.kicad_mod"),
-    pins={"Pin_1": V5, "Pin_2": GND, "Pin_3": MOIST_IN},
-    part=Part(mpn="KF2EDGR-3.81-3P", manufacturer="Cixi Kefa Elec"),
-    properties={"value": "KF2EDGR-3.81-3P"},
-    dnp=True,
-)
-Resistor(name="R_MOIST", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=MOIST_IN, P2=MOIST)
-Capacitor(name="C_MOIST", value="100nF", package="0603", voltage="50V", dielectric="X7R", mpn="CC0603KRX7R9BB104", manufacturer="YAGEO", P1=MOIST, P2=GND)
-# Clamp to both rails behind the series resistor: pin 1 anode, pin 2 cathode, pin 3 the common point.
-Component(
-    name="D_MOIST",
-    prefix="D",
-    symbol=Symbol(SYM + "BAV99.kicad_sym"),
-    footprint=File(FP + "SOT-23.kicad_mod"),
-    pins={"A": GND, "K": V5, "COM": MOIST},
-    part=Part(mpn="BAV99,215", manufacturer="Nexperia"),
-)
-
 # --- 24 VAC -------------------------------------------------------------------------------------
 
 Component(
@@ -298,7 +270,7 @@ for i in range(OUTPUTS):
 
 # --- Test pads and mounting ---------------------------------------------------------------------
 
-# Supply rails and the four unused pins.
+# Supply rails and the five unused pins.
 for name, net in [("TP_5V", V5), ("TP_GND", GND), ("TP_VIN", VIN)] + [("TP_" + pin, net) for pin, net in FREE.items()]:
     TestPoint(name=name, variant="Pad_D1.5mm", P1=net)
 

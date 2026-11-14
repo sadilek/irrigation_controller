@@ -146,27 +146,9 @@ def mcu(x, y):
     S.power_symbol((px - 5 * G, y + 20.32 - 3 * G), net="+5V")
     S.wire("J_UPDI.3", (px - G, y + 22.86), (px - G, y + 22.86 + 2 * G))
     S.power_symbol((px - G, y + 22.86 + 2 * G), net="GND")
-    # Pads on the four unused pins.
-    for i, name in enumerate(("TP_PA3", "TP_PB1", "TP_PB4", "TP_PB5")):
+    # Pads on the five unused pins.
+    for i, name in enumerate(("TP_PA1", "TP_PA3", "TP_PB1", "TP_PB4", "TP_PB5")):
         S.place(name, x + 17.78, y + 15.24 + i * 2 * G, rot=270, ref=(1.6, -0.6), value=False)
-
-
-def moisture(x, y):
-    S.box(x, y, x + 119.38, y + 43.18, "Moisture sensor input (option)", "Terminal not populated; the protection parts are.")
-    yl = y + 27.94
-    S.place("J_MOIST", x + 12.7, yl - G, mirror="y", ref=(-4.0, 5.3), value=(-4.0, 7.1))
-    S.wire("J_MOIST.1", (x + 20.32, yl - 2 * G), (x + 20.32, yl - 3 * G))
-    S.power_symbol((x + 20.32, yl - 3 * G), net="+5V")
-    S.wire("J_MOIST.2", (x + 27.94, yl - G), (x + 27.94, yl + 4 * G))
-    S.power_symbol((x + 27.94, yl + 4 * G), net="GND")
-    S.place("R_MOIST", x + 43.18, yl, rot=90)
-    S.wire("J_MOIST.3", "R_MOIST.1")
-    S.place("D_MOIST", x + 68.58, yl, pin="3", ref=(-5.0, -5.6), value=(-5.0, -3.8))
-    S.place("C_MOIST", x + 83.82, yl + 2 * G, value=(1.9, 1.2))
-    S.wire("R_MOIST.2", (x + 99.06, yl))
-    S.wire("C_MOIST.1", (x + 83.82, yl))
-    S.label((x + 99.06, yl), (1, 0), net="MOIST")
-    S.label((x + 33.02, yl), (0, -1), net="MOIST_IN")
 
 
 def ac_protection(x, y):
@@ -226,7 +208,6 @@ def notes(x, y):
         x + G,
         y + 22.0,
         "Population options (crossed-out parts are not populated):\n"
-        "- moisture sensor terminal\n"
         "- termination, bias resistors, UPDI header",
         size=1.27,
     )
@@ -236,9 +217,8 @@ bus_jacks(12.7, 12.7)
 supply(137.16, 12.7)
 rs485(137.16, 60.96)
 mcu(271.78, 12.7)
-moisture(12.7, 96.52)
-ac_protection(12.7, 142.24)
-notes(12.7, 187.96)
+ac_protection(12.7, 96.52)
+notes(12.7, 142.24)
 for n in range(2):
     output(n + 1, 137.16 + n * 134.62, 134.62)
 S.finish()

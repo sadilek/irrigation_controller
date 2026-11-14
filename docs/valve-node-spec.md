@@ -9,7 +9,9 @@ sign-off, in particular: two outputs without footprints for more, and a tantalum
 regulator output. The enclosure is described in [`valve-node-enclosure.md`](valve-node-enclosure.md);
 it changes "Outline and connectors" below: the board is 96 × 44 mm with all connectors on one long
 edge, the jacks sit 34 mm apart, all cables enter through one wall, the moisture sensor has no
-cable entry, and only the bus inserts are slit.
+cable entry, and only the bus inserts are slit. After the sign-off the owner dropped the moisture
+sensor input from the board altogether (2026-11-14, schematic deviation 5); R13, the pin
+assignment and the current budget below say so, the outline section is superseded by the enclosure.
 
 The node replaces every existing node on the buried cable. Cable, wiring, addresses and registers
 stay as described in [`bus-protocol.md`](bus-protocol.md). The installation it goes into, with
@@ -26,7 +28,7 @@ checked again before an order.
 Signing this page off accepts these six points. Each one is explained in the section named.
 
 1. **ATtiny1616 instead of ATtiny1614** (accepted by the owner on 2026-11-14, VQFN package). Four outputs with one monitor input each, the address
-   switch, the moisture input and the LED need 17 pins. The ATtiny1614 has 11.
+   switch and the LED need 16 pins. The ATtiny1614 has 11.
    See [Microcontroller](#microcontroller-and-pin-assignment).
 2. **The 24 VAC side is isolated from the logic.** Optocouplers drive the triacs. No 24 VAC wire
    connects to the 12 V ground. See [Valve outputs](#valve-outputs).
@@ -59,7 +61,7 @@ Signing this page off accepts these six points. Each one is explained in the sec
 | R10 | A node with a fault does not take the 12 V supply or the 24 VAC supply down for the others | Bus fault of 2026-11 |
 | R11 | Parts rated for −40 to +85 °C, no electrolytic capacitors | Valve box in the ground |
 | R12 | Two layers, assembled by JLCPCB, bus passed through from one jack to the other | Baseline |
-| R13 | Optional input for a capacitive soil moisture sensor, one status LED | Baseline |
+| R13 | One status LED. The baseline's optional input for a capacitive soil moisture sensor is dropped: the sensor on the installed system never worked properly (owner, 2026-11-14) | Baseline |
 
 Not required, and not claimed: surviving a direct lightning strike, and surviving 24 VAC wired to
 the 12 V or RS485 wires. A cable crimped to the standard colour order cannot be miswired at the
@@ -94,8 +96,8 @@ which the 24 VAC would damage; the jacks are labelled.
                    └────────┼────┤ ATtiny1616 ├───╫───┤ output 1  ├──╫── valve 1
    address switch ──────────┼────┤            ├───╫───┤ output 2  ├──╫── valve 2
    status LED ──────────────┼────┤            ├───╫───┤ (output 3)├──╫── (valve 3)
-   moisture sensor ─────────┼────┤            ├───╫───┤ (output 4)├──╫── (valve 4)
-   UPDI header ─────────────┼────┤            │   ║   └──┬────────┘  ║
+   UPDI header ─────────────┼────┤            ├───╫───┤ (output 4)├──╫── (valve 4)
+                            │    │            │   ║   └──┬────────┘  ║
                             │    └────────────┘   ║      │
                            GND                    ║   valve common (fused 24 VAC a)
 
@@ -145,7 +147,6 @@ All 5 V current is 12 V current, because the regulator is linear.
 | Status LED, address switch, monitor pull-ups | 2 mA | by design |
 | **Node idle** | **about 8 mA** | |
 | One valve open: optotriac LED through 220 Ω | + 16 mA typical, 18 mA maximum | Everlight, forward voltage 1.18 V typical, p. 3 |
-| Moisture sensor, if fitted | + about 5 mA | module figure, not verified |
 | Transmitting into one 120 Ω terminator | + about 35 mA for 8 to 16 ms per answer | TI SLLSF20B, 6.7: 4 V typical into 100 Ω |
 | Transmitting into two terminators (60 Ω) | + about 58 mA | TI SLLSF20B, 6.7: 3.3 V typical into 60 Ω |
 
@@ -157,11 +158,11 @@ For the whole cable, with the 26 Ω loop resistance estimated in
 | Today's four nodes, one valve open | 48 mA | 1.2 V | 10.8 V |
 | The same while a node answers into one terminator | 83 mA | 2.2 V | 9.8 V |
 | Six nodes, one valve open | 64 mA | 1.7 V | 10.3 V |
-| Six nodes with six moisture sensors, one valve open, a node answering into two terminators | 152 mA | 4.0 V | 8.0 V |
+| Six nodes, one valve open, a node answering into two terminators | 122 mA | 3.2 V | 8.8 V |
 
 The first three cases leave at least 1.5 V above the 8.3 V the node needs. The last case does not,
 and it is the reason for decision 5: with termination open on the nodes, the fourth line becomes
-129 mA and 8.6 V. The real cable is shorter than 100 m and the nodes are spread along it, so the
+99 mA and 9.4 V. The real cable is shorter than 100 m and the nodes are spread along it, so the
 real drop is roughly half of each figure. The old nodes pulled the supply down to about 6 V with
 one relay energised (owner's calculation).
 
@@ -320,7 +321,6 @@ others.
 | 24 VAC a against b | SMBJ48CA at the jacks | 77.4 V at 7.8 A | Snubber capacitor, 100 V; triac and optotriac, 600 V |
 | 24 VAC pair against logic | No clamp. Isolation by two optocouplers per output and board clearance | | Optocouplers, 5000 V RMS for one minute |
 | Valve terminals | Behind the 24 VAC clamp; wires stay inside the box | | Triac, 600 V |
-| Moisture sensor input | 1 kΩ series resistor, 100 nF, clamp diodes to 5 V and ground | | Microcontroller pin, 1 mA injection (DS40002204A, 36.2, p. 505) |
 
 The 24 VAC TVS (Littelfuse SMBJ series, p. 2) has a stand-off of 48 V. That is the peak of
 33.9 V RMS, enough for a transformer that runs 40 % above its 24 V rating without load. The
@@ -369,7 +369,7 @@ and UPDI header masked. JLCPCB's standard assembly does not include it.
 
 ATtiny1616-MNR in a 3 × 3 mm VQFN-20, running at 5 V from the internal oscillator at 5 MHz.
 
-Why not the ATtiny1614 of the baseline. The functions need 17 pins:
+Why not the ATtiny1614 of the baseline. The functions need 16 pins:
 
 | Function | Pins |
 |---|---|
@@ -378,8 +378,7 @@ Why not the ATtiny1614 of the baseline. The functions need 17 pins:
 | Output monitors | 4 |
 | Address switch | 4 |
 | Status LED | 1 |
-| Moisture sensor | 1 |
-| **Total** | **17** |
+| **Total** | **16** |
 
 The ATtiny1614 has 11 usable pins, the ATtiny1616 has 17 (DS40002204A, table 5-1, p. 18). Both
 are the same chip family with the same core, peripherals, memory and tools; the firmware does not
@@ -401,7 +400,7 @@ Why this family at all, compared with the existing ATtiny85:
 | Pin | VQFN-20 | Function | Note |
 |---|---|---|---|
 | PA0 | 19 | UPDI | Programming header |
-| PA1 | 20 | Moisture sensor | ADC0 input 1 |
+| PA1 | 20 | Free | Test pad |
 | PA2 | 1 | Status LED | |
 | PA3 | 2 | Monitor 4 | Free on a two-valve board |
 | PA4 | 5 | Output 1 | High opens the valve |
@@ -417,9 +416,9 @@ Why this family at all, compared with the existing ATtiny85:
 | PC0 to PC3 | 15 to 18 | Address switch 1 to 4 | Switch to ground, internal pull-ups |
 | VDD, GND | 4, 3 | 5 V | 100 nF at the pin |
 
-With four outputs populated no pin is left. On the standard two-valve board the four free pins go
-to test pads. The layout may swap pins among outputs, monitors and switch if routing asks for it.
-TXD, RXD and XDIR are fixed, and the moisture input has to stay on a pin of ADC0.
+With four outputs populated PA1 is the one pin left. On the standard two-valve board the five free
+pins go to test pads. The layout may swap pins among outputs, monitors and switch if routing asks
+for it. TXD, RXD and XDIR are fixed.
 
 Address switch: four positions, binary, addresses 1 to 15. Position 0 is not a valid address
 (broadcast); the firmware specification says what a node does with it. The switch is read at
@@ -439,7 +438,7 @@ answer to weaknesses of the existing system and because the hardware is sized fo
 | Bus-loss timeout | All valves close after 60 s without a valid request to this node | The controller polls every 5 s, so 60 s is twelve missed polls |
 | Run-time limit | A valve closes after 120 min open | Home Assistant's longest setting is 90 min; this is the backstop when Home Assistant fails and the controller keeps polling |
 | One valve per node | Opening one output closes the node's other outputs and sets their setpoints to 0 | Transformer and cable carry one valve |
-| Diagnostics | New registers from 5 upward: monitor state per output, moisture value, firmware version, address | Registers 0 to 4 keep their meaning |
+| Diagnostics | New registers from 5 upward: monitor state per output, firmware version, address | Registers 0 to 4 keep their meaning |
 | Answer delay | The node answers after 3.5 characters of silence, as Modbus prescribes | The old node answered after 1.5 |
 
 The one-valve rule across nodes stays the controller's job. A node cannot see the others.
@@ -596,8 +595,8 @@ Quantity is per board with two outputs populated.
 | | 2-pole plug 5.08 mm | 2 | C440880 | extended | 43,965 | $0.15 |
 
 Resistors and the remaining capacitors are JLCPCB basic parts in 0603 and 0805; their numbers are
-fixed with the bill of materials. The moisture sensor terminal, the UPDI header, the termination
-resistor and the bias resistors are footprints.
+fixed with the bill of materials. The UPDI header, the termination resistor and the bias
+resistors are footprints.
 
 Parts for one board come to about $9. Most parts are "extended", for which JLCPCB charges a
 set-up fee per part type and order; the exact amount is part of the cost estimate before the
@@ -619,17 +618,18 @@ a 150 Ω LED resistor, because it needs 10 mA.
 
 | Baseline | This specification | Reason |
 |---|---|---|
-| ATtiny1614 | ATtiny1616 in VQFN-20 | 17 pins needed, 11 available; better stock and price |
+| ATtiny1614 | ATtiny1616 in VQFN-20 | 16 pins needed, 11 available; better stock and price |
 | SM712 | PSM712 | Same part, JLCPCB basic |
 | Triac outputs, drive not stated | Triacs fired through optotriacs, 24 VAC isolated from logic | Ground shift, surge path, fault containment |
 | Valve current sensing, optional | Voltage monitor across each triac, populated | No voltage drop; finds a broken wire before opening |
 | Termination via solder jumper | Kept, but open on every node; bias footprints added | Budget; idle level with the existing controller module |
 | Bus passed through | Kept, including the spare pair | A later branch can use the spare pair at any box |
 | Pluggable screw terminals | RJ45 jacks for the bus; screw plugs only for the valves | One plug, testable, bridged by a coupler, right termination for the cable |
+| Optional moisture input | Dropped after sign-off | The sensor on the installed system never worked properly (owner, 2026-11-14) |
 
 Everything else follows the baseline: RS485 transceiver with TVS, 12 V input with reverse
 polarity protection, resettable fuse and TVS, 5 V regulator, two of four outputs populated, DIP
-switch address, two layers, optional moisture input, status LED.
+switch address, two layers, status LED.
 
 ## Answers to the existing system
 

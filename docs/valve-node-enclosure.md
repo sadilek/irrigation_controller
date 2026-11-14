@@ -128,7 +128,6 @@ every side. No bought nut fits, and none is meant to.
 | Mounting holes | (4, 4), (92, 4), (4, 40), (92, 26), 3.2 mm for M3 | The fourth sits behind the valve headers, which occupy that corner |
 | Bus jacks | Front face on the bottom edge (y = 44), centres at x = 17 and x = 51 | 34 mm apart: two 33 mm nuts side by side. Fixed: the entries are aligned with them |
 | Valve headers | Front face on the bottom edge, centres at x = 79.92 and x = 90.08 | Their entry is at x = 85. May move along the edge; the wires are flexible |
-| Moisture terminal | No fixed place | It has no cable entry any more, see deviation 3 |
 | Keep-out, top | 7 mm circle around each hole | Screw head |
 | Keep-out, bottom | 9 mm circle around each hole | Standoff, 8 mm |
 | Height above the board | 18 mm | Lid underside at 20.4 mm |
@@ -145,7 +144,7 @@ show; the area is that of the outline the specification proposed.
 |---|---|---|---|
 | 1 | Board about 75 × 52 mm, jacks side by side on one short edge, valve headers on the opposite one, holes in the four corners | 96 × 44 mm, all connectors on one long edge, jacks 34 mm apart | All cables through one wall makes the box 114 mm long instead of 190 mm. Two entries that a plug passes through cannot be closer than their nuts, so the jacks are 34 mm apart; the pass-through between them is about 18 mm long instead of a few millimetres, and the surge protection still sits between the jacks |
 | 2 | Valve inserts with a slit per hole | Closed holes | These wires have free ends and are pushed through. A closed hole seals better than a slit one, and only the bus cable carries a plug |
-| 3 | Cable entry and terminal on the edge for a moisture sensor | No entry; the terminal has no fixed place | Owner, 2026-11-14: the sensor never worked properly. The footprint and its three protection parts are still in the schematic |
+| 3 | Cable entry and terminal on the edge for a moisture sensor | No entry and no terminal | Owner, 2026-11-14: the sensor never worked properly. The schematic dropped the input as well ([schematic deviation 5](valve-node-schematic.md#deviations-from-the-specification)) |
 | 4 | Entry: opening, insert, nut | A washer between nut and insert | See [Cable entries](#cable-entries) |
 | 5 | One entry per valve | One entry for all valve wires of a box, with a two-hole or four-hole insert | A third and fourth entry would each widen the box by 34 mm |
 | 6 | Nut of PETG | Nut of the box's material (ASA) | One material for all stiff parts; PETG remains the fallback for all of them |
@@ -218,7 +217,5 @@ The owner, with a caliper, before the first print. Each value is one line at the
   renumbers reference designators.
 - The rotation is 0° for all four connectors: the footprints' plug side is +y, which is the
   board's bottom edge. Check it in the first board render.
-- The moisture terminal has no place in `mech.json`. It is not populated and no cable reaches
-  it; the layout puts the footprint where it costs nothing, or the schematic drops it.
 - When the layout moves a connector that is not `fixed`, it changes `mech.json`, and
   `make enclosure collide` has to pass again.
