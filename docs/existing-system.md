@@ -24,6 +24,20 @@ shed (dry)                               buried CAT-6, daisy chain, < 100 m
 
 The drawing shows the bus addresses, not the order of the boxes along the cable.
 
+## Current state: bus down
+
+Reported by the owner on 2026-11-14: all four nodes have been offline for several weeks, and the
+receive LED on the controller's RS485 module is lit permanently. A receive LED that never goes
+dark means the bus is held in the active state all the time; a node that transmits without end, a
+damaged module or a fault between the bus wires (moisture at a connection) would each do that.
+Which one it is has not been investigated.
+
+Consequence for commissioning (owner's decision): the old nodes are not repaired and not replaced
+one at a time. All of them are removed, then the new nodes are connected and commissioned one
+after the other. With all nodes removed, the LED shows where the fault is: if it stays lit with
+only the cable connected, the fault is in the cable or the controller's module; if it also stays
+lit with the cable disconnected, it is the module.
+
 ## Controller
 
 - Wemos D1 Mini (ESP8266) running ESPHome with the `modbus_controller` component; UART on pins D1
@@ -74,8 +88,8 @@ Found by reading the firmware and the notes, and reported by the owner.
 - **The bus does not tolerate another node or a terminator.** The owner's attempt to convert a
   further node made communication with all nodes collapse, and so did adding a termination
   resistor. A likely cause is described under [RS485 adapter module](#rs485-adapter-module). The
-  new node has to be designed for this bus as it is, because old and new nodes share it during the
-  swap.
+  old nodes are all removed before the first new one is connected, so the new nodes never share
+  the bus with old ones. The controller's module stays until the controller is replaced.
 
 - **No close on bus loss.** A node holds an open valve for as long as it has power.
 - **Both outputs can be on at once.** Nothing in the node limits it to one valve.
@@ -149,8 +163,9 @@ or an extra terminator lowers the resistance further and the idle level disappea
 
 Test, two minutes: measure the resistance between A and B on a loose spare module (expected about
 120 Ω), and between the brown wires of the powered-down bus (expected about 24 Ω). If the
-hypothesis holds, removing the resistor from the modules that are not at the ends of the cable
-repairs the existing bus, and the new node must be built without a fixed terminator.
+hypothesis holds, it settles the termination of the new bus: the controller's module, which stays
+for now, terminates the controller end; the new nodes get no fixed terminator, only a switchable
+one for the node at the far end.
 
 ## Valves
 
@@ -222,9 +237,8 @@ in the node, so that the rule and the run-time limit hold without Home Assistant
 
 | Point | Needed for | Who |
 |---|---|---|
-| Termination on the RS485 modules (test above) | Whether new nodes can join the existing bus at all | Owner, multimeter |
+| Termination on the RS485 modules (test above) | Termination of the new nodes; the controller's module stays on the bus | Owner, multimeter |
 | Loop resistance of the cable | Voltage at the far valve and on the 12 V supply | Short the spare blue pair at the last box and measure at the controller |
 | Open-circuit voltage of the transformer, and its voltage with one valve open | Sizing of the replacement | Measurement |
-| Current drawn by a node, idle and with a relay energised | 12 V budget during the mixed operation of old and new nodes | Measurement |
 | Solenoid inrush duration and pull-in voltage | Output switch sizing | Measurement on a spare valve |
 | Bus points listed in [`bus-protocol.md`](bus-protocol.md#open-points) | | |

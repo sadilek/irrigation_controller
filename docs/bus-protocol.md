@@ -1,8 +1,10 @@
 # Bus and protocol
 
 What runs on the buried cable today: wiring, serial settings, addresses, registers and timing. The
-new boards keep all of it, so old and new nodes work side by side on the same bus while the boxes
-are swapped one by one. The hardware around the bus is described in
+new valve nodes keep cable, addresses and registers, so the existing controller and its Home
+Assistant entities work with them unchanged until the controller is replaced as well. Old and new
+nodes never share the bus: all old nodes are removed before the first new one is connected. The
+hardware around the bus is described in
 [`existing-system.md`](existing-system.md).
 
 Sources, read on 2026-11-14:
