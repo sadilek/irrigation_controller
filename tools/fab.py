@@ -58,7 +58,7 @@ def main(name):
         key = part["lcsc"]
         entry = bom.setdefault(key, {"refs": [], "comment": fp.GetValue(), "footprint": fp.GetFPID().GetLibItemName().wx_str(), "class": part["class"]})
         entry["refs"].append(ref)
-        if part["assembly"] == "smt":
+        if part["assembly"] in ("smt", "tht"):  # JLCPCB drops a BOM line whose designators have no placement
             pos = fp.GetPosition()
             rot = (fp.GetOrientationDegrees() + float(part["rotation_offset"] or 0)) % 360
             cpl.append([ref, "%.4fmm" % pcbnew.ToMM(pos.x - origin.x), "%.4fmm" % -pcbnew.ToMM(pos.y - origin.y),

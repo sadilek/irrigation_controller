@@ -2,7 +2,8 @@
 
 How a board goes from source text to checked fabrication data and an enclosure that fits, without
 opening KiCad or a CAD program. Verified end to end on `boards/throwaway` (5 V in, 3.3 V regulator,
-LED) on 2026-11-13; the full chain runs in about 15 seconds.
+LED) on 2026-11-13; the full chain runs in about 15 seconds. The valve node (60 footprints) runs
+through the same chain in about two minutes.
 
 ## The chain
 
@@ -13,10 +14,10 @@ boards/<board>/<board>.zen ──check──▶ Zener compiler (nets, types, vol
 eda/<board>.kicad_sch ◀──arrange── schematic.py (where each symbol sits; optional)
         │ erc ──▶ erc.rpt      schematic ──▶ <board>-schematic.pdf      bom ──▶ <board>-bom.csv
 eda/<board>.kicad_pcb  (footprints and nets, unplaced)
-        │ layout   ◀── layout.py (positions) ◀── mech.json (outline, holes) ──▶ enclosure.py
+        │ layout   ◀── layout.py (positions, rules, tracks) ◀── mech.json ──▶ enclosure.py
         ▼                                                                          │ enclosure
-eda/<board>.kicad_pcb  (outline, placed, routed by Freerouting)                    ▼
-        │ drc ──▶ drc.rpt        render ──▶ render-top.png, render-bottom.png   base.step/.stl
+eda/<board>.kicad_pcb, .kicad_dru  (outline, placed, routed, design rules)         ▼
+        │ drc ──▶ drc.rpt        render, plots ──▶ render-*.png, plots/*.svg    base.step/.stl
         │ fab                                                                   lid.step/.stl
         ▼                                                                          │
 fab/<board>-gerbers.zip, -bom-jlcpcb.csv, -cpl-jlcpcb.csv, <board>.step ──collide──┘
@@ -39,15 +40,16 @@ Run from the repository root. `BOARD` defaults to `throwaway`.
 | `make bom` | `build/<board>/<board>-bom.csv` and `.md`: every footprint with part number, LCSC number, class, assembly type and side, populated or not |
 | `make erc` | `build/<board>/erc.rpt`; fails on any violation |
 | `make schematic` | `build/<board>/<board>-schematic.pdf` |
-| `make layout` | Board outline, placement, ground zone and routed tracks in the `.kicad_pcb` |
+| `make layout` | Board outline, placement, zones, rule areas, silkscreen texts and tracks in the `.kicad_pcb`; net classes in the `.kicad_pro`, custom rules in the `.kicad_dru` |
 | `make drc` | Zones filled, `build/<board>/drc.rpt`; fails on any violation or unconnected pad |
-| `make render` | `build/<board>/render-top.png`, `render-bottom.png` |
-| `make fab` | `build/<board>/fab/`: Gerber and drill zip, JLCPCB BOM, JLCPCB placement file, board STEP |
-| `make enclosure` | `build/<board>/enclosure/`: the enclosure parts as STEP. Throwaway board: STL beside them. Valve node: STL per printed part in `print/`, pictures in `views/`, and `envelope.step` (about 40 s) |
+| `make render` | `build/<board>/render-top.png`, `render-bottom.png`, `render-angle.png` |
+| `make plots` | `build/<board>/plots/`: copper per side and an assembly drawing with reference designators (SVG), copper coloured by net class (`classes.svg`), and `<board>-1to1.pdf`, the board at true size for a paper test fit |
+| `make fab` | `build/<board>/fab/`: Gerber and drill zip, JLCPCB BOM, JLCPCB placement file (surface-mount and through-hole parts), board STEP |
+| `make enclosure` | `build/<board>/enclosure/`: the enclosure parts as STEP. Throwaway board: STL beside them. Valve node: STL per printed part in `print/` (with `board-dummy.stl` for a test fit), pictures in `views/` (with the real board once `make fab` has run), and `envelope.step` (about 40 s) |
 | `make collide` | Overlap volume of the populated board against each enclosure part; fails on overlap. Without a board STEP it uses `envelope.step`: the outline and connectors from `mech.json` as blocks |
 | `make all` | All of the above in order |
 | `make verify` | The checks only, without touching committed files (what Obeya runs before landing) |
-| `make selftest` | Lowers the lid into the pin header (throwaway board) and into the bus jacks (valve node) and expects `collide` to fail; renames a net label in the valve node schematic and expects the comparison with the source to fail |
+| `make selftest` | Lowers the lid into the pin header (throwaway board) and into the bus jacks (valve node) and expects `collide` to fail; renames a net label in the valve node schematic and expects the comparison with the source to fail; draws a ground track near 24 VAC copper, under an optocoupler and under a screw head on a copy of the valve node board and expects DRC to name the rule each time |
 
 ## Schematic format: Zener
 
@@ -107,6 +109,27 @@ labels and power symbols on the rest and frames the functional blocks
 - Symbols are addressed by their Zener path (`OUT1.R_GATE`), not by reference designator, because
   Zener renumbers references when parts are added.
 
+## Routing
+
+A board's `layout.py` places every part by coordinates and then has three ways to make copper,
+all in [`tools/kilayout.py`](../tools/kilayout.py):
+
+| | What | Used for |
+|---|---|---|
+| `track()`, `via()`, `zone()` | Copper drawn by coordinates | Everything where the path matters: 24 VAC, the bus pass-through, surge paths, copper areas |
+| `router()` | [`tools/gridroute.py`](../tools/gridroute.py): a grid router of this repository. 0.1 mm grid, two layers, 45° bends, shortest path first, one net after the other in the order given, no second attempt. `fanout()` leads the pins of a fine-pitch package out to twice their pitch first | The logic side of the valve node |
+| `autoroute()` | Freerouting round trip (Specctra DSN out, session in). Scripted tracks are exported as fixed and put back as drawn | The throwaway board |
+
+Design rules belong to the board, not to the script that routes it. `write_rules()` puts net
+classes and their net-name patterns into the KiCad project and custom rules into
+`<board>.kicad_dru`; `kicad-cli pcb drc` then checks them, whoever drew the copper. The valve
+node's 3 mm between 24 VAC and logic is such a rule, with a named area for the one exception
+([`valve-node-layout.md`](valve-node-layout.md)).
+
+The grid router knows one clearance and no custom rules. A board keeps it away from copper with a
+larger clearance through the region it hands over. It stops the build when a net finds no way
+and prints the obstacle map around the pads it could not reach.
+
 ## What is installed
 
 `scripts/setup.sh` downloads pinned versions with SHA-256 checks into `.tools/` and changes nothing
@@ -134,17 +157,22 @@ rotation correction that `make fab` writes into the BOM and placement file.
 
 Found while running the chain. Ordered by how much they matter for the real boards.
 
-1. **The autorouter's result is unreviewed copper.** Freerouting connects everything and passes
-   DRC, but it knows nothing about current, creepage between 24 VAC and logic, or where surge
-   current should flow. On the throwaway board that is harmless. For the valve node, mains-side and
-   protection nets need track widths, clearances and keep-outs set as rules *before* routing (net
-   classes in `lib/jlcpcb.zen`, custom DRC rules in the KiCad project), and the critical nets may
-   have to be routed by explicit coordinates in `layout.py`. Net classes beyond `Default` and their
-   assignment to nets from Zener are not exercised yet.
+1. **An autorouter's result is unreviewed copper, and Freerouting did not finish the real board.**
+   It knows nothing about current, creepage between 24 VAC and logic, or where surge current
+   should flow. On the throwaway board that is harmless. On the valve node (2026-11-14) the
+   critical nets are drawn by coordinates, and for the rest Freerouting 2.5.0 left 8 to 13
+   connections open around the 0.4 mm pitch microcontroller in every run and wrote three tracks of
+   0.12 mm, below the 0.15 mm minimum. More passes, a 0.2 mm default width and pre-drawn stubs
+   did not change that. The valve node therefore uses `tools/gridroute.py` ("Routing" above). That
+   router is small and crude: no rip-up, one clearance, pad outlines as rectangles; a placement
+   change can leave a net without a way, and the fix is then by hand in `layout.py`. Zener cannot
+   assign nets to classes other than by impedance, so net classes come from `layout.py`.
 2. **Placement is by coordinates the worker picks.** There is no auto-placer. `layout.py` lists a
-   position per part; the script refuses to run if a part has none. This is workable for 30–60
-   parts but each placement round needs a render to look at, and DRC only catches overlaps, not bad
-   placement.
+   position per part; the script refuses to run if a part has none. This worked for the valve
+   node's 60 footprints, but each placement round needs a picture to look at (`make plots` is
+   faster than `make render`), and DRC only catches overlaps, not bad placement. Two identical
+   connectors whose pins are passed through need their wire order planned before anything is
+   placed ([`valve-node-layout.md`](valve-node-layout.md), "The pass-through").
 3. **KiCad's ERC is weakened on a Zener schematic.** Two rules are switched off in the project
    file: `lib_symbol_issues` (Zener embeds symbols without a library table) and
    `power_pin_not_driven` (Zener has no `PWR_FLAG`; a power net without a source is caught by
@@ -194,5 +222,16 @@ Found while running the chain. Ordered by how much they matter for the real boar
     `"HAL lead-free"`; default design rules (0.09 mm) are finer than JLCPCB's standard process and
     must be overridden (`lib/jlcpcb.zen`); a shared library must be its own package with a `pcb.toml`.
 
-Not exercised on the throwaway board: parts on the bottom side, more than one net class, panels,
-through-hole assembly by JLCPCB, and an actual upload to JLCPCB.
+14. **A rule area that forbids tracks is not enough.** KiCad 10.0.1's DRC did not report a track
+    drawn through one on the valve node; zones did stay out. Keep-outs are therefore repeated as
+    `disallow` rules in the board's `.kicad_dru`, and `make selftest` proves each one by drawing
+    a track into it on a copy of the board.
+15. **Zener keeps the footprint a board was created with.** A changed footprint file in `lib/`
+    reaches the board only after `eda/<board>.kicad_pcb` and `eda/snapshot.layout.json` are
+    deleted and `make apply layout` has run. `pcb apply` also resets the `Default` net class of
+    the KiCad project from `lib/jlcpcb.zen` on every run; other classes survive.
+16. **Silkscreen from fetched footprints crosses pads and board edges.** The two connector
+    footprints were trimmed by hand ([`lib/README.md`](../lib/README.md)).
+
+Not exercised on either board: parts on the bottom side, panels, through-hole assembly by JLCPCB,
+and an actual upload to JLCPCB.

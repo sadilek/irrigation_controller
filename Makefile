@@ -19,7 +19,7 @@ FILTER := 2>&1 | grep -v -e 'memory leak' -e 'create wxApp' ; exit $${PIPESTATUS
 
 SHELL := /bin/bash
 .SHELLFLAGS := -o pipefail -c
-.PHONY: help setup check apply arrange bom erc schematic layout drc render fab enclosure collide all verify selftest clean
+.PHONY: help setup check apply arrange bom erc schematic layout drc render plots fab enclosure collide all verify selftest clean
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/' | expand -t 12
@@ -51,17 +51,27 @@ schematic: ## Schematic as PDF -> build/<board>/<board>-schematic.pdf
 bom: ## Review BOM with LCSC numbers, assembly side and unpopulated footprints -> build/<board>/<board>-bom.csv, .md
 	@$(KIPY) tools/bom.py $(BOARD) $(FILTER)
 
-layout: ## Outline, placement, zones and autorouting from boards/<board>/layout.py
+layout: ## Outline, placement, zones and routing from boards/<board>/layout.py
 	@$(KIPY) $(SRC)/layout.py $(FILTER)
 
 drc: ## Fill zones, then KiCad design rules check -> build/<board>/drc.rpt
 	@mkdir -p $(OUT)
 	$(KICAD) pcb drc --refill-zones --save-board --severity-all --exit-code-violations -o $(OUT)/drc.rpt $(EDA)/$(BOARD).kicad_pcb $(QUIET)
 
-render: ## 3D renders of the board, top and bottom -> build/<board>/render-*.png
+render: ## 3D renders of the board: top, bottom, at an angle -> build/<board>/render-*.png
 	@mkdir -p $(OUT)
 	$(KICAD) pcb render --side top --quality high -w 1600 -h 1000 -o $(OUT)/render-top.png $(EDA)/$(BOARD).kicad_pcb >/dev/null $(QUIET)
 	$(KICAD) pcb render --side bottom --quality high -w 1600 -h 1000 -o $(OUT)/render-bottom.png $(EDA)/$(BOARD).kicad_pcb >/dev/null $(QUIET)
+	$(KICAD) pcb render --side top --rotate "-40,0,-20" --perspective --quality high -w 1600 -h 1000 -o $(OUT)/render-angle.png $(EDA)/$(BOARD).kicad_pcb >/dev/null $(QUIET)
+
+PLOT := $(KICAD) pcb export svg --mode-single --page-size-mode 2 --exclude-drawing-sheet
+plots: ## Flat drawings: copper per side, copper by net class, assembly drawing, 1:1 print -> build/<board>/plots/
+	@mkdir -p $(OUT)/plots
+	$(PLOT) --layers F.Cu,F.SilkS,Edge.Cuts -o $(OUT)/plots/copper-top.svg $(EDA)/$(BOARD).kicad_pcb >/dev/null $(QUIET)
+	$(PLOT) --layers B.Cu,B.SilkS,Edge.Cuts --mirror -o $(OUT)/plots/copper-bottom.svg $(EDA)/$(BOARD).kicad_pcb >/dev/null $(QUIET)
+	$(PLOT) --layers F.Fab,Edge.Cuts --black-and-white --sp -o $(OUT)/plots/assembly-top.svg $(EDA)/$(BOARD).kicad_pcb >/dev/null $(QUIET)
+	$(KICAD) pcb export pdf --mode-single --scale 1 --black-and-white --layers Edge.Cuts,F.Fab,F.SilkS,Cmts.User -o $(OUT)/plots/$(BOARD)-1to1.pdf $(EDA)/$(BOARD).kicad_pcb >/dev/null $(QUIET)
+	@$(KIPY) tools/classmap.py $(BOARD) $(FILTER)
 
 fab: ## Gerbers + drill (zip), JLCPCB BOM and placement file, board STEP -> build/<board>/fab/
 	@$(KIPY) tools/fab.py $(BOARD) $(FILTER)
@@ -72,13 +82,13 @@ enclosure: ## Enclosure parts as STEP and STL (valve node: also pictures) -> bui
 collide: ## Collision check: board STEP against the enclosure parts
 	uv run python tools/collide.py $(BOARD)
 
-all: apply erc schematic layout drc render fab enclosure collide ## The whole chain, source to checked outputs
+all: apply erc schematic layout drc render plots fab enclosure collide ## The whole chain, source to checked outputs
 
 verify: check erc ## All checks without modifying committed files (zones as last filled by `make drc`)
 	$(KICAD) pcb drc --severity-all --exit-code-violations -o $(OUT)/drc.rpt $(EDA)/$(BOARD).kicad_pcb $(QUIET)
 	@$(MAKE) --no-print-directory fab enclosure collide BOARD=$(BOARD)
 
-selftest: ## Prove the checks can fail: a lowered lid (both enclosures) and a changed schematic must be reported
+selftest: ## Prove the checks can fail: a lowered lid (both enclosures), a changed schematic, a logic track near 24 VAC
 	uv run python boards/throwaway/enclosure.py --lid-drop 6 >/dev/null
 	@if uv run python tools/collide.py throwaway >/dev/null; then echo "selftest: collision NOT detected"; exit 1; else echo "selftest: collision detected as expected"; fi
 	uv run python boards/throwaway/enclosure.py >/dev/null
@@ -86,6 +96,10 @@ selftest: ## Prove the checks can fail: a lowered lid (both enclosures) and a ch
 	@if uv run python tools/collide.py valve-node >/dev/null; then echo "selftest: valve node collision NOT detected"; exit 1; else echo "selftest: valve node collision detected as expected"; fi
 	uv run python boards/valve-node/enclosure.py --no-views >/dev/null
 	@tools/selftest-schematic.sh valve-node $(PCB)
+	@# A ground track 2.5 mm from the 24 VAC jumper pads, one under an optocoupler, one under a screw head.
+	@$(KIPY) tools/selftest-drc.py valve-node GND F.Cu 60.0 31.0 60.0 33.0 "24 VAC to logic" $(FILTER)
+	@$(KIPY) tools/selftest-drc.py valve-node GND B.Cu 62.0 10.0 66.0 10.0 "no copper under the optocouplers" $(FILTER)
+	@$(KIPY) tools/selftest-drc.py valve-node GND F.Cu 6.5 2.0 6.5 6.0 "screw heads and standoffs" $(FILTER)
 
 clean: ## Remove generated outputs
 	rm -rf build
