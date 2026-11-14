@@ -43,7 +43,7 @@ Run from the repository root. `BOARD` defaults to `throwaway`.
 | `make drc` | Zones filled, `build/<board>/drc.rpt`; fails on any violation or unconnected pad |
 | `make render` | `build/<board>/render-top.png`, `render-bottom.png` |
 | `make fab` | `build/<board>/fab/`: Gerber and drill zip, JLCPCB BOM, JLCPCB placement file, board STEP |
-| `make enclosure` | `build/<board>/enclosure/`: the enclosure parts as STEP. Throwaway board: STL beside them. Valve node: STL per printed part in `print/`, pictures in `views/`, and `envelope.step` (about 50 s) |
+| `make enclosure` | `build/<board>/enclosure/`: the enclosure parts as STEP. Throwaway board: STL beside them. Valve node: STL per printed part in `print/`, pictures in `views/`, and `envelope.step` (about 40 s) |
 | `make collide` | Overlap volume of the populated board against each enclosure part; fails on overlap. Without a board STEP it uses `envelope.step`: the outline and connectors from `mech.json` as blocks |
 | `make all` | All of the above in order |
 | `make verify` | The checks only, without touching committed files (what Obeya runs before landing) |

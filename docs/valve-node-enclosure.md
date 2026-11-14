@@ -4,7 +4,9 @@ The sealed box the valve node lies in, and the board outline that follows from i
 the mounting holes and the connector positions in
 [`boards/valve-node/mech.json`](../boards/valve-node/mech.json) are the input to the layout.
 
-Status: proposal, 2026-11-14. Nothing is printed yet. Four dimensions are assumed until the owner
+Status: proposal, 2026-11-14, second version: the owner asked for a box the size of a
+surface-mounted junction box and dropped the moisture sensor's cable entry. Nothing is printed
+yet. Three dimensions are assumed until the owner
 has measured them ([To measure](#to-measure)); they are parameters at the top of
 [`enclosure.py`](../boards/valve-node/enclosure.py), and one command rebuilds everything.
 
@@ -23,7 +25,7 @@ says why.
 | Pictures | same | `build/valve-node/views/*.png` |
 | Fit of board and connectors | `make collide BOARD=valve-node` | report on the terminal |
 
-The command takes about 50 seconds. STEP and STL files are not committed: they are 25 MB per
+The command takes about 40 seconds. STEP and STL files are not committed: they are 20 MB per
 revision, and the model, not its output, is the source. The pictures on this page are copies of
 `build/valve-node/views/`.
 
@@ -33,30 +35,34 @@ revision, and the model, not its output, is the source. The pictures on this pag
 
 | | |
 |---|---|
-| Outside | 177 × 85 × 34 mm, 190 mm long over the nuts |
-| Inside | 135 × 60 × 27 mm |
-| Walls and floor | 3 mm |
-| Parts | Base, lid, gasket, four cable entries (nut, washer and insert each) |
-| Hardware | 8 screws M3 × 10 for the lid, 4 screws M3 × 6 for the board, 12 heat-set inserts M3 (4.6 mm outside, 5.7 mm long), all stainless or brass |
+| Outside | 114 × 93 × 34 mm over the nuts; the body alone is 114 × 74 mm |
+| Inside | 100 × 60 × 27 mm |
+| Walls and floor | 3 mm, solid pillars in the four corners |
+| Parts | Base, lid, gasket, three cable entries (nut, washer and insert each) |
+| Hardware | 4 screws M3 × 10 for the lid, 4 screws M3 × 6 for the board, 8 heat-set inserts M3 (4.6 mm outside, 5.7 mm long), all stainless or brass |
 | Material | ASA for base, lid, nuts and washers (PETG as fallback); TPU 95A for gasket and inserts |
 
 Why it has this shape:
 
-- **Cable entries on the two short walls, in line with the connectors.** The bus cable is stiff
-  and its aluminium strands break when bent
-  ([`existing-system.md`](existing-system.md#cable)). Each bus cable therefore runs straight from
-  its entry into its jack: the plug is pushed through the entry and into the jack along one line,
-  with the nut loose.
-- **30 mm between each board end and the wall.** On the bus side that is the part of the plug
-  that stands out of the jack plus room for a finger or a screwdriver on the latch. On the valve
-  side it is the screw plug and the bend of the wires. It is the first number to shrink if the
-  box turns out too long for a valve box.
+- **All three cables enter through one wall.** A cable entry with its nut is 23 mm long. With
+  entries on two opposite walls the first version was 190 mm long; with all of them on one wall
+  the box is as wide as three nuts side by side (114 mm) and as deep as the board plus one entry
+  (93 mm).
+- **Each bus cable runs straight into its jack.** The cable is stiff and its aluminium strands
+  break when bent ([`existing-system.md`](existing-system.md#cable)). The jacks and the valve
+  headers sit on one edge of the board, each opposite its entry: the plug is pushed through the
+  entry and into the jack along one line, with the nut loose.
+- **14 mm between the board's connector edge and the wall.** The plug stands 9.5 mm out of the
+  jack; its rear end lies just inside the wall. That leaves no room for fingers on the latch. To
+  unplug: loosen the nuts, undo the four board screws, push the cables in and lift the board out
+  with the cables on it.
+- **Lid screws in the corners, inside the outline.** The cavity's corners are rounded with 8 mm.
+  The gasket follows that curve, and each corner outside it is a solid pillar that takes a
+  heat-set insert. Nothing stands out beyond the rim except the nuts.
 - **The cable entries set the height.** An entry that an RJ45 plug passes through needs a thread
   of 26 mm and a nut of 33 mm. The entry's axis is at the jack's opening, the nut's lower edge
   ends level with the underside of the box, and the rim of the base lies just above the entry.
   That gives 20 mm of room above the board where the jacks need 13 mm.
-- **The lid is flat and the base is deep**, so the seal lies above everything that could collect
-  water inside, and the board, the plugs and the nuts are reachable with the lid off.
 
 ## Seal between base and lid
 
@@ -73,8 +79,10 @@ presses 0.5 mm into the ring.
   the lid open.
 - The screws sit outside the gasket. No screw hole leads inside, so the heat-set inserts need no
   sealing.
-- Eight screws, 40 mm apart along the long sides. The short sides carry the cable entries and
-  have no screws; a rim under the lid, 3 mm deep, stiffens it there and centres it in the box.
+- Four screws, 106 and 66 mm apart. That is far for a gasket, so the lid is 4 mm thick and
+  carries a rib of 2 × 5 mm all around, just inside the wall, which keeps it flat between the
+  screws and centres it in the box. Whether that is enough is one of the things the water bath
+  test answers; the fix would be a softer gasket (printed with less infill) or a shallower ridge.
 - The fallback, if a printed ring does not seal: a 2.5 mm round cord of silicone or EPDM fits the
   same groove; the ridge under the lid is then shortened to 0.5 mm (`TONGUE_H`).
 
@@ -82,7 +90,7 @@ presses 0.5 mm into the ring.
 
 ![One entry taken apart](images/valve-node-enclosure-entry-parts.png)
 
-All four entries are the same: a threaded boss on the wall with a conical seat inside, a soft
+All three entries are the same: a threaded boss on the wall with a conical seat inside, a soft
 insert, a stiff washer and a nut. Only the insert and its washer differ.
 
 | Insert | Holes | Slit | Used for |
@@ -90,8 +98,7 @@ insert, a stiff washer and a nut. Only the insert and its washer differ.
 | `bus` | One, for the cable jacket | Yes | Each of the two bus cables |
 | `valve-2` | Two, one per wire | No | A box with one valve |
 | `valve-4` | Four | No | A box with two valves |
-| `sensor` | One | No | Moisture sensor cable |
-| `blank` | None | No | An entry that is not used |
+| `blank` | None | No | An entry that is not used: the second bus entry of the last node on the cable |
 
 How it seals. The seat is a cone that narrows towards the inside by 9° per side. The insert has
 the same cone and stands 1.5 mm out of the boss when the nut is hand-tight. Tightening the nut
@@ -101,8 +108,9 @@ As with the lid, the stop is a hard face and not a feeling.
 
 Why a washer. The nut's opening has to be as large as the plug (15.5 mm), which leaves a ring of
 2 mm to press on a 20 mm insert; the soft material would bulge out through the opening. The
-washer closes the opening down to the cable. The bus washer has a slot so that it goes around a
-cable with a plug on it.
+washer closes the opening down to the cable. The bus washer has a slot from its rim to its centre,
+as wide as the cable, and is pushed onto the cable from the side; the nut, whose opening the plug
+passes through, is threaded over the plug before that.
 
 Why the thread is its own. A printed thread needs a coarse pitch and play
 ([`tools/printthread.py`](../tools/printthread.py)): 2.5 mm pitch, 1.2 mm deep, 0.3 mm of play on
@@ -114,38 +122,41 @@ every side. No bought nut fits, and none is meant to.
 
 | Item | Value | Reason |
 |---|---|---|
-| Board | 75 × 56 mm, corners 2 mm, 1.6 mm thick | See deviation 1 |
-| Clearance to the long walls | 2 mm | Board drops in without tilting |
-| Mounting holes | (20, 4), (71, 4), (20, 52), (71, 52), 3.2 mm for M3 | The left pair sits behind the jacks, because the jacks occupy the corners |
-| Bus jacks | Front face on the left edge, centres at y = 11 and y = 45 | 34 mm apart: two 33 mm nuts side by side. Fixed: the entries are aligned with them |
-| Valve headers | Front face on the right edge, centres at y = 31 and y = 41.16 | May move along the edge; the wires are flexible |
-| Moisture terminal | Front face on the right edge, pin 1 at y = 19.2 | Moved from the top edge, see deviation 3 |
+| Board | 96 × 44 mm, corners 3 mm, 1.6 mm thick | See deviation 1. The same area as 75 × 56 mm |
+| Clearance to the walls | 2 mm on three sides, 14 mm on the connector edge | Board drops in without tilting; the rounded corners of the cavity clear the board's corners by 0.8 mm |
+| Mounting holes | (4, 4), (92, 4), (4, 40), (92, 26), 3.2 mm for M3 | The fourth sits behind the valve headers, which occupy that corner |
+| Bus jacks | Front face on the bottom edge (y = 44), centres at x = 17 and x = 51 | 34 mm apart: two 33 mm nuts side by side. Fixed: the entries are aligned with them |
+| Valve headers | Front face on the bottom edge, centres at x = 79.92 and x = 90.08 | Their entry is at x = 85. May move along the edge; the wires are flexible |
+| Moisture terminal | No fixed place | It has no cable entry any more, see deviation 3 |
 | Keep-out, top | 7 mm circle around each hole | Screw head |
 | Keep-out, bottom | 9 mm circle around each hole | Standoff, 8 mm |
 | Height above the board | 18 mm | Lid underside at 20.4 mm |
 | Depth below the board | 3.5 mm | Floor at 5 mm |
 
-The valve headers and the moisture terminal are 4 mm apart on the right edge. The layout's
-isolation gap (3 mm between the 24 VAC side and the logic) passes between them.
+All connectors are on one edge. From left to right: jack, jack, valve headers. The 24 VAC side of
+the board is its right part, behind the valve headers; the logic is the left part and the strip
+along the far edge. Whether the circuit fits on 96 × 44 mm with that split is for the layout to
+show; the area is that of the outline the specification proposed.
 
 ## Deviations from the specification
 
 | # | Specification | This design | Reason |
 |---|---|---|---|
-| 1 | Board about 75 × 52 mm, jacks side by side, holes in the four corners | 75 × 56 mm, jacks 34 mm apart at the corners of the left edge, left holes at x = 20 | Two entries that a plug passes through cannot be closer than their nuts. Keeping the jacks side by side would bend each stiff cable by 8 mm on its last 30 mm. The pass-through between the jacks grows from a few millimetres to about 18 mm; the surge protection still sits between the jacks |
-| 2 | Valve and sensor inserts with a slit per hole | Closed holes | These wires have free ends and are pushed through. A closed hole seals better than a slit one, and only the bus cable carries a plug |
-| 3 | Moisture terminal on the top edge | On the right edge, above the valve headers | A plug on a long edge would widen the box by 20 mm for an option that is not populated. The right edge has room since the board has two outputs |
+| 1 | Board about 75 × 52 mm, jacks side by side on one short edge, valve headers on the opposite one, holes in the four corners | 96 × 44 mm, all connectors on one long edge, jacks 34 mm apart | All cables through one wall makes the box 114 mm long instead of 190 mm. Two entries that a plug passes through cannot be closer than their nuts, so the jacks are 34 mm apart; the pass-through between them is about 18 mm long instead of a few millimetres, and the surge protection still sits between the jacks |
+| 2 | Valve inserts with a slit per hole | Closed holes | These wires have free ends and are pushed through. A closed hole seals better than a slit one, and only the bus cable carries a plug |
+| 3 | Cable entry and terminal on the edge for a moisture sensor | No entry; the terminal has no fixed place | Owner, 2026-11-14: the sensor never worked properly. The footprint and its three protection parts are still in the schematic |
 | 4 | Entry: opening, insert, nut | A washer between nut and insert | See [Cable entries](#cable-entries) |
-| 5 | One entry per valve | One entry for all valve wires of a box, with a two-hole or four-hole insert | Three entries do not fit on the short wall. The fourth entry is the sensor's, closed with a blank insert until a sensor is fitted |
+| 5 | One entry per valve | One entry for all valve wires of a box, with a two-hole or four-hole insert | A third and fourth entry would each widen the box by 34 mm |
 | 6 | Nut of PETG | Nut of the box's material (ASA) | One material for all stiff parts; PETG remains the fallback for all of them |
+| 7 | Cable entries on two opposite walls | All on one wall | The owner asked for a box the size of a surface-mounted junction box; see deviation 1 |
 
 ## Printing
 
 | Part | Material | How it lies | Note |
 |---|---|---|---|
-| `base` | ASA | Floor down | Support only under the four bosses, 3 mm high. The undersides of rim and screw tabs slope at 45° and need none |
+| `base` | ASA | Floor down | Support only under the three bosses, 3 mm high. The underside of the rim slopes at 45° and needs none |
 | `lid` | ASA | Top face down | |
-| `nut-4x` | ASA | End wall down | Thread axis upright, no support |
+| `nut-3x` | ASA | End wall down | Thread axis upright, no support |
 | `washer-*` | ASA | Flat | |
 | `gasket-tpu` | TPU 95A | Flat | 10 layers at 0.2 mm |
 | `insert-*-tpu` | TPU 95A | Large end down | 100 % infill |
@@ -174,16 +185,17 @@ layout, `make collide` uses the real board STEP.
    seal is decided by the water bath test (24 h under water, paper towel inside), with the real
    cable in the entries. Print one base, one lid and the entry parts before the board is ordered:
    the same print is the test fit for the layout hold point.
-2. **Four dimensions are assumed** ([To measure](#to-measure)).
-3. **The two nuts on a wall are 1 mm apart.** They turn, but fingers do not fit between them; each
-   is gripped from above and below.
-4. **The height of the jack's plug opening is assumed** (7 mm above the board, the middle of a
+2. **Three dimensions are assumed** ([To measure](#to-measure)).
+3. **The nuts are 1 mm apart.** They turn, but fingers do not fit between them; each is gripped
+   from above and below.
+4. **Four lid screws for 320 mm of gasket.** See [Seal between base and lid](#seal-between-base-and-lid).
+5. **The height of the jack's plug opening is assumed** (7 mm above the board, the middle of a
    13.2 mm body). The bore is 15.5 mm for a 6 mm cable, so a few millimetres do not matter; the
    board STEP will show it.
-5. **Plugs are not in the collision check.** The RJ45 plugs are drawn in the pictures; the valve
-   screw plugs are not modelled. The 30 mm on each side is the allowance for them.
-6. **Opening a box in the ground** means eight screws. That is the price of screws outside the
-   gasket and a lid that stays flat.
+6. **Plugs are not in the collision check.** The RJ45 plugs are drawn in the pictures; the valve
+   screw plugs are not modelled, and the 14 mm in front of the headers is the allowance for them.
+   If a plug needs more, the headers move back on the board.
+7. **A plug cannot be pulled with the board in place.** See [The box](#the-box).
 
 ## To measure
 
@@ -195,8 +207,7 @@ The owner, with a caliper, before the first print. Each value is one line at the
 | `BUS_CABLE_D` | 6.0 mm | Outer diameter of the bus cable |
 | `VALVE_WIRE_D` | 2.2 mm | Outer diameter of one valve wire with insulation |
 | `PLUG_BORE_D` | 15.5 mm | Diagonal of the crimped RJ45 plug including the pressed-down latch, plus 1 mm |
-| `SENSOR_CABLE_D` | 4.5 mm | Outer diameter of a moisture sensor cable, once a sensor is chosen |
-| | 190 × 85 × 34 mm | Does the box fit into each valve box next to the valves? |
+| | 114 × 93 × 34 mm | Does the box fit into each valve box next to the valves? |
 
 ## Handed to the layout
 
@@ -205,8 +216,9 @@ The owner, with a caliper, before the first print. Each value is one line at the
   new keys for the layout script to use.
 - Connectors are keyed by their name in the Zener source (`J_IN`, `OUT1.J`), because Zener
   renumbers reference designators.
-- The rotations (270° for the jacks, 90° for the right-edge connectors) follow from the
-  footprints' plug side being +y; check them in the first board render.
-- The moisture terminal moved to the right edge. Its footprint spans 12.8 mm along the edge.
+- The rotation is 0° for all four connectors: the footprints' plug side is +y, which is the
+  board's bottom edge. Check it in the first board render.
+- The moisture terminal has no place in `mech.json`. It is not populated and no cable reaches
+  it; the layout puts the footprint where it costs nothing, or the schematic drops it.
 - When the layout moves a connector that is not `fixed`, it changes `mech.json`, and
   `make enclosure collide` has to pass again.

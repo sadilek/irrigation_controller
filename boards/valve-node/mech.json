@@ -1,25 +1,24 @@
 {
   "_comment": "Mechanical interface between enclosure.py and layout.py. Millimetres. Origin: top-left board corner, x right, y down (KiCad). STEP exports use the same origin with y up. Reasons for every number: docs/valve-node-enclosure.md.",
-  "board": {"width": 75.0, "height": 56.0, "corner_radius": 2.0, "thickness": 1.6},
-  "mounting_holes": {"H1": [20.0, 4.0], "H2": [71.0, 4.0], "H3": [20.0, 52.0], "H4": [71.0, 52.0]},
+  "board": {"width": 96.0, "height": 44.0, "corner_radius": 3.0, "thickness": 1.6},
+  "mounting_holes": {"H1": [4.0, 4.0], "H2": [92.0, 4.0], "H3": [4.0, 40.0], "H4": [92.0, 26.0]},
   "clearance_to_enclosure": 2.0,
   "connectors": {
-    "_comment": "Keyed by the part's name in the Zener source. `at` is the footprint origin, `rotation` is KiCad's (counter-clockwise, degrees), `faces` is the board edge the plug leaves through. `fixed: true` means the enclosure's cable entry is aligned with it; the others may move along their edge.",
-    "J_IN": {"at": [8.51, 11.0], "rotation": 270, "faces": "left", "fixed": true},
-    "J_OUT": {"at": [8.51, 45.0], "rotation": 270, "faces": "left", "fixed": true},
-    "OUT1.J": {"at": [63.84, 31.0], "rotation": 90, "faces": "right", "fixed": false},
-    "OUT2.J": {"at": [63.84, 41.16], "rotation": 90, "faces": "right", "fixed": false},
-    "J_MOIST": {"at": [67.0, 19.2], "rotation": 90, "faces": "right", "fixed": false}
+    "_comment": "Keyed by the part's name in the Zener source. `at` is the footprint origin, `rotation` is KiCad's (counter-clockwise, degrees), `faces` is the board edge the plug leaves through. `fixed: true` means the enclosure's cable entry is aligned with it; the others may move along their edge. The moisture terminal J_MOIST has no cable entry and no fixed place.",
+    "J_IN": {"at": [17.0, 35.49], "rotation": 0, "faces": "bottom", "fixed": true},
+    "J_OUT": {"at": [51.0, 35.49], "rotation": 0, "faces": "bottom", "fixed": true},
+    "OUT1.J": {"at": [79.92, 32.84], "rotation": 0, "faces": "bottom", "fixed": false},
+    "OUT2.J": {"at": [90.08, 32.84], "rotation": 0, "faces": "bottom", "fixed": false}
   },
   "keepouts": [
-    {"name": "screw head H1", "side": "top", "shape": "circle", "at": [20.0, 4.0], "diameter": 7.0},
-    {"name": "screw head H2", "side": "top", "shape": "circle", "at": [71.0, 4.0], "diameter": 7.0},
-    {"name": "screw head H3", "side": "top", "shape": "circle", "at": [20.0, 52.0], "diameter": 7.0},
-    {"name": "screw head H4", "side": "top", "shape": "circle", "at": [71.0, 52.0], "diameter": 7.0},
-    {"name": "standoff H1", "side": "bottom", "shape": "circle", "at": [20.0, 4.0], "diameter": 9.0},
-    {"name": "standoff H2", "side": "bottom", "shape": "circle", "at": [71.0, 4.0], "diameter": 9.0},
-    {"name": "standoff H3", "side": "bottom", "shape": "circle", "at": [20.0, 52.0], "diameter": 9.0},
-    {"name": "standoff H4", "side": "bottom", "shape": "circle", "at": [71.0, 52.0], "diameter": 9.0}
+    {"name": "screw head H1", "side": "top", "shape": "circle", "at": [4.0, 4.0], "diameter": 7.0},
+    {"name": "screw head H2", "side": "top", "shape": "circle", "at": [92.0, 4.0], "diameter": 7.0},
+    {"name": "screw head H3", "side": "top", "shape": "circle", "at": [4.0, 40.0], "diameter": 7.0},
+    {"name": "screw head H4", "side": "top", "shape": "circle", "at": [92.0, 26.0], "diameter": 7.0},
+    {"name": "standoff H1", "side": "bottom", "shape": "circle", "at": [4.0, 4.0], "diameter": 9.0},
+    {"name": "standoff H2", "side": "bottom", "shape": "circle", "at": [92.0, 4.0], "diameter": 9.0},
+    {"name": "standoff H3", "side": "bottom", "shape": "circle", "at": [4.0, 40.0], "diameter": 9.0},
+    {"name": "standoff H4", "side": "bottom", "shape": "circle", "at": [92.0, 26.0], "diameter": 9.0}
   ],
   "height_limits": {"top": 18.0, "bottom": 3.5}
 }
