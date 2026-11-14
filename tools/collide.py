@@ -2,6 +2,10 @@
 
     uv run python tools/collide.py <board>
 
+Until a board has a layout there is no board STEP. If the enclosure script wrote
+build/<board>/envelope.step (the board outline with its connectors as blocks, from mech.json), the
+check runs against that and says so.
+
 Reports the overlapping volume per enclosure part and per board solid, and exits 1 if any overlap
 exceeds the tolerance. Faces that merely touch (board resting on its standoffs) have zero volume
 and pass. It does not check clearances: a part 0.05 mm from a wall passes.
@@ -19,6 +23,9 @@ def main(name: str) -> int:
     build = REPO / "build" / name
     board_step = build / "fab" / f"{name}.step"
     parts = sorted((build / "enclosure").glob("*.step"))
+    if not board_step.exists() and (build / "envelope.step").exists():
+        board_step = build / "envelope.step"
+        print(f"collide: no board STEP yet, checking against the envelope from mech.json ({board_step.relative_to(REPO)})")
     if not board_step.exists() or not parts:
         sys.exit(f"collide: need {board_step.relative_to(REPO)} and build/{name}/enclosure/*.step (run `make fab enclosure`)")
 

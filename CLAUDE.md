@@ -16,10 +16,13 @@ in files; the owner reviews each board at three hold points (specification, sche
 enclosure) and places every order himself.
 
 **Status:** toolchain proven on a throwaway board. The valve node has a signed-off specification
-([`docs/valve-node-spec.md`](docs/valve-node-spec.md)) and a signed-off schematic with bill of
-materials ([`docs/valve-node-schematic.md`](docs/valve-node-schematic.md)). Its next stage is the
-layout and enclosure, the third hold point. It has no layout yet, so `make all` and `make verify`
-do not run for it; use `make apply erc schematic bom BOARD=valve-node`. No real board exists yet.
+([`docs/valve-node-spec.md`](docs/valve-node-spec.md)), a signed-off schematic with bill of
+materials ([`docs/valve-node-schematic.md`](docs/valve-node-schematic.md)) and an enclosure model
+with the board outline derived from it
+([`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md)), not printed yet. Its next stage
+is the layout, which with the enclosure forms the third hold point. It has no layout yet, so
+`make all` and `make verify` do not run for it; use
+`make apply erc schematic bom enclosure collide BOARD=valve-node`. No real board exists yet.
 
 ## Rules that are not negotiable
 
@@ -63,7 +66,7 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
 | `boards/<board>/enclosure.py` | Enclosure model (build123d, runs in the project venv via `uv run`) |
 | `boards/<board>/eda/` | Generated KiCad project, committed so the design opens without the toolchain |
 | `lib/` | Shared parts: copied KiCad symbols and footprints, LCSC footprints, JLCPCB design rules, part-number mapping ([`lib/README.md`](lib/README.md)) |
-| `tools/` | Shared scripts: layout helpers, fabrication outputs, collision check |
+| `tools/` | Shared scripts: layout helpers, fabrication outputs, collision check, printable thread, renderer for enclosure pictures |
 | `scripts/` | Setup and part fetching |
 | `docs/` | Durable documentation (Markdown) |
 | `build/` | Generated outputs, ignored by git |
@@ -77,6 +80,7 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
 | What does the installed system look like, what are its weaknesses, what is still unknown? | [`docs/existing-system.md`](docs/existing-system.md) |
 | What does the valve node have to do, which parts does it use and why? | [`docs/valve-node-spec.md`](docs/valve-node-spec.md) |
 | What does the valve node's schematic add to the specification, what was checked, what goes to the layout? | [`docs/valve-node-schematic.md`](docs/valve-node-schematic.md) |
+| What does the valve node's enclosure look like, how does it seal, where do outline and connector positions come from? | [`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md) |
 | Why Zener and not KiCad files? | [`docs/toolchain.md`](docs/toolchain.md) "Schematic format" |
 | How do I add a part and map it to an LCSC number? | [`lib/README.md`](lib/README.md) |
 | Which license covers what, and what blocks publication? | [`docs/license.md`](docs/license.md) |
@@ -136,3 +140,11 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
   finish.
 - **A zero-violation report is only worth something if the check can fail.** `make selftest` proves
   it for the collision check. When adding a check, add the case that makes it fail.
+- **OpenCascade (build123d 0.13) and threads.** A ridge swept along a helix and fused to a
+  cylinder gave an invalid solid with a wrong volume. `tools/printthread.py` lofts through
+  cross-sections instead, which is valid. Intersecting two such thread solids with each other
+  still returns nonsense (zero, or the whole volume); against plain bodies it is correct. Check a
+  boolean's volume against a hand estimate whenever a thread is involved.
+- **No renderer is installed for build123d.** Pictures of an enclosure come from
+  `tools/render3d.py` (numpy and Pillow, both already there). build123d's own `tessellate()`
+  stops at a face the mesher left empty; the renderer meshes through OCP and skips it.

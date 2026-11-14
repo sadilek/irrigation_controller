@@ -43,11 +43,11 @@ Run from the repository root. `BOARD` defaults to `throwaway`.
 | `make drc` | Zones filled, `build/<board>/drc.rpt`; fails on any violation or unconnected pad |
 | `make render` | `build/<board>/render-top.png`, `render-bottom.png` |
 | `make fab` | `build/<board>/fab/`: Gerber and drill zip, JLCPCB BOM, JLCPCB placement file, board STEP |
-| `make enclosure` | `build/<board>/enclosure/`: `base` and `lid` as STEP and STL |
-| `make collide` | Overlap volume of the populated board against each enclosure part; fails on overlap |
+| `make enclosure` | `build/<board>/enclosure/`: the enclosure parts as STEP. Throwaway board: STL beside them. Valve node: STL per printed part in `print/`, pictures in `views/`, and `envelope.step` (about 50 s) |
+| `make collide` | Overlap volume of the populated board against each enclosure part; fails on overlap. Without a board STEP it uses `envelope.step`: the outline and connectors from `mech.json` as blocks |
 | `make all` | All of the above in order |
 | `make verify` | The checks only, without touching committed files (what Obeya runs before landing) |
-| `make selftest` | Lowers the lid into the pin header and expects `collide` to fail; renames a net label in the valve node schematic and expects the comparison with the source to fail |
+| `make selftest` | Lowers the lid into the pin header (throwaway board) and into the bus jacks (valve node) and expects `collide` to fail; renames a net label in the valve node schematic and expects the comparison with the source to fail |
 
 ## Schematic format: Zener
 
@@ -117,7 +117,7 @@ else on the machine (no shell profile edits, no URL handlers, no global packages
 | KiCad | 10.0.1 (already installed, `/Applications`) | `kicad-cli` for ERC, DRC, exports, renders; its bundled Python (`pcbnew`) for layout scripts |
 | Zener `pcb` | launcher 0.2.8, toolchain 0.4.101 | Schematic source, KiCad file generation |
 | Freerouting | 2.5.0 (jar) with a private Temurin 25 JRE | Autorouter (Specctra DSN in, session file out) |
-| build123d | 0.13 (via `uv`, Python 3.12) | Enclosure CAD, STEP import for the collision check |
+| build123d | 0.13 (via `uv`, Python 3.12) | Enclosure CAD, STEP import for the collision check; `tools/render3d.py` draws the enclosure pictures with the numpy and Pillow it brings along |
 | easyeda2kicad | 1.0.1 (via `uvx`) | `scripts/fetch-lcsc.sh`: symbol, footprint, STEP model of an LCSC part |
 | Konnect | 0.13.0 | KiCad MCP server; installed, not part of the chain (see below) |
 
@@ -183,7 +183,9 @@ Found while running the chain. Ordered by how much they matter for the real boar
     `.kicad_pcb` changes in git even when nothing moved. Commit it only after intended changes.
 11. **The collision check finds overlap, not clearance.** A part 0.05 mm from a wall passes. It
     also reports solids by position, not by reference designator. Minimum-distance checking and
-    names are small additions for the enclosure work.
+    names are small additions for the enclosure work. It is also blind where two thread solids
+    meet: OpenCascade returns wrong volumes for that pair, so nut against boss is right by
+    construction only ([`valve-node-enclosure.md`](valve-node-enclosure.md), "Checks").
 12. **Zener joins pins that share a name.** A symbol with two pins called `NC` gets one net for
     both, and the board would connect them. Copied symbols get distinct pin names
     (`scripts/copy-kicad.py … 3=NC3 5=NC5`). Generic modules (`Tvs`) also write their own value

@@ -6,7 +6,9 @@ points for the board. The schematic does not start before the owner signed this 
 Status: signed off by the owner on 2026-11-14. The schematic that follows it is described in
 [`valve-node-schematic.md`](valve-node-schematic.md); its "Deviations" list what changed after this
 sign-off, in particular: two outputs without footprints for more, and a tantalum capacitor at the
-regulator output.
+regulator output. The enclosure is described in [`valve-node-enclosure.md`](valve-node-enclosure.md);
+it changes "Outline and connectors" below: the board is 75 × 56 mm, the jacks sit 34 mm apart, the
+moisture terminal is on the right edge, and only the bus inserts are slit.
 
 The node replaces every existing node on the buried cable. Cable, wiring, addresses and registers
 stay as described in [`bus-protocol.md`](bus-protocol.md). The installation it goes into, with

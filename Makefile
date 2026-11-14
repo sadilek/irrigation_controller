@@ -66,7 +66,7 @@ render: ## 3D renders of the board, top and bottom -> build/<board>/render-*.png
 fab: ## Gerbers + drill (zip), JLCPCB BOM and placement file, board STEP -> build/<board>/fab/
 	@$(KIPY) tools/fab.py $(BOARD) $(FILTER)
 
-enclosure: ## Enclosure parts as STEP and STL -> build/<board>/enclosure/
+enclosure: ## Enclosure parts as STEP and STL (valve node: also pictures) -> build/<board>/enclosure/, print/, views/
 	uv run python $(SRC)/enclosure.py
 
 collide: ## Collision check: board STEP against the enclosure parts
@@ -78,10 +78,13 @@ verify: check erc ## All checks without modifying committed files (zones as last
 	$(KICAD) pcb drc --severity-all --exit-code-violations -o $(OUT)/drc.rpt $(EDA)/$(BOARD).kicad_pcb $(QUIET)
 	@$(MAKE) --no-print-directory fab enclosure collide BOARD=$(BOARD)
 
-selftest: ## Prove the checks can fail: a lowered lid and a changed schematic must be reported
+selftest: ## Prove the checks can fail: a lowered lid (both enclosures) and a changed schematic must be reported
 	uv run python boards/throwaway/enclosure.py --lid-drop 6 >/dev/null
 	@if uv run python tools/collide.py throwaway >/dev/null; then echo "selftest: collision NOT detected"; exit 1; else echo "selftest: collision detected as expected"; fi
 	uv run python boards/throwaway/enclosure.py >/dev/null
+	uv run python boards/valve-node/enclosure.py --no-views --lid-drop 8 >/dev/null
+	@if uv run python tools/collide.py valve-node >/dev/null; then echo "selftest: valve node collision NOT detected"; exit 1; else echo "selftest: valve node collision detected as expected"; fi
+	uv run python boards/valve-node/enclosure.py --no-views >/dev/null
 	@tools/selftest-schematic.sh valve-node $(PCB)
 
 clean: ## Remove generated outputs
