@@ -19,7 +19,7 @@ checked again before an order.
 
 Signing this page off accepts these six points. Each one is explained in the section named.
 
-1. **ATtiny1616 instead of ATtiny1614.** Four outputs with one monitor input each, the address
+1. **ATtiny1616 instead of ATtiny1614** (accepted by the owner on 2026-11-14, VQFN package). Four outputs with one monitor input each, the address
    switch, the moisture input and the LED need 17 pins. The ATtiny1614 has 11.
    See [Microcontroller](#microcontroller-and-pin-assignment).
 2. **The 24 VAC side is isolated from the logic.** Optocouplers drive the triacs. No 24 VAC wire
@@ -32,8 +32,10 @@ Signing this page off accepts these six points. Each one is explained in the sec
    See [Behaviour](#behaviour-input-for-the-firmware).
 5. **Termination stays open on every node.** At 9600 baud the cable needs none, and each
    terminator costs supply current. See [RS485](#rs485).
-6. **Bus terminals on the two short edges, valve terminals on one long edge.** The enclosure gets
-   cable glands on three sides. See [Outline and terminals](#outline-and-terminals).
+6. **The bus connects through two RJ45 jacks, not screw terminals** (owner's proposal,
+   2026-11-14). Both jacks sit on one short edge, the valve terminals on the opposite one. The
+   cable entries are sealed with printed split inserts, so a crimped plug does not have to pass
+   through the seal. See [Outline and connectors](#outline-and-connectors).
 
 ## Requirements
 
@@ -50,17 +52,18 @@ Signing this page off accepts these six points. Each one is explained in the sec
 | R9 | Reports per output whether current can flow and whether the output conducts | [`existing-system.md`](existing-system.md#known-weaknesses), "No feedback" |
 | R10 | A node with a fault does not take the 12 V supply or the 24 VAC supply down for the others | Bus fault of 2026-11 |
 | R11 | Parts rated for −40 to +85 °C, no electrolytic capacitors | Valve box in the ground |
-| R12 | Two layers, assembled by JLCPCB, bus passed through from one plug to the other | Baseline |
+| R12 | Two layers, assembled by JLCPCB, bus passed through from one jack to the other | Baseline |
 | R13 | Optional input for a capacitive soil moisture sensor, one status LED | Baseline |
 
 Not required, and not claimed: surviving a direct lightning strike, and surviving 24 VAC wired to
-the 12 V or RS485 terminals. The second case is reduced by labelling the terminals with the wire
-colours, not by the circuit.
+the 12 V or RS485 wires. A cable crimped to the standard colour order cannot be miswired at the
+node, and a cable tester checks it. What remains is a bus cable plugged into network equipment,
+which the 24 VAC would damage; the jacks are labelled.
 
 ## Block diagram
 
 ```
- bus plug IN                                                              bus plug OUT
+ bus jack IN                                                              bus jack OUT
  ┌──────────┐                                                             ┌──────────┐
  │ A        ├──────────────────────────┬──────────────────────────────────┤ A        │
  │ B        ├──────────────────────────┼─┬────────────────────────────────┤ B        │
@@ -105,7 +108,7 @@ Outputs in brackets are footprints without parts.
 
 ## Power supply from the 12 V pair
 
-Path: terminal, resettable fuse F1, bidirectional TVS D1 to ground, series diode D2, 10 µF
+Path: jack, resettable fuse F1, bidirectional TVS D1 to ground, series diode D2, 10 µF
 ceramic capacitor, regulator, 5 V.
 
 | Part | Choice | What the datasheet says | Why |
@@ -121,7 +124,7 @@ converter adds an inductor, switching noise next to the bus and a part that can 
 regulator turns at most (12 V − 5 V) × 25 mA = 0.18 W into heat, against 0.50 W allowed for the
 package (Holtek, p. 4).
 
-The node works with at least 8.3 V at its terminal: 7 V at the regulator, 1.1 V for D2 and 0.2 V
+The node works with at least 8.3 V at its jack: 7 V at the regulator, 1.1 V for D2 and 0.2 V
 for F1 (5 Ω at 40 mA). Below that the 5 V rail may sag, the brown-out detector resets the
 microcontroller at 4.2 V (Microchip DS40002204A, p. 510) and the valves close.
 
@@ -161,7 +164,7 @@ one relay energised (owner's calculation).
 | Part | Choice | What the datasheet says |
 |---|---|---|
 | Transceiver | THVD2410DR, SOIC-8, at 5 V | Bus pins withstand ±70 V, receiver works over ±25 V common mode, 1/8 unit load, fail-safe receiver, thermal shutdown, driver enable with internal pull-down (TI SLLSF20B, p. 1, 3 and 4) |
-| TVS | PSM712-LF-T7, SOT-23, at the terminals | Stand-off 7 V and 12 V, clamps at 30 V with 30 A and at 17 V with 34 A, 600 W for 8/20 µs (ProTek 05094.R8, p. 2) |
+| TVS | PSM712-LF-T7, SOT-23, at the jacks | Stand-off 7 V and 12 V, clamps at 30 V with 30 A and at 17 V with 34 A, 600 W for 8/20 µs (ProTek 05094.R8, p. 2) |
 | Termination | 120 Ω behind a solder jumper, open | |
 | Bias | Two resistor footprints, A to 5 V and B to ground, empty | |
 
@@ -190,9 +193,9 @@ resistors. The new receiver reads an idle bus as "1" when the voltage between A 
 nothing. Measured once at commissioning, with the first new node connected: if the idle voltage is
 in that gap, the two bias footprints on one node are populated.
 
-Polarity. Terminal "A" goes to the transceiver's pin A, which is the more positive wire on an idle
-bus. If the letters on the existing module mean the opposite, the two brown wires are swapped in
-the plug. The board needs no change either way.
+Polarity. The brown wire goes to the transceiver's pin A, which is the more positive wire on an
+idle bus. If the letters on the existing module mean the opposite, a pair of solder jumpers next
+to the transceiver swaps A and B. A crimped plug cannot be rewired, so the swap is on the board.
 
 ## Valve outputs
 
@@ -306,9 +309,9 @@ others.
 
 | Path | Protection | Clamp level | Weakest part behind it |
 |---|---|---|---|
-| A or B against ground | PSM712 at the terminals | 30 V at 30 A | Transceiver bus pins, 70 V |
+| A or B against ground | PSM712 at the jacks | 30 V at 30 A | Transceiver bus pins, 70 V |
 | +12 V against ground | SMBJ15CA behind fuse F1 | 24.4 V at 24.6 A | Regulator input, 30 V |
-| 24 VAC a against b | SMBJ48CA at the terminals | 77.4 V at 7.8 A | Snubber capacitor, 100 V; triac and optotriac, 600 V |
+| 24 VAC a against b | SMBJ48CA at the jacks | 77.4 V at 7.8 A | Snubber capacitor, 100 V; triac and optotriac, 600 V |
 | 24 VAC pair against logic | No clamp. Isolation by two optocouplers per output and board clearance | | Optocouplers, 5000 V RMS for one minute |
 | Valve terminals | Behind the 24 VAC clamp; wires stay inside the box | | Triac, 600 V |
 | Moisture sensor input | 1 kΩ series resistor, 100 nF, clamp diodes to 5 V and ground | | Microcontroller pin, 1 mA injection (DS40002204A, 36.2, p. 505) |
@@ -321,7 +324,8 @@ size up is fitted.
 A TVS does not age with each surge the way a varistor does. When a TVS is overloaded it fails
 short. On the 12 V input the fuse F1 then removes the node from the supply. On the RS485 pair and
 the 24 VAC pair a shorted TVS takes the pair down for every node. The fault is then found by
-pulling the OUT plug box by box, which is why the terminals are pluggable.
+pulling the OUT plug box by box. A faulty node is taken out and its two cables are joined with
+an RJ45 coupler, so the other nodes keep running.
 
 What this does not cover: a direct or very close strike. The pairs inside one cable are insulated
 from each other for some hundred volts at most. Where the cable itself breaks down, no part on the
@@ -352,8 +356,8 @@ larger replacement gets a fuse at the controller.
 
 The enclosure keeps water out; that is the enclosure's job and its own test. On the board, the
 24 VAC side and the logic side keep 3 mm distance (see [Layout rules](#layout-rules)). Proposal:
-the owner sprays the assembled boards with conformal coating, with plugs, address switch and UPDI
-header masked. JLCPCB's standard assembly does not include it.
+the owner sprays the assembled boards with conformal coating, with jacks, plugs, address switch
+and UPDI header masked. JLCPCB's standard assembly does not include it.
 
 ## Microcontroller and pin assignment
 
@@ -434,65 +438,108 @@ answer to weaknesses of the existing system and because the hardware is sized fo
 
 The one-valve rule across nodes stays the controller's job. A node cannot see the others.
 
-## Outline and terminals
+## Outline and connectors
 
 The enclosure is designed in its own step and decides the final outline. This is the board's
 input to it.
 
 ```
-        x →   0                                   72 mm
-     y        ┌──────────────────────────────────────┐
-     ↓   0    │ ○     moisture   UPDI   address    ○ │
-              │       sensor            switch       │
-              │                                      │
-         9 ┌──┤ A                                  A ├──┐
-           │  │ B        LOGIC SIDE                B │  │
-   bus IN  │  │ GND      microcontroller         GND │  │  bus OUT
-   plug    │  │ +12 V    transceiver, regulator +12 V│  │  plug
-           │  │ spare 1                      spare 1 │  │
-           │  │ spare 2 ═══ isolation gap ══ spare 2 │  │
-           │  │ 24 VAC b                    24 VAC b │  │
-        43 └──┤ 24 VAC a    24 VAC SIDE     24 VAC a ├──┘
-              │             triacs, fuse F2          │
-              │ ○   ┌────┐ ┌────┐ ┌────┐ ┌────┐    ○ │
-        52    └─────┤ V1 ├─┤ V2 ├─┤(V3)├─┤(V4)├──────┘
-                    └────┘ └────┘ └────┘ └────┘
-                    valve plugs, two poles each: output and common
+        x →   0                                        75 mm
+     y        ┌───────────────────────────────────────────┐
+     ↓   0    │ ○   address    UPDI    moisture         ○ │
+              │     switch             sensor             │
+           ┌──┤                                           ├──┐
+   bus IN  │  │  protection   LOGIC SIDE                  │V1│
+   RJ45    │  │  12 V, RS485  microcontroller, regulator  ├──┤
+           ├──┤                                           │V2│  valve plugs,
+   bus OUT │  │            ═════ isolation gap ═════      ├──┤  two poles each:
+   RJ45    │  │                                           │V3│  output and common
+           └──┤  24 VAC       24 VAC SIDE                 ├──┤
+              │  TVS, fuse    triacs, optocouplers        │V4│
+        52    │ ○                                       ○ ├──┘
+              └───────────────────────────────────────────┘
 ```
 
 | Item | Proposal |
 |---|---|
-| Board | 72 × 52 mm, two layers, 1.6 mm, parts on top |
+| Board | About 75 × 52 mm, two layers, 1.6 mm, parts on top |
 | Mounting | Four holes for M3, 4 mm from the edges in the corners |
-| Bus plugs | Two 8-pole pluggable screw terminals, 3.81 mm pitch, right-angle headers on the left and right edge, about 33 mm long each |
-| Valve plugs | Four 2-pole pluggable screw terminals, 5.08 mm pitch, right-angle headers on the bottom edge, two populated |
+| Bus | Two RJ45 jacks, 8 poles, unshielded, right angle, side by side on the left edge |
+| Valve plugs | Four 2-pole pluggable screw terminals, 5.08 mm pitch, right-angle headers on the right edge, two populated |
 | Moisture sensor | 3-pole pluggable terminal, 3.81 mm pitch, on the top edge: 5 V, ground, signal |
-| Height | About 12 mm above the board at the plugs, 3 mm below for the through-hole pins |
-| Enclosure, estimate | About 115 × 95 × 45 mm outside, cable glands on three sides: bus in, bus out, valves |
+| Height | About 14 mm above the board at the jacks, 3 mm below for the through-hole pins |
+| Enclosure | Cable entries on two opposite walls: two bus cables on one, valve wires and sensor on the other |
 
-Why the bus plugs sit on opposite edges with the same pin order. The eight pass-through traces
-then run straight across the board, parallel, without crossing. The four logic wires are at the
-top, the 24 VAC pair is at the bottom, and the unused spare pair lies between them. The board
-divides into a logic half and a 24 VAC half along one straight line, and the valve terminals are
-on the 24 VAC half's own edge.
+### Bus: RJ45
 
-Why two plugs and not two wires per terminal. Two thin solid wires under one screw do not hold
-equally, and aluminium yields under pressure over time. One wire per terminal is the only
-connection that can be checked. The cost: an unplugged node interrupts the bus for the nodes
-behind it.
+The bus cable is crimped with RJ45 plugs in the standard T568B order. With the colours of
+[`bus-protocol.md`](bus-protocol.md) that gives:
 
-Why 3.81 mm for the bus and 5.08 mm for the valves. Sixteen bus poles at 5.08 mm would need
-81 mm of edge. The 3.81 mm plugs take wire from AWG 28 to 16 (JLCPCB listing for C14234; the
-datasheet could not be read), which covers the AWG 24 cable. The valve leads are thicker stranded
-wire and get the larger plug.
+| Pin | Wire | Function |
+|---|---|---|
+| 1 | orange/white | 24 VAC |
+| 2 | orange | 24 VAC |
+| 3 | green/white | +12 V |
+| 4 | blue | spare |
+| 5 | blue/white | spare |
+| 6 | green | 12 V − |
+| 7 | brown/white | RS485 B |
+| 8 | brown | RS485 A |
 
-Copper-clad aluminium in a screw terminal. The plugs clamp the wire in a rising cage, not under
-the screw tip. Even so the wire can loosen as the aluminium yields. The cable gland is the strain
-relief, the wire is stripped without nicking it, and the screws are checked once after the first
-season. Terminal labels on the board carry function and wire colour.
+Jack: Amphenol RJHSE-5080, rated 1.5 A and 125 V AC per contact, tested with 1000 V AC between
+contacts, 20 mΩ contact resistance, −55 to 85 °C, 750 mating cycles (Amphenol RJHSE series
+datasheet, p. 1). The largest current is 0.37 A on the 24 VAC pair.
 
-The plugs are through-hole parts. Whether JLCPCB solders them or the owner does is decided with
-the bill of materials; both work.
+Why RJ45 and not the screw terminals of the baseline:
+
+- One plug replaces eight screws, and a cable tester checks each cable segment after crimping.
+- A node can be taken out and bridged with a coupler. With screw plugs an unplugged node
+  interrupted the bus for the nodes behind it.
+- The contacts of an RJ45 plug cut into the conductor. That is the termination this cable is made
+  for. Aluminium under a screw yields over time and the screw loosens.
+- Two wires under one screw were never needed, because the bus still passes through the board
+  from jack to jack.
+
+What it costs:
+
+- In the jack, the 24 VAC contacts sit next to the +12 V contact at 1 mm pitch, where the screw
+  terminals had the spare pair in between. The jack is tested with 1000 V AC between contacts, and
+  inside the cable the pairs are no further apart. A flashover there ends on the 12 V supply,
+  where the TVS D1 clamps it, and not on the 5 V logic. The 3 mm rule still holds between the
+  24 VAC section and the logic.
+- The plugs must be the type for solid conductors, and crimping needs the tool.
+- Two functions that the screw plug offered by rewiring move onto the board as solder jumpers,
+  open by default: swapping A and B, and connecting the spare pair in parallel to the 24 VAC pair.
+
+Why both jacks on one edge. The eight pass-through connections are then a few millimetres long.
+A surge that travels along the cable passes the node at its edge, and the TVS diodes sit right
+there. The 24 VAC pair leaves the pass-through along one long edge to the triacs; the logic takes
+the other long edge.
+
+### Cable entries
+
+A seal needs a round jacket, and two things here are not round: the crimped plug is larger than
+the cable, and each valve has two single wires.
+
+The owner prints the seals. Each entry is an opening in the enclosure wall with a conical seat, a
+split insert of TPU that is laid around the cable, and a nut of PETG that presses the insert into
+the cone.
+
+- Bus cable: the opening is large enough for the RJ45 plug. The insert has one hole for the cable
+  jacket and one slit. The cable stays crimped when the node or the enclosure is taken out.
+- Valve wires: one insert with two holes, one per wire, each with a slit.
+- Moisture sensor cable: as the bus cable, smaller.
+
+A slit seals less well than a closed ring. Whether it holds is decided by the water bath test of
+the enclosure step, on a printed sample with the real cable and real valve wires. The fallback
+needs no other enclosure: an insert without a slit, pushed onto the cable before the plug is
+crimped.
+
+Needed for the enclosure step: the outer diameter of the bus cable and of a valve wire, and the
+plug's cross-section, measured with a caliper.
+
+The valve plugs are through-hole parts, as are the jacks. Whether JLCPCB solders them or the owner
+does is decided with the bill of materials; both work.
 
 ## Layout rules
 
@@ -502,13 +549,14 @@ before routing.
 | Rule | Value |
 |---|---|
 | Net class "AC": the 24 VAC pair, fused common, valve outputs, gate and snubber nets, monitor LED nets | Track width 0.8 mm, clearance 0.5 mm inside the class |
-| Clearance between class "AC" and every other net | 3.0 mm. Exception: at the bus plug pins the 3.81 mm pitch sets it, about 1.8 mm to the spare pair |
+| Clearance between class "AC" and every other net | 3.0 mm. Exception: at the two jacks and on the pass-through between them the jack's pin spacing sets it |
 | Isolation gap | No copper on either layer under the optocouplers between their pin rows, and none in a 3 mm strip along the boundary |
 | Ground zone | On the logic half only |
 | Net class "bus power": +12 V and ground pass-through | Track width 0.8 mm |
-| Protection first | Each TVS sits at its plug, before any other part on that net, with a short and wide connection to its return (TI SLLSF20B, 11.1, p. 21) |
+| Protection first | Each TVS sits at the jacks, before any other part on that net, with a short and wide connection to its return (TI SLLSF20B, 11.1, p. 21) |
 | Triac cooling | At least 0.5 cm² of copper under each DPAK tab; the 70 K/W figure assumes it |
-| Spare pair | Passed through plug to plug, connected to nothing |
+| Spare pair | Passed through jack to jack; two open solder jumpers can connect it to the 24 VAC pair |
+| A and B | Two solder jumpers at the transceiver select which bus wire is A; default brown |
 
 The 3 mm is a design choice, not a figure from a safety standard: both sides are extra-low
 voltage. It is the distance that the smallest part across the barrier allows comfortably, and it
@@ -537,8 +585,7 @@ Quantity is per board with two outputs populated.
 | C | 100 nF 100 V X7R 0805, snubber | 2 | C106243 | extended | 1,620,552 | $0.01 |
 | C | 10 µF 50 V X5R 1206, regulator input | 1 | C13585 | basic | 3,594,662 | $0.12 |
 | LED | Green 0603, already in `lib/jlcpcb-parts.csv` | 1 | C72043 | extended | not read | |
-| J1, J2 | 8-pole header 3.81 mm, right angle | 2 | C5188163 | extended | 1,114 | $0.14 |
-| | 8-pole plug 3.81 mm | 2 | C14234 | extended | 20,427 | $0.57 |
+| J1, J2 | RJ45 jack RJHSE-5080 (Amphenol) | 2 | C599441 | extended | 617 | $0.94 |
 | J3, J4 | 2-pole header 5.08 mm, right angle | 2 | C441204 | extended | 45,581 | $0.05 |
 | | 2-pole plug 5.08 mm | 2 | C440880 | extended | 43,965 | $0.15 |
 
@@ -546,17 +593,18 @@ Resistors and the remaining capacitors are JLCPCB basic parts in 0603 and 0805; 
 fixed with the bill of materials. The moisture sensor terminal, the UPDI header, the termination
 resistor and the bias resistors are footprints.
 
-Parts for one board come to about $8.50. Most parts are "extended", for which JLCPCB charges a
+Parts for one board come to about $9. Most parts are "extended", for which JLCPCB charges a
 set-up fee per part type and order; the exact amount is part of the cost estimate before the
 order.
 
 Not verified from a datasheet, because the file could not be read: the address switch (24 V,
-25 mA and −40 to 85 °C are from the JLCPCB listing) and the terminal blocks (300 V, 8 A and 15 A
+25 mA and −40 to 85 °C are from the JLCPCB listing) and the valve terminal blocks (300 V and 15 A
 from the listing). Neither carries a rating that a design decision depends on; their dimensions
 are checked against the footprint at the schematic stage. The 10 µF capacitor is X5R, rated to
 85 °C, which matches R11.
 
-Second choices, if stock runs out: Z0107MN (C71218, 1 A, SOT-223) is not a replacement for the
+Second choices, if stock runs out: the Molex 95501-2881 (C293728, 4,886 in stock) for the jack,
+once its datasheet is read. Z0107MN (C71218, 1 A, SOT-223) is not a replacement for the
 triac, because it lacks the margin for a shorted valve wire; the T405-600B-TR (C283473, same
 datasheet, 139 in stock) is. EL3052S(TA) (C5687675, 20,027 in stock) replaces the optotriac with
 a 150 Ω LED resistor, because it needs 10 mA.
@@ -571,10 +619,11 @@ a 150 Ω LED resistor, because it needs 10 mA.
 | Valve current sensing, optional | Voltage monitor across each triac, populated | No voltage drop; finds a broken wire before opening |
 | Termination via solder jumper | Kept, but open on every node; bias footprints added | Budget; idle level with the existing controller module |
 | Bus passed through | Kept, including the spare pair | A later branch can use the spare pair at any box |
+| Pluggable screw terminals | RJ45 jacks for the bus; screw plugs only for the valves | One plug, testable, bridged by a coupler, right termination for the cable |
 
 Everything else follows the baseline: RS485 transceiver with TVS, 12 V input with reverse
 polarity protection, resettable fuse and TVS, 5 V regulator, two of four outputs populated, DIP
-switch address, pluggable screw terminals, two layers, optional moisture input, status LED.
+switch address, two layers, optional moisture input, status LED.
 
 ## Answers to the existing system
 
@@ -593,13 +642,13 @@ Weaknesses and open points from [`existing-system.md`](existing-system.md) and
 | Relay coil current over the cable | No relay. One open valve costs 16 mA. Far node at 10.8 V in today's configuration where the old design reached about 6 V. |
 | 8 VA transformer | The node takes nothing from 24 VAC except the valve's own current and about 0.04 VA per connected valve for monitor and snubber. Sizing the replacement is part of the controller specification. This page hands over one requirement: limit the short-circuit current, see [Faults on the 24 VAC side](#faults-on-the-24-vac-side). |
 | Transformer open-circuit voltage unknown | The node tolerates up to 33.9 V RMS. A measurement above 33 V changes one TVS. |
-| Cable is copper-clad aluminium, 26 Ω loop estimated | The 12 V budget holds with the estimate. For the valves the node adds about 1 V of drop that a relay did not have; tested first on the first board. If the far valve does not pull in, the spare pair can double the 24 VAC pair by bridging terminals in the plugs, with no board change. That gives up the branch reserve, so it is the owner's call at that point. |
-| Aluminium strands break and corrode | One wire per terminal, cage clamps, cable gland as strain relief, re-tighten after one season, sealed enclosure. |
+| Cable is copper-clad aluminium, 26 Ω loop estimated | The 12 V budget holds with the estimate. For the valves the node adds about 1 V of drop that a relay did not have; tested first on the first board. If the far valve does not pull in, the spare pair can double the 24 VAC pair through two solder jumpers on each node. That gives up the branch reserve, so it is the owner's call at that point. |
+| Aluminium strands break and corrode | RJ45 plugs for solid wire cut into the conductor and need no re-tightening; the cable entry is the strain relief; sealed enclosure. |
 | Fixed 120 Ω on every RS485 module (hypothesis) | It no longer matters once the old nodes are out: the one remaining module at the controller may carry its 120 Ω. The two-minute measurement is still worth doing because it explains the old fault. |
 | Solenoid tolerance, switch-on duration and pull-in voltage unknown | The triac has a margin of ten on current. The pull-in voltage stays the open risk named above and is measured on the first board. |
 | One-valve rule not enforced | In the node for its own outputs; across nodes in the controller. |
 | Maximum run time only in Home Assistant | 120 min limit in the node. |
-| RS485 polarity | Settled at the plug by swapping two wires; the board needs no change. |
+| RS485 polarity | Two solder jumpers swap A and B. |
 | Termination and bias on the existing bus | Idle voltage measured at commissioning; bias footprints on every node. |
 | Controller response timeout, retries, request spacing | The node answers within 4 ms after a request ends, faster than any ESPHome default. Recording the ESPHome version stays open for the controller. |
 | Registers of the generation-1 nodes | Not needed. The controller uses registers 0 and 2 only, and the new node implements the generation-2 map. |
@@ -613,7 +662,9 @@ Weaknesses and open points from [`existing-system.md`](existing-system.md) and
 | Does a valve close with 2 mA of off-state current? | Monitor and snubber values | First board |
 | Idle voltage between A and B with the existing controller module | Whether bias resistors are populated | Owner, multimeter, at commissioning |
 | Open-circuit voltage of the transformer | TVS on the 24 VAC pair | Owner, multimeter, any time |
-| Inside dimensions of the valve boxes | Whether a 115 × 95 × 45 mm enclosure fits | Owner, before the enclosure is designed |
+| Inside dimensions of the valve boxes | Size limit of the enclosure | Owner, before the enclosure is designed |
+| Diameters of bus cable and valve wire, cross-section of the RJ45 plug | Split inserts | Owner, caliper, before the enclosure is designed |
+| Do the split inserts stay tight? | Cable entries | Water bath test in the enclosure step |
 | Conformal coating | Moisture margin | Owner's decision before bring-up |
 | JLCPCB class and stock of every part | Order | Before the order, on jlcpcb.com |
 
@@ -632,4 +683,5 @@ Weaknesses and open points from [`existing-system.md`](existing-system.md) and
 | Littelfuse, *SMBJ series*, revised 2025-07-04 | Electrical characteristics table (p. 2) |
 | Techfuse, *mSMD series* and *mSMD010-60V specification sheet* QR0429 | Performance table, hold current versus temperature |
 | MDD, *M1 thru M7*, Rev. 2025A5 | Ratings (p. 1) |
+| Amphenol, *Modular Jack, RJHSE Series* | Electrical and mechanical performance (p. 1) |
 | JLCPCB parts search, 2026-11-14 | Stock, class, price; ratings of switch and terminal blocks |
