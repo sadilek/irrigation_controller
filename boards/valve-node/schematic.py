@@ -15,7 +15,7 @@ S.title(
     "Valve node",
     "A",
     [
-        "Modbus RTU over RS485, up to four 24 VAC valve outputs",
+        "Modbus RTU over RS485, two 24 VAC valve outputs",
         "Crossed-out parts are footprints without parts (population options)",
         "Part numbers: bill of materials. Reasoning: docs/valve-node-spec.md",
     ],
@@ -59,7 +59,7 @@ def supply(x, y):
     S.place("C_VIN", x + 58.42, yl + 3 * G, value=(1.9, 1.2))
     S.place("TP_VIN", x + 66.04, yl - 2 * G, ref=(1.5, -1.0), value=False)
     S.place("U_REG", x + 83.82, yl + G, ref=(-5.0, -9.6), value=(-5.0, -7.8))
-    S.place("C_5V", x + 101.6, yl + 3 * G, value=(1.9, 1.2))
+    S.place("C_5V", x + 101.6, yl + 3 * G, ref=(1.9, -1.1), value=(1.9, 1.2))
     S.place("TP_5V", x + 109.22, yl - 2 * G, ref=(1.5, -1.0), value=False)
     S.place("TP_GND", x + 121.92, yl + 3 * G, ref=(1.5, -1.0), value=False)
     rail = yl + 7 * G
@@ -140,14 +140,14 @@ def mcu(x, y):
 
     # Programming header: UPDI, 5 V, ground.
     S.place("J_UPDI", x + 124.46, y + 20.32, ref=(-1.3, -6.6), value=False)
-    S.text(x + 112.0, y + 31.0, "UPDI header", size=1.27)
+    S.text(x + 112.0, y + 34.5, "UPDI header", size=1.27)
     px = S.at("J_UPDI.2")[0]
     S.wire("J_UPDI.2", (px - 5 * G, y + 20.32), (px - 5 * G, y + 20.32 - 3 * G))
     S.power_symbol((px - 5 * G, y + 20.32 - 3 * G), net="+5V")
     S.wire("J_UPDI.3", (px - G, y + 22.86), (px - G, y + 22.86 + 2 * G))
     S.power_symbol((px - G, y + 22.86 + 2 * G), net="GND")
-    # Pads on the four pins that are free on a two-valve board.
-    for i, name in enumerate(("TP_DRIVE3", "TP_MON3", "TP_DRIVE4", "TP_MON4")):
+    # Pads on the four unused pins.
+    for i, name in enumerate(("TP_PA3", "TP_PB1", "TP_PB4", "TP_PB5")):
         S.place(name, x + 17.78, y + 15.24 + i * 2 * G, rot=270, ref=(1.6, -0.6), value=False)
 
 
@@ -175,9 +175,8 @@ def ac_protection(x, y):
     S.place("F2", x + 71.12, y + 26.67, rot=90)
 
 
-def output(n, x, y, populated):
-    title = "Valve output %d" % n + ("" if populated else " (option, not populated)")
-    S.box(x, y, x + 132.08, y + 55.88, title)
+def output(n, x, y):
+    S.box(x, y, x + 132.08, y + 55.88, "Valve output %d" % n)
     o = "OUT%d." % n
     top, bottom = y + 17.78, y + 48.26  # valve rail, 24 VAC b rail
     yd = y + 25.4  # drive line
@@ -227,7 +226,6 @@ def notes(x, y):
         x + G,
         y + 22.0,
         "Population options (crossed-out parts are not populated):\n"
-        "- outputs 3 and 4\n"
         "- moisture sensor terminal\n"
         "- termination, bias resistors, UPDI header",
         size=1.27,
@@ -241,6 +239,6 @@ mcu(271.78, 12.7)
 moisture(12.7, 96.52)
 ac_protection(12.7, 142.24)
 notes(12.7, 187.96)
-for n in range(4):
-    output(n + 1, 137.16 + (n % 2) * 134.62, 134.62 + (n // 2) * 57.15, populated=n < 2)
+for n in range(2):
+    output(n + 1, 137.16 + n * 134.62, 134.62)
 S.finish()

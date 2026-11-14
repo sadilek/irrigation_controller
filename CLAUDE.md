@@ -128,7 +128,9 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
   when copying the symbol (`scripts/copy-kicad.py`), and read `eda/default.net` for nets named
   `NC_…` with more than one node.
 - **Zener's generated schematic is a netlist, not a drawing.** A board that a person has to review
-  needs a `schematic.py`. `pcb apply` keeps the arrangement but reformats the file, so `make apply`
-  reruns the arrangement; never commit a schematic that `make apply` did not finish.
+  needs a `schematic.py`. Zener's in-place update of an arranged schematic reformats it and broke
+  it once (library symbol renamed, instances dangling), so `make apply` deletes the schematic,
+  recreates it and reruns the arrangement; never commit a schematic that `make apply` did not
+  finish.
 - **A zero-violation report is only worth something if the check can fail.** `make selftest` proves
   it for the collision check. When adding a check, add the case that makes it fail.

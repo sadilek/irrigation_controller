@@ -1,7 +1,7 @@
 [board]
 name = "valve-node"
 path = "valve-node.zen"
-description = "Valve node: Modbus RTU over RS485 on the buried cable, up to four 24 VAC valve outputs."
+description = "Valve node: Modbus RTU over RS485 on the buried cable, two 24 VAC valve outputs."
 
 [dependencies]
 "github.com/sadilek/irrigation_controller/lib" = "0.1.0"

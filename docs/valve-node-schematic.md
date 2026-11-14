@@ -18,7 +18,7 @@ to the layout.
 | Electrical rules check | `make erc BOARD=valve-node` | `build/valve-node/erc.rpt` |
 
 Sources: [`valve-node.zen`](../boards/valve-node/valve-node.zen) (board),
-[`output.zen`](../boards/valve-node/output.zen) (one valve output, instantiated four times) and
+[`output.zen`](../boards/valve-node/output.zen) (one valve output, instantiated twice) and
 [`schematic.py`](../boards/valve-node/schematic.py) (where each symbol sits on the sheet).
 
 The PDF carries values, not part numbers. Review it next to the bill of materials.
@@ -32,6 +32,7 @@ The PDF carries values, not part numbers. Review it next to the bill of material
 | Drawing against source: after arranging, Zener compares the schematic's netlist with the source and any difference stops the build | no difference |
 | `make selftest`: one net label is renamed and the comparison has to fail | fails as expected |
 | Every populated part has a row in `lib/jlcpcb-parts.csv` | 27 lines, 42 parts |
+| Run twice, `make apply` writes the same schematic byte for byte | yes |
 | Pin assignment of every part with more than two pins against its datasheet | all confirmed, see [below](#checked-against-datasheets) |
 
 ## Population options
@@ -41,11 +42,11 @@ these footprints with "Populated: no".
 
 | Option | Standard board | To use it |
 |---|---|---|
-| Outputs 3 and 4 | Not populated: 9 parts and the plug header per output | Populate the whole output. One source line decides it: `OUTPUTS_POPULATED` in `valve-node.zen` |
+| Outputs 3 and 4 | Not on this board (owner, 2026-11-14): the footprints would cost board area on every node. A box with more valves gets a board variant of its own; `OUTPUTS` in `valve-node.zen` is the one line that changes | |
 | Moisture sensor | Series resistor, capacitor and clamp diodes populated (three basic parts); terminal J2 not | Solder the 3-pole header |
 | Current sensing | Not on the board. The specification replaced it by the output monitor, which is populated on every output | |
-| Termination | R25 not populated, jumper JP5 open | Populate 120 Ω and bridge JP5 |
-| Bias | R21 and R22 not populated | Populate 1 kΩ each on one node, if the idle voltage measured at commissioning is between 40 and 200 mV |
+| Termination | R15 not populated, jumper JP5 open | Populate 120 Ω and bridge JP5 |
+| Bias | R11 and R12 not populated | Populate 1 kΩ each on one node, if the idle voltage measured at commissioning is between 40 and 200 mV |
 | A/B swap | JP1 and JP2 bridged 1-2 in copper: brown is A | Cut both bridges, solder 2-3 on both |
 | Spare pair parallel to 24 VAC | JP3 and JP4 open | Bridge both, on every node |
 | Programming header | J4 not populated | Solder a 3-pin header or use spring pins: UPDI, 5 V, ground |
@@ -56,25 +57,28 @@ Zener numbers the parts itself, so the references differ from the ones the speci
 
 | Specification | Schematic | Part |
 |---|---|---|
-| U1 | U9 | Microcontroller |
-| U2 | U11 | RS485 transceiver |
-| U3 | U10 | 5 V regulator |
-| Q1, Q2 | Q1, Q2 (Q3, Q4 not populated) | Triacs |
-| U4, U5 | U1, U3 (U5, U7) | Optotriacs |
-| U6, U7 | U2, U4 (U6, U8) | Monitor optocouplers |
+| U1 | U5 | Microcontroller |
+| U2 | U7 | RS485 transceiver |
+| U3 | U6 | 5 V regulator |
+| Q1, Q2 | Q1, Q2 | Triacs |
+| U4, U5 | U1, U3 | Optotriacs |
+| U6, U7 | U2, U4 | Monitor optocouplers |
 | D1 to D4 | D1 to D4 | TVS 12 V, series diode, RS485 TVS, TVS 24 VAC |
 | F1, F2 | F1, F2 | Fuses 12 V and valves |
 | J1, J2 | J1, J3 | Bus jacks IN and OUT |
-| J3, J4 | J5, J6 (J7, J8) | Valve plug headers |
+| J3, J4 | J5, J6 | Valve plug headers |
 
 ## Deviations from the specification
 
-The circuit of the specification is unchanged: same parts, same pins, same values. These points
-are additions or choices the specification left open.
+Two points change the specification, both decided by the owner at this hold point (2026-11-14):
+the board has two outputs and no footprints for more, and the regulator's output capacitor is a
+tantalum part. Everything else is the specified circuit with the same parts, pins and values; the
+remaining points are additions or choices the specification left open.
 
 | # | Specification | Schematic | Reason |
 |---|---|---|---|
-| 1 | Regulator with a 10 µF input capacitor | A 10 µF, 25 V ceramic at the output as well (C1) | The Holtek application circuit shows 10 µF at input and output (HT75xx-1 Rev. 2.80, p. 13). It draws both as polarised parts and says nothing about ceramics or ESR; see open points |
+| 0 | R3: two outputs populated, footprints for four | Two outputs, no further footprints. Pins PA3, PB1, PB4 and PB5 are unused and end on test pads | Owner: the footprints take board area on every node; a box with more valves gets its own board. The ATtiny1616 stays: two outputs still need 13 pins, the ATtiny1614 has 11 |
+| 1 | Regulator with a 10 µF input capacitor; R11: no electrolytic capacitors | A 10 µF, 16 V tantalum capacitor at the output (C1, TAJA106K016RNJ, case A) | The Holtek application circuit shows 10 µF at input and output, drawn as polarised parts, and says nothing about ceramics or ESR (HT75xx-1 Rev. 2.80, p. 13). A tantalum part is what it draws, so stability does not have to be proven on the first board. R11 is about wet electrolytics that dry out; a solid tantalum does not, and it is rated −55 to 125 °C with 3 Ω ESR (JLCPCB listing, not read from the datasheet). At 5 V it runs at a third of its voltage rating, behind a regulator that limits the current |
 | 2 | "100 nF at the pin" for the microcontroller | Also 100 nF at the transceiver (C4) | TI asks for 100 nF close to VCC (SLLSF20B, p. 20) |
 | 3 | Monitor pull-ups in the current budget | No resistors; the microcontroller's internal pull-ups | The pull-up is 20 to 50 kΩ (DS40002204A, I/O pin characteristics), at most 0.25 mA at 5 V, against at least 0.4 mA of collector current at the peak of each half-wave. The input goes low around every peak; the firmware samples for that. Four parts fewer |
 | 4 | "Resistors in 0603 and 0805" | 0805 for the three resistors on the 24 VAC side of each output (gate 150 Ω, snubber 100 Ω, monitor 15 kΩ), 0603 elsewhere | 150 V working voltage and 125 mW instead of 75 V and 100 mW (UNI-ROYAL listing); the monitor resistor carries the full supply voltage |
@@ -89,15 +93,15 @@ are additions or choices the specification left open.
 
 ## Bill of materials in short
 
-Standard board with two outputs: 27 lines, 42 parts, all on the top side. 12 lines are JLCPCB
-basic parts, 15 are extended parts with a set-up fee per type. The two bus jacks and the two
+27 lines, 42 parts, all on the top side. 12 lines are JLCPCB basic parts, 15 are extended parts
+with a set-up fee per type. The two bus jacks and the two
 valve headers are through-hole parts; everything else is surface-mount.
 
-Not on the board and ordered loose: one plug KF2EDGK-5.08-2P (C440880) per populated output.
+Not on the board and ordered loose: two plugs KF2EDGK-5.08-2P (C440880) per board.
 
-Decision for the owner: whether JLCPCB solders the four through-hole parts (20 joints per board)
-or the owner does. They are marked `tht` in `lib/jlcpcb-parts.csv`, which puts them into the
-JLCPCB BOM; `none` leaves them out.
+Whether JLCPCB solders the four through-hole parts (20 joints per board) or the owner does is
+decided with the cost estimate before the order (owner, 2026-11-14). They are marked `tht` in
+`lib/jlcpcb-parts.csv`, which puts them into the JLCPCB BOM; `none` leaves them out.
 
 Class and stock come from the specification's parts search of 2026-11-14 and a community mirror.
 They are checked again on jlcpcb.com before the order, as are the placement rotations.
@@ -136,6 +140,7 @@ substrate that must stay open. The pins now carry different names, and the lesso
 - Bus jack: the plug opening is on the footprint's +y side, the latch stands 0.89 mm proud of the
   front face, the body is 13.2 mm high. Valve header: the plug enters from +y, the header is
   12.2 mm deep and 8.4 mm high.
+- The tantalum capacitor is polarised: pad 1 is the positive terminal.
 - Pins may be swapped among outputs, monitors and address switch if routing asks for it; the
   specification says which ones are fixed.
 - The bus jack and the valve header footprints are fetched LCSC data, the point that
@@ -145,7 +150,7 @@ substrate that must stay open. The pins now carry different names, and the lesso
 
 | Point | Needed for | Who, when |
 |---|---|---|
-| Regulator stable with a ceramic output capacitor? The datasheet does not say | C1 | First board: 5 V rail on the oscilloscope, idle and with one valve open. Fallback on the same footprint: a tantalum or polymer capacitor |
-| Through-hole parts soldered by JLCPCB or by the owner | BOM | Owner, with this sign-off or before the order |
+| Tantalum capacitor C1: temperature range and ESR are from the listing | C1 | Read the Kyocera AVX TAJ datasheet before the order |
+| Through-hole parts soldered by JLCPCB or by the owner | BOM | Owner, with the cost estimate |
 | Fuse maker: the documents linked at LCSC are from another maker than the name in the listing, and the 0.2 A type is marked "UL pending" | Order | Before the order |
 | The points listed in the specification's "Open points" | | unchanged |

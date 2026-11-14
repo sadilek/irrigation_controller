@@ -1,11 +1,10 @@
 """
-Valve node: Modbus RTU slave on the buried RS485 cable, up to four 24 VAC valve outputs.
+Valve node: Modbus RTU slave on the buried RS485 cable, two 24 VAC valve outputs.
 
 Specification with the reasoning for every part: docs/valve-node-spec.md.
 What changed between specification and schematic: docs/valve-node-schematic.md.
 
 Population options (parts marked DNP in the schematic are footprints without parts):
-  outputs 3 and 4    not populated; populate the whole output module for a three- or four-valve box
   moisture sensor    protection network populated, terminal J_MOIST not populated
   termination, bias  not populated (R_TERM, R_BIAS_A, R_BIAS_B), jumper JP_TERM open
   UPDI header        not populated
@@ -23,7 +22,7 @@ Output = Module("output.zen")
 
 SYM = "../../lib/kicad/symbols/"
 FP = "../../lib/kicad/footprints.pretty/"
-OUTPUTS_POPULATED = 2
+OUTPUTS = 2  # a box with more valves gets its own board variant
 
 # --- Nets ---------------------------------------------------------------------------------------
 
@@ -54,9 +53,10 @@ LED_A = Net("LED_A")
 MOIST = Net("MOIST")
 MOIST_IN = Net("MOIST_IN")
 ADDR = [Net("ADDR%d" % i) for i in (1, 2, 3, 4)]
-DRIVE = [Net("DRIVE%d" % i) for i in (1, 2, 3, 4)]
-MON = [Net("MON%d" % i) for i in (1, 2, 3, 4)]
-VALVE = [Net("VALVE%d" % i) for i in (1, 2, 3, 4)]
+DRIVE = [Net("DRIVE%d" % (i + 1)) for i in range(OUTPUTS)]
+MON = [Net("MON%d" % (i + 1)) for i in range(OUTPUTS)]
+VALVE = [Net("VALVE%d" % (i + 1)) for i in range(OUTPUTS)]
+FREE = {pin: Net(pin) for pin in ("PA3", "PB1", "PB4", "PB5")}  # unused pins, on test pads
 
 # --- Bus jacks ----------------------------------------------------------------------------------
 # T568B: 1 orange/white, 2 orange, 3 green/white, 4 blue, 5 blue/white, 6 green, 7 brown/white, 8 brown.
@@ -123,7 +123,17 @@ Component(
     part=Part(mpn="HT7550-1", manufacturer="Holtek"),
     properties={"value": "HT7550-1"},
 )
-Capacitor(name="C_5V", value="10uF", package="0805", voltage="25V", dielectric="X5R", mpn="CL21A106KAYNNNE", manufacturer="Samsung Electro-Mechanics", P1=V5, P2=GND)
+# Tantalum, as the regulator's application circuit draws it: the datasheet does not say whether the
+# regulator is stable with a ceramic output capacitor.
+Component(
+    name="C_5V",
+    prefix="C",
+    symbol=Symbol(SYM + "C_Polarized_Small.kicad_sym"),
+    footprint=File(FP + "CP_EIA-3216-18_Kemet-A.kicad_mod"),
+    pins={"1": V5, "2": GND},  # pin 1 is the positive terminal
+    part=Part(mpn="TAJA106K016RNJ", manufacturer="Kyocera AVX"),
+    properties={"value": "10uF 16V Ta"},
+)
 
 # --- RS485 --------------------------------------------------------------------------------------
 
@@ -191,17 +201,17 @@ Component(
         "~{RESET}/PA0": UPDI,
         "PA1": MOIST,  # ADC0 AIN1
         "PA2": LED,
-        "PA3": MON[3],
+        "PA3": FREE["PA3"],
         "PA4": DRIVE[0],
         "PA5": MON[0],
         "PA6": DRIVE[1],
         "PA7": MON[1],
         "PB0": XDIR,  # USART0 XDIR
-        "PB1": DRIVE[3],
+        "PB1": FREE["PB1"],
         "PB2": TXD,  # USART0 TXD
         "PB3": RXD,  # USART0 RXD, internal pull-up
-        "PB4": MON[2],
-        "PB5": DRIVE[2],
+        "PB4": FREE["PB4"],
+        "PB5": FREE["PB5"],
         "PC0": ADDR[0],
         "PC1": ADDR[1],
         "PC2": ADDR[2],
@@ -275,7 +285,7 @@ Component(
     properties={"value": "0.5A 60V"},
 )
 
-for i in range(4):
+for i in range(OUTPUTS):
     Output(
         name="OUT%d" % (i + 1),
         DRIVE=DRIVE[i],
@@ -284,13 +294,12 @@ for i in range(4):
         AC_B=AC_B,
         AC_COM=AC_COM,
         VALVE=VALVE[i],
-        dnp=i >= OUTPUTS_POPULATED,
     )
 
 # --- Test pads and mounting ---------------------------------------------------------------------
 
-# Supply rails, and the four pins that are free on a two-valve board.
-for name, net in (("TP_5V", V5), ("TP_GND", GND), ("TP_VIN", VIN), ("TP_DRIVE3", DRIVE[2]), ("TP_MON3", MON[2]), ("TP_DRIVE4", DRIVE[3]), ("TP_MON4", MON[3])):
+# Supply rails and the four unused pins.
+for name, net in [("TP_5V", V5), ("TP_GND", GND), ("TP_VIN", VIN)] + [("TP_" + pin, net) for pin, net in FREE.items()]:
     TestPoint(name=name, variant="Pad_D1.5mm", P1=net)
 
 for i in (1, 2, 3, 4):

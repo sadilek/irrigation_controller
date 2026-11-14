@@ -31,6 +31,9 @@ check: ## Compile the Zener source: connectivity, typed nets, voltage checks
 	cd $(SRC) && $(PCB) build $(BOARD).zen
 
 apply: check ## Generate/update the KiCad schematic and board from the Zener source, then arrange the schematic
+	@# A schematic.py redraws the whole sheet, so Zener starts from an empty one: its incremental
+	@# update of an arranged schematic left a library symbol renamed and its instances dangling.
+	@if [ -f $(SRC)/schematic.py ]; then rm -f $(EDA)/$(BOARD).kicad_sch; fi
 	cd $(SRC) && $(PCB) apply --no-open $(BOARD).zen
 	@$(MAKE) --no-print-directory arrange BOARD=$(BOARD)
 

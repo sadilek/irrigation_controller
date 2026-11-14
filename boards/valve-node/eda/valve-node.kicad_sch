@@ -7,7 +7,7 @@
 	(title_block
 		(title "Valve node")
 		(rev "A")
-		(comment 1 "Modbus RTU over RS485, up to four 24 VAC valve outputs")
+		(comment 1 "Modbus RTU over RS485, two 24 VAC valve outputs")
 		(comment 2 "Crossed-out parts are footprints without parts (population options)")
 		(comment 3 "Part numbers: bill of materials. Reasoning: docs/valve-node-spec.md")
 	)
@@ -849,6 +849,150 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "C_Polarized_Small"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0.254)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "C"
+				(at 0.254 1.778 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font (size 1.27 1.27))
+					(justify left)
+				)
+			)
+			(property "Value" "C_Polarized_Small"
+				(at 0.254 -2.032 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font (size 1.27 1.27))
+					(justify left)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Description" "Polarized capacitor, small symbol"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "ki_keywords" "cap capacitor"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "ki_fp_filters" "CP_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(symbol "C_Polarized_Small_0_1"
+				(rectangle
+					(start -1.524 0.6858)
+					(end 1.524 0.3048)
+					(stroke (width 0) (type default))
+					(fill
+						(type none)
+					)
+				)
+				(rectangle
+					(start -1.524 -0.3048)
+					(end 1.524 -0.6858)
+					(stroke (width 0) (type default))
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.27 1.524) (xy -0.762 1.524)
+					)
+					(stroke (width 0) (type default))
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -1.016 1.27) (xy -1.016 1.778)
+					)
+					(stroke (width 0) (type default))
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "C_Polarized_Small_1_1"
+				(pin passive line
+					(at 0 2.54 270)
+					(length 1.8542)
+					(name ""
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+					(number "1"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+				)
+				(pin passive line
+					(at 0 -2.54 90)
+					(length 1.8542)
+					(name ""
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+					(number "2"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "C_Small"
 			(pin_numbers
 				(hide yes)
@@ -1595,276 +1739,6 @@
 				)
 			)
 			(symbol "EL3053_1_1"
-				(pin passive line
-					(at -7.62 2.54 0)
-					(length 2.54)
-					(name ""
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-					(number "1"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-				)
-				(pin passive line
-					(at -7.62 -2.54 0)
-					(length 2.54)
-					(name ""
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-					(number "2"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-				)
-				(pin no_connect line
-					(at -5.08 0 0)
-					(length 2.54)
-					(hide yes)
-					(name "NC3"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-					(number "3"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -2.54 180)
-					(length 2.54)
-					(name ""
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-					(number "4"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-				)
-				(pin no_connect line
-					(at 5.08 0 180)
-					(length 2.54)
-					(hide yes)
-					(name "NC5"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-					(number "5"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 2.54 180)
-					(length 2.54)
-					(name ""
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-					(number "6"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "EL3053_1"
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "U"
-				(at -5.334 4.826 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font (size 1.27 1.27))
-					(justify left)
-				)
-			)
-			(property "Value" "EL3053"
-				(at 0 5.08 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font (size 1.27 1.27))
-					(justify left)
-				)
-			)
-			(property "Footprint" ""
-				(at -5.08 -5.08 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27) (italic yes))
-					(justify left)
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27))
-					(justify left)
-				)
-			)
-			(property "Description" "Pin assignment of Relay_SolidState:MOC3052M"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(property "ki_keywords" "Opto-Triac Opto Triac Random Phase"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(property "ki_fp_filters" "DIP*W7.62mm* SMDIP*W9.53mm* DIP*W10.16mm*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(symbol "EL3053_1_0_1"
-				(rectangle
-					(start -5.08 3.81)
-					(end 5.08 -3.81)
-					(stroke (width 0.254) (type default))
-					(fill
-						(type background)
-					)
-				)
-				(polyline
-					(pts
-						(xy -5.08 2.54) (xy -2.54 2.54) (xy -2.54 -2.54) (xy -5.08 -2.54)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -3.175 -0.635) (xy -1.905 -0.635)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -2.54 -0.635) (xy -3.175 0.635) (xy -1.905 0.635) (xy -2.54 -0.635)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.143 0.508) (xy 0.127 0.508) (xy -0.254 0.381) (xy -0.254 0.635) (xy 0.127 0.508)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.143 -0.508) (xy 0.127 -0.508) (xy -0.254 -0.635) (xy -0.254 -0.381) (xy 0.127 -0.508)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.889 -0.635) (xy 3.683 -0.635) (xy 3.048 0.635) (xy 2.413 -0.635)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.524 -0.635) (xy 1.524 0.635)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.286 0.635) (xy 2.286 2.54) (xy 5.08 2.54)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 2.286 -0.635) (xy 2.286 -2.54) (xy 5.08 -2.54)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 3.048 0.635) (xy 3.048 -0.635)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 3.683 0.635) (xy 0.889 0.635) (xy 1.524 -0.635) (xy 2.159 0.635)
-					)
-					(stroke (width 0) (type default))
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "EL3053_1_1_1"
 				(pin passive line
 					(at -7.62 2.54 0)
 					(length 2.54)
@@ -4986,10 +4860,10 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "028f8e0a-86c9-5ffa-a918-2de6336d94e8")
-		(property "Reference" "U10"
+		(property "Reference" "U6"
 			(show_name no)
 			(do_not_autoplace no)
-			(at 217.675 25.96 0)
+			(at 217.11 25.96 0)
 			(effects
 				(font (size 1.27 1.27))
 			)
@@ -5050,7 +4924,7 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "U10")
+					(reference "U6")
 					(unit 1)
 				)
 			)
@@ -5218,83 +5092,6 @@
 		)
 	)
 	(symbol
-		(lib_id "TestPoint_Small")
-		(at 289.56 33.02 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "126db199-81d5-5a09-b41f-d1b032f6882a")
-		(property "Reference" "TP5"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 292.855 32.42 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "TestPoint_Small"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 297.527 31.412 90)
-			(hide yes)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_TestPoint:TestPoint_Pad_D1.5mm"
-			(at 289.56 33.02 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 289.56 33.02 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "test point"
-			(at 289.56 33.02 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "TP_MON3.TP"
-			(at 289.56 33.02 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "7ca7610b-1aaa-55cc-9b1b-4e45fe776658")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "TP5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "R_Small")
 		(at 153.67 160.02 90)
 		(unit 1)
@@ -5374,7 +5171,6 @@
 		)
 	)
 	(symbol
-		(lib_name "EL3053_1")
 		(lib_id "EL3053")
 		(at 303.53 162.56 0)
 		(unit 1)
@@ -5460,85 +5256,6 @@
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
 					(reference "U3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "C_Small")
-		(at 359.41 229.87 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "1dd41099-2cb4-5cb8-8c06-bcc7bd5a4ad8")
-		(property "Reference" "C9"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 363.064 228.77 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "100nF 100V X7R"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 369.22 231.07 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Capacitor_SMD:C_0805_2012Metric"
-			(at 359.41 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 359.41 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "100nF 100V X7R"
-			(at 359.41 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT4.C_SNUB.C"
-			(at 359.41 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "aad998de-9fdf-553f-ad99-2ce36014b287")
-		)
-		(pin "2"
-			(uuid "d2410253-55cd-557c-91b6-c98823e6525f")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "C9")
 					(unit 1)
 				)
 			)
@@ -5692,85 +5409,6 @@
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
 					(reference "H4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "R_Small")
-		(at 328.93 233.68 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "345a4d7f-7eb3-5f3c-9093-218ab993a55b")
-		(property "Reference" "R17"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 332.387 232.58 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "1k"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 331.822 234.78 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0603_1608Metric"
-			(at 328.93 233.68 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 328.93 233.68 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "1k"
-			(at 328.93 233.68 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT4.R_GK.R"
-			(at 328.93 233.68 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "ad3a9dc6-23b9-5303-92d3-909db527dcba")
-		)
-		(pin "2"
-			(uuid "53aa90ca-64bb-56ca-9607-bca681558343")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R17")
 					(unit 1)
 				)
 			)
@@ -6095,83 +5733,6 @@
 		)
 	)
 	(symbol
-		(lib_id "TestPoint_Small")
-		(at 289.56 38.1 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "41c8b8e5-cda1-5658-905a-7bd41145d350")
-		(property "Reference" "TP3"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 292.855 37.5 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "TestPoint_Small"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 297.527 36.492 90)
-			(hide yes)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_TestPoint:TestPoint_Pad_D1.5mm"
-			(at 289.56 38.1 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 289.56 38.1 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "test point"
-			(at 289.56 38.1 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "TP_DRIVE4.TP"
-			(at 289.56 38.1 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "e3bf07dc-fec9-5f6e-8344-6856a434206c")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "TP3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "R_Small")
 		(at 152.4 99.06 90)
 		(unit 1)
@@ -6183,7 +5744,7 @@
 		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "495c7877-dd05-547b-b0a3-2ed6052a6b41")
-		(property "Reference" "R25"
+		(property "Reference" "R15"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 152.4 95.46 90)
@@ -6244,51 +5805,52 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R25")
+					(reference "R15")
 					(unit 1)
 				)
 			)
 		)
 	)
 	(symbol
-		(lib_id "T410-600B")
-		(at 339.09 226.06 0)
+		(lib_id "TestPoint_Small")
+		(at 289.56 38.1 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
+		(in_pos_files no)
+		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "4bfd1042-83af-507f-8423-ed5ef8f991ab")
-		(property "Reference" "Q4"
+		(uuid "52905113-8f1e-5f18-9962-a01d84b419ba")
+		(property "Reference" "TP5"
 			(show_name no)
 			(do_not_autoplace no)
-			(at 343.42 225.06 0)
+			(at 292.855 37.5 90)
 			(effects
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Value" "T410-600B-TR"
+		(property "Value" "TestPoint_Small"
 			(show_name no)
 			(do_not_autoplace no)
-			(at 349.07 226.96 0)
+			(at 297.527 36.492 90)
+			(hide yes)
 			(effects
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Footprint" "sadilek_irrigation_controller_lib_kicad_footprints:TO-252-2"
-			(at 339.09 226.06 0)
+		(property "Footprint" "stdlib_kicad-footprints_TestPoint:TestPoint_Pad_D1.5mm"
+			(at 289.56 38.1 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
-				(font (size 1.27 1.27) (italic yes))
+				(font (size 1.27 1.27))
 			)
 		)
 		(property "Datasheet" ""
-			(at 339.09 226.06 0)
+			(at 289.56 38.1 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6296,8 +5858,8 @@
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Description" "Pin assignment of Triac_Thyristor:BT136-600"
-			(at 339.09 226.06 0)
+		(property "Description" "test point"
+			(at 289.56 38.1 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6305,8 +5867,8 @@
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Path" "OUT4.Q"
-			(at 339.09 226.06 0)
+		(property "Path" "TP_PB4.TP"
+			(at 289.56 38.1 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -6315,18 +5877,91 @@
 			)
 		)
 		(pin "1"
-			(uuid "81e6d8a2-ea4f-549f-a84f-9d0a35d47f58")
-		)
-		(pin "2"
-			(uuid "18610c39-f353-5051-b799-e85310e1bc53")
-		)
-		(pin "3"
-			(uuid "12e731d2-4a96-5cc2-8d38-64a5d7c8e459")
+			(uuid "45f078a3-9ead-51f0-aaf0-f3058b4999bc")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "Q4")
+					(reference "TP5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "C_Polarized_Small")
+		(at 238.76 40.64 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "54764726-aa0d-59f4-becb-86b32e1e898d")
+		(property "Reference" "C1"
+			(show_name no)
+			(do_not_autoplace no)
+			(at 241.79 39.54 0)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Value" "10uF 16V Ta"
+			(show_name no)
+			(do_not_autoplace no)
+			(at 246.875 41.84 0)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Footprint" "sadilek_irrigation_controller_lib_kicad_footprints:CP_EIA-3216-18_Kemet-A"
+			(at 238.76 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Datasheet" ""
+			(at 238.76 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Description" "Polarized capacitor, small symbol"
+			(at 238.76 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Path" "C_5V"
+			(at 238.76 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(pin "1"
+			(uuid "e08fb072-c006-5000-a832-90fd85aeed0f")
+		)
+		(pin "2"
+			(uuid "43c8bf32-f8f5-5735-8137-a8894d9e0e15")
+		)
+		(instances
+			(project "valve-node"
+				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
+					(reference "C1")
 					(unit 1)
 				)
 			)
@@ -6418,10 +6053,10 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "56ada037-2df1-5fbc-b636-3ff1e68fb10a")
-		(property "Reference" "U11"
+		(property "Reference" "U7"
 			(show_name no)
 			(do_not_autoplace no)
-			(at 212.475 79.32 0)
+			(at 211.91 79.32 0)
 			(effects
 				(font (size 1.27 1.27))
 			)
@@ -6497,7 +6132,7 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "U11")
+					(reference "U7")
 					(unit 1)
 				)
 			)
@@ -6763,98 +6398,6 @@
 		)
 	)
 	(symbol
-		(lib_name "EL3053_1")
-		(lib_id "EL3053")
-		(at 168.91 219.71 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "625774c3-51eb-57f8-b777-e3a73428c239")
-		(property "Reference" "U5"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 161.14 213.01 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "EL3053S1(TA)-V"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 167.92 214.81 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "sadilek_irrigation_controller_lib_kicad_footprints:SMDIP-6_W9.53mm"
-			(at 168.91 219.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27) (italic yes))
-			)
-		)
-		(property "Datasheet" ""
-			(at 168.91 219.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Pin assignment of Relay_SolidState:MOC3052M"
-			(at 168.91 219.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT3.U_DRV"
-			(at 168.91 219.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "5d145074-d118-5d53-b460-b350eb0f6fe6")
-		)
-		(pin "2"
-			(uuid "cc791857-e3f4-5c83-a615-5169699d551e")
-		)
-		(pin "3"
-			(uuid "b287e1f7-e8c8-5012-b7d9-d442a08264db")
-		)
-		(pin "4"
-			(uuid "32ad62fc-5693-551f-bdac-0ce3cdd7a9b0")
-		)
-		(pin "5"
-			(uuid "d519b705-4950-539b-9ebc-ec187586d6e9")
-		)
-		(pin "6"
-			(uuid "f36d5af8-ba5f-5bc9-80b7-dbb18c89047a")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "U5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "R_Small")
 		(at 378.46 81.28 90)
 		(unit 1)
@@ -6866,7 +6409,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "643ba541-3c74-5246-b764-323e99226f73")
-		(property "Reference" "R23"
+		(property "Reference" "R13"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 378.46 77.68 90)
@@ -6927,7 +6470,84 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R23")
+					(reference "R13")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "TestPoint_Small")
+		(at 289.56 33.02 270)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board yes)
+		(in_pos_files no)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "65b11b35-35a8-58a6-a534-8952292ae355")
+		(property "Reference" "TP4"
+			(show_name no)
+			(do_not_autoplace no)
+			(at 292.855 32.42 90)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Value" "TestPoint_Small"
+			(show_name no)
+			(do_not_autoplace no)
+			(at 297.527 31.412 90)
+			(hide yes)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Footprint" "stdlib_kicad-footprints_TestPoint:TestPoint_Pad_D1.5mm"
+			(at 289.56 33.02 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Datasheet" ""
+			(at 289.56 33.02 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Description" "test point"
+			(at 289.56 33.02 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(property "Path" "TP_PB1.TP"
+			(at 289.56 33.02 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font (size 1.27 1.27))
+			)
+		)
+		(pin "1"
+			(uuid "aefb50c0-1369-5934-82db-94310d3b07eb")
+		)
+		(instances
+			(project "valve-node"
+				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
+					(reference "TP4")
 					(unit 1)
 				)
 			)
@@ -7095,85 +6715,6 @@
 		)
 	)
 	(symbol
-		(lib_id "R_Small")
-		(at 359.41 214.63 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "74268644-5953-5315-ad66-b52476877610")
-		(property "Reference" "R20"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 362.867 213.53 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "100"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 362.867 215.73 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0805_2012Metric"
-			(at 359.41 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 359.41 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "100"
-			(at 359.41 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT4.R_SNUB.R"
-			(at 359.41 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "facba383-9487-5a46-b544-f0e4a3136aee")
-		)
-		(pin "2"
-			(uuid "80b992ec-33d7-55ff-a80b-a638c3b24325")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R20")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "SW_DIP_x04")
 		(at 314.96 63.5 0)
 		(mirror y)
@@ -7272,35 +6813,36 @@
 		)
 	)
 	(symbol
-		(lib_id "R_Small")
-		(at 194.31 233.68 0)
+		(lib_id "TestPoint_Small")
+		(at 289.56 43.18 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
+		(in_pos_files no)
+		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "786a6cb4-6613-5259-bbb2-dd9e9a5c754b")
-		(property "Reference" "R12"
+		(uuid "77095402-cbe5-5dce-9b2e-0b06d2bffb23")
+		(property "Reference" "TP6"
 			(show_name no)
 			(do_not_autoplace no)
-			(at 197.767 232.58 0)
+			(at 292.855 42.58 90)
 			(effects
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Value" "1k"
+		(property "Value" "TestPoint_Small"
 			(show_name no)
 			(do_not_autoplace no)
-			(at 197.202 234.78 0)
+			(at 297.527 41.572 90)
+			(hide yes)
 			(effects
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0603_1608Metric"
-			(at 194.31 233.68 0)
+		(property "Footprint" "stdlib_kicad-footprints_TestPoint:TestPoint_Pad_D1.5mm"
+			(at 289.56 43.18 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7309,7 +6851,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 194.31 233.68 0)
+			(at 289.56 43.18 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7317,8 +6859,8 @@
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Description" "1k"
-			(at 194.31 233.68 0)
+		(property "Description" "test point"
+			(at 289.56 43.18 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7326,8 +6868,8 @@
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Path" "OUT3.R_GK.R"
-			(at 194.31 233.68 0)
+		(property "Path" "TP_PB5.TP"
+			(at 289.56 43.18 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -7336,15 +6878,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "7855cd3c-efb0-5ecf-ad72-0d77985d6001")
-		)
-		(pin "2"
-			(uuid "adfc05bc-a41f-5162-afde-96ab21ff4cdd")
+			(uuid "ad5b5806-ff49-5b30-bf39-3e11f23a3680")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R12")
+					(reference "TP6")
 					(unit 1)
 				)
 			)
@@ -7447,7 +6986,7 @@
 		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "7dd1bfc7-c34d-51b6-865d-6004868fe1d4")
-		(property "Reference" "R21"
+		(property "Reference" "R11"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 237.137 72.56 0)
@@ -7508,7 +7047,7 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R21")
+					(reference "R11")
 					(unit 1)
 				)
 			)
@@ -8153,85 +7692,6 @@
 		)
 	)
 	(symbol
-		(lib_id "R_Small")
-		(at 234.95 214.63 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "9ee1d9e9-681e-5d94-8f41-7a932a78b594")
-		(property "Reference" "R14"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 238.407 213.53 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "15k"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 238.407 215.73 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0805_2012Metric"
-			(at 234.95 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 234.95 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "15k"
-			(at 234.95 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT3.R_MON.R"
-			(at 234.95 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "4c9ace1a-d9c6-5e85-b8bf-a9649cfd92ec")
-		)
-		(pin "2"
-			(uuid "a1e18899-49f4-5045-b90b-e7c4d1779325")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R14")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Polyfuse")
 		(at 157.48 33.02 90)
 		(unit 1)
@@ -8305,85 +7765,6 @@
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
 					(reference "F1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "R_Small")
-		(at 153.67 217.17 90)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "a1ef89da-36c6-5a76-82e2-e1df27640639")
-		(property "Reference" "R13"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 153.67 213.57 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "220"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 153.67 215.37 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0603_1608Metric"
-			(at 153.67 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 153.67 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "220"
-			(at 153.67 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT3.R_LED.R"
-			(at 153.67 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "5859eb18-99b4-527b-9e5d-d4372c5df4b7")
-		)
-		(pin "2"
-			(uuid "45e7147c-e916-5528-83a7-78dabc40532c")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R13")
 					(unit 1)
 				)
 			)
@@ -8470,91 +7851,6 @@
 		)
 	)
 	(symbol
-		(lib_id "LTV-814S")
-		(at 383.54 224.79 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "ab4ddf2f-c09b-5365-850c-4f2e3a56f635")
-		(property "Reference" "U8"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 375.77 218.09 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "LTV-814S-TA1"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 381.42 219.89 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "sadilek_irrigation_controller_lib_kicad_footprints:SMDIP-4_W9.53mm"
-			(at 383.54 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27) (italic yes))
-			)
-		)
-		(property "Datasheet" ""
-			(at 383.54 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Pin assignment of Isolator:LTV-814"
-			(at 383.54 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT4.U_MON"
-			(at 383.54 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "934cc3f4-0d79-5a2e-9ec2-05f0272b856c")
-		)
-		(pin "2"
-			(uuid "1bb63418-fcd8-5b68-bc43-eb9d19abeb73")
-		)
-		(pin "3"
-			(uuid "e4aa7351-948e-5757-8ed5-4f80f8bec3dc")
-		)
-		(pin "4"
-			(uuid "0d4d8692-989c-5416-9912-5f8df2b0cfa9")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "U8")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "ATtiny1616-M")
 		(at 347.98 53.34 0)
 		(unit 1)
@@ -8566,7 +7862,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ab5ba32f-5c79-55ea-b65f-d884c468c0e0")
-		(property "Reference" "U9"
+		(property "Reference" "U5"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 336.41 28.74 0)
@@ -8684,7 +7980,7 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "U9")
+					(reference "U5")
 					(unit 1)
 				)
 			)
@@ -8773,91 +8069,6 @@
 		)
 	)
 	(symbol
-		(lib_id "LTV-814S")
-		(at 248.92 224.79 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "abf4a011-1bdb-51bb-9e36-44daff4abbce")
-		(property "Reference" "U6"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 241.15 218.09 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "LTV-814S-TA1"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 246.8 219.89 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "sadilek_irrigation_controller_lib_kicad_footprints:SMDIP-4_W9.53mm"
-			(at 248.92 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27) (italic yes))
-			)
-		)
-		(property "Datasheet" ""
-			(at 248.92 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Pin assignment of Isolator:LTV-814"
-			(at 248.92 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT3.U_MON"
-			(at 248.92 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "b702553e-6de5-5476-924b-4038f3614920")
-		)
-		(pin "2"
-			(uuid "799cd3fa-7b2d-592a-9252-3cc1b9d0f614")
-		)
-		(pin "3"
-			(uuid "c5e11499-2214-56bb-bc2b-4cae30d0acb6")
-		)
-		(pin "4"
-			(uuid "cb2d5ea6-9e54-594d-b3ef-9f51052d9c1c")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "U6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "TestPoint_Small")
 		(at 259.08 40.64 0)
 		(unit 1)
@@ -8869,7 +8080,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ad59b617-d00b-58b2-b67e-c7ce8f44b245")
-		(property "Reference" "TP4"
+		(property "Reference" "TP2"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 262.275 39.64 0)
@@ -8928,7 +8139,7 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "TP4")
+					(reference "TP2")
 					(unit 1)
 				)
 			)
@@ -9268,7 +8479,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b96f71a3-2de0-5ee0-9741-90eed1312bf4")
-		(property "Reference" "R24"
+		(property "Reference" "R14"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 55.88 120.86 90)
@@ -9329,7 +8540,7 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R24")
+					(reference "R14")
 					(unit 1)
 				)
 			)
@@ -9489,44 +8700,45 @@
 		)
 	)
 	(symbol
-		(lib_id "T410-600B")
-		(at 204.47 226.06 0)
+		(lib_id "TestPoint_Small")
+		(at 289.56 27.94 270)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
+		(in_pos_files no)
+		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "c1c13df5-c98b-51f7-af2f-776d169726c6")
-		(property "Reference" "Q3"
+		(uuid "bea2b3be-7324-5b71-852d-f54e9f789c9c")
+		(property "Reference" "TP3"
 			(show_name no)
 			(do_not_autoplace no)
-			(at 208.8 225.06 0)
+			(at 292.855 27.34 90)
 			(effects
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Value" "T410-600B-TR"
+		(property "Value" "TestPoint_Small"
 			(show_name no)
 			(do_not_autoplace no)
-			(at 214.45 226.96 0)
+			(at 297.527 26.332 90)
+			(hide yes)
 			(effects
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Footprint" "sadilek_irrigation_controller_lib_kicad_footprints:TO-252-2"
-			(at 204.47 226.06 0)
+		(property "Footprint" "stdlib_kicad-footprints_TestPoint:TestPoint_Pad_D1.5mm"
+			(at 289.56 27.94 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
-				(font (size 1.27 1.27) (italic yes))
+				(font (size 1.27 1.27))
 			)
 		)
 		(property "Datasheet" ""
-			(at 204.47 226.06 0)
+			(at 289.56 27.94 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9534,8 +8746,8 @@
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Description" "Pin assignment of Triac_Thyristor:BT136-600"
-			(at 204.47 226.06 0)
+		(property "Description" "test point"
+			(at 289.56 27.94 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9543,8 +8755,8 @@
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Path" "OUT3.Q"
-			(at 204.47 226.06 0)
+		(property "Path" "TP_PA3.TP"
+			(at 289.56 27.94 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9553,18 +8765,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "248531a6-3fb2-5e30-a7ad-e7dacf7a063c")
-		)
-		(pin "2"
-			(uuid "8d8f89f2-327f-5f93-9fcb-06c24de14748")
-		)
-		(pin "3"
-			(uuid "0aae3163-ff9d-5be9-8abb-8e545e15542a")
+			(uuid "5066cab2-ba47-5311-a020-d72c44f455cb")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "Q3")
+					(reference "TP3")
 					(unit 1)
 				)
 			)
@@ -9650,84 +8856,6 @@
 		)
 	)
 	(symbol
-		(lib_id "TestPoint_Small")
-		(at 289.56 27.94 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "c209d0fc-7a70-58d3-81c6-6637f73f5180")
-		(property "Reference" "TP2"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 292.855 27.34 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "TestPoint_Small"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 297.527 26.332 90)
-			(hide yes)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_TestPoint:TestPoint_Pad_D1.5mm"
-			(at 289.56 27.94 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 289.56 27.94 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "test point"
-			(at 289.56 27.94 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "TP_DRIVE3.TP"
-			(at 289.56 27.94 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "d2b06882-7f11-5329-aece-4f730ba3f735")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "TP2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_name "EL3053_1")
 		(lib_id "EL3053")
 		(at 168.91 162.56 0)
 		(unit 1)
@@ -9813,85 +8941,6 @@
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
 					(reference "U1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "C_Small")
-		(at 238.76 40.64 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "c3cf6024-457b-563f-a139-a7adc77361d3")
-		(property "Reference" "C1"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 242.414 39.54 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "10uF 25V X5R"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 247.44 41.84 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Capacitor_SMD:C_0805_2012Metric"
-			(at 238.76 40.64 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 238.76 40.64 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "10uF 25V X5R"
-			(at 238.76 40.64 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "C_5V.C"
-			(at 238.76 40.64 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "dbcfdf53-0e52-5df1-9aed-3eae3c15da36")
-		)
-		(pin "2"
-			(uuid "8b0d5650-366c-5263-a7a6-f8e6ecc72b1b")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "C1")
 					(unit 1)
 				)
 			)
@@ -10149,176 +9198,6 @@
 		)
 	)
 	(symbol
-		(lib_id "EL3053")
-		(at 303.53 219.71 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "d0107717-8df4-5b99-9113-b5d942d5736e")
-		(property "Reference" "U7"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 295.76 213.01 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "EL3053S1(TA)-V"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 302.54 214.81 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "sadilek_irrigation_controller_lib_kicad_footprints:SMDIP-6_W9.53mm"
-			(at 303.53 219.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27) (italic yes))
-			)
-		)
-		(property "Datasheet" ""
-			(at 303.53 219.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Pin assignment of Relay_SolidState:MOC3052M"
-			(at 303.53 219.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT4.U_DRV"
-			(at 303.53 219.71 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "b3cb31f4-ba01-5296-a102-40c4a91a8ac3")
-		)
-		(pin "2"
-			(uuid "9fc50198-278c-5dd2-b8d3-c92beea56743")
-		)
-		(pin "3"
-			(uuid "a61935ed-3045-51a3-a6de-58206798268a")
-		)
-		(pin "4"
-			(uuid "fe9cd31a-66bf-59dd-b13a-403dc7bfa91a")
-		)
-		(pin "5"
-			(uuid "c7f2af0b-ffe8-549c-9968-fc1732370167")
-		)
-		(pin "6"
-			(uuid "1d26a406-6a1f-5a23-b3c5-874c9285962d")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "U7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "R_Small")
-		(at 224.79 214.63 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "d1053996-0920-5d13-95f4-336df63354ab")
-		(property "Reference" "R15"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 228.247 213.53 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "100"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 228.247 215.73 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0805_2012Metric"
-			(at 224.79 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 224.79 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "100"
-			(at 224.79 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT3.R_SNUB.R"
-			(at 224.79 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "6503a9a8-b901-563e-8d95-61eaf019319a")
-		)
-		(pin "2"
-			(uuid "5d39e4fb-1e44-5f8a-bba8-77ec0186ee24")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R15")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "R_Small")
 		(at 233.68 114.3 0)
 		(unit 1)
@@ -10330,7 +9209,7 @@
 		(dnp yes)
 		(fields_autoplaced yes)
 		(uuid "d3bcf154-a7dc-5a4a-9888-322446dfd4d0")
-		(property "Reference" "R22"
+		(property "Reference" "R12"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 237.137 113.2 0)
@@ -10391,7 +9270,7 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R22")
+					(reference "R12")
 					(unit 1)
 				)
 			)
@@ -10471,85 +9350,6 @@
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
 					(reference "R10")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Screw_Terminal_01x02")
-		(at 396.24 204.47 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "d53db0be-d03d-56f0-829d-408271d38517")
-		(property "Reference" "J8"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 396.41 199.87 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "KF2EDGR-5.08-2P"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 389.065 201.67 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "sadilek_irrigation_controller_lib_lcsc_lcsc:CONN-TH_2P-P5.08_KF2EDGR-5.08-2P"
-			(at 396.24 204.47 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 396.24 204.47 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 396.24 204.47 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT4.J"
-			(at 396.24 204.47 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "e2d96d97-ca4b-51d6-bce1-6d6cfc15bc7c")
-		)
-		(pin "2"
-			(uuid "1488195f-deeb-576e-a683-e471da282ae8")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "J8")
 					(unit 1)
 				)
 			)
@@ -10956,241 +9756,6 @@
 	)
 	(symbol
 		(lib_id "C_Small")
-		(at 224.79 229.87 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "e547fc2c-c9b9-50a8-8af9-316bb555cba3")
-		(property "Reference" "C8"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 228.444 228.77 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "100nF 100V X7R"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 234.6 231.07 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Capacitor_SMD:C_0805_2012Metric"
-			(at 224.79 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 224.79 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "100nF 100V X7R"
-			(at 224.79 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT3.C_SNUB.C"
-			(at 224.79 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "6115d746-90ad-5295-b789-832dbf59070c")
-		)
-		(pin "2"
-			(uuid "e840ee98-4e4c-534f-8f0e-5c535316e130")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "C8")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "TestPoint_Small")
-		(at 289.56 43.18 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(in_pos_files no)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "e859afd5-6ec8-54a3-bade-2107e8a2259d")
-		(property "Reference" "TP6"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 292.855 42.58 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "TestPoint_Small"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 297.527 41.572 90)
-			(hide yes)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_TestPoint:TestPoint_Pad_D1.5mm"
-			(at 289.56 43.18 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 289.56 43.18 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "test point"
-			(at 289.56 43.18 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "TP_MON4.TP"
-			(at 289.56 43.18 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "b776cc58-dc6d-5898-9958-a93196359ece")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "TP6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Screw_Terminal_01x02")
-		(at 261.62 204.47 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "ee2ecb16-797d-5615-b9a3-c7744a39bbb1")
-		(property "Reference" "J7"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 261.79 199.87 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "KF2EDGR-5.08-2P"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 254.445 201.67 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "sadilek_irrigation_controller_lib_lcsc_lcsc:CONN-TH_2P-P5.08_KF2EDGR-5.08-2P"
-			(at 261.62 204.47 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 261.62 204.47 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 261.62 204.47 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT3.J"
-			(at 261.62 204.47 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "06497f8e-5c14-502e-a231-92c8103ebede")
-		)
-		(pin "2"
-			(uuid "9f049353-de68-5c56-a57d-bf4e31524e9d")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "J7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "C_Small")
 		(at 170.18 119.38 0)
 		(unit 1)
 		(body_style 1)
@@ -11270,322 +9835,6 @@
 	)
 	(symbol
 		(lib_id "R_Small")
-		(at 184.15 217.17 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "f376812b-eaa1-57ca-8f14-9bb0babdb666")
-		(property "Reference" "R11"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 184.15 213.57 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "150"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 184.15 215.37 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0805_2012Metric"
-			(at 184.15 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 184.15 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "150"
-			(at 184.15 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT3.R_GATE.R"
-			(at 184.15 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "3ee5b689-9ae0-52e3-9df8-9d335cc6d9a9")
-		)
-		(pin "2"
-			(uuid "6a5a216d-a378-569d-8445-b22a2fb71b5f")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R11")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "R_Small")
-		(at 318.77 217.17 270)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "f389721a-5598-505e-a8a9-64c13d2775f4")
-		(property "Reference" "R16"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 318.77 213.57 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "150"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 318.77 215.37 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0805_2012Metric"
-			(at 318.77 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 318.77 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "150"
-			(at 318.77 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT4.R_GATE.R"
-			(at 318.77 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "07525596-dd3d-5736-9824-fdd6e4369a2e")
-		)
-		(pin "2"
-			(uuid "33ec03f5-365b-5f85-9836-30ba57f2fa7c")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R16")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "R_Small")
-		(at 288.29 217.17 90)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "f3e55d9c-0e82-5f5d-8ea3-089524e9eb59")
-		(property "Reference" "R18"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 288.29 213.57 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "220"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 288.29 215.37 90)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0603_1608Metric"
-			(at 288.29 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 288.29 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "220"
-			(at 288.29 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT4.R_LED.R"
-			(at 288.29 217.17 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "95d26c20-ed94-5e7e-8c25-4e83c5b0e357")
-		)
-		(pin "2"
-			(uuid "d71f609d-8aaf-522d-b478-d9a60b4ece92")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R18")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "R_Small")
-		(at 369.57 214.63 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(fields_autoplaced yes)
-		(uuid "f52a8bd1-e20e-5968-bdc9-1439b92c4863")
-		(property "Reference" "R19"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 373.027 213.53 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "15k"
-			(show_name no)
-			(do_not_autoplace no)
-			(at 373.027 215.73 0)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" "stdlib_kicad-footprints_Resistor_SMD:R_0805_2012Metric"
-			(at 369.57 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 369.57 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "15k"
-			(at 369.57 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Path" "OUT4.R_MON.R"
-			(at 369.57 214.63 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "dc09fc03-1b24-5848-ac26-e829b3bb2fb0")
-		)
-		(pin "2"
-			(uuid "2bab6570-1524-5656-91b0-03dc19ef5128")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R19")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "R_Small")
 		(at 152.4 119.38 0)
 		(unit 1)
 		(body_style 1)
@@ -11596,7 +9845,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f827c91a-5263-5516-8cb3-1b93cc15a215")
-		(property "Reference" "R26"
+		(property "Reference" "R16"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 155.857 118.28 0)
@@ -11657,7 +9906,7 @@
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "R26")
+					(reference "R16")
 					(unit 1)
 				)
 			)
@@ -12696,7 +10945,7 @@
 	)
 	(text "UPDI header"
 		(exclude_from_sim no)
-		(at 383.78 43.7 0)
+		(at 383.78 47.2 0)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left top)
@@ -13185,7 +11434,7 @@
 		)
 		(uuid "f2746520-53d2-5f5a-af88-5a608c7d70bd")
 	)
-	(text "Population options (crossed-out parts are not populated):\n- outputs 3 and 4\n- moisture sensor terminal\n- termination, bias resistors, UPDI header"
+	(text "Population options (crossed-out parts are not populated):\n- moisture sensor terminal\n- termination, bias resistors, UPDI header"
 		(exclude_from_sim no)
 		(at 15.24 209.96 0)
 		(effects
@@ -13986,804 +12235,12 @@
 		)
 		(uuid "f5e8a5bc-2a51-54d1-bc56-a2531dddf2fd")
 	)
-	(rectangle
-		(start 137.16 191.77)
-		(end 269.24 247.65)
-		(stroke (width 0.15) (type dash))
-		(fill
-			(type none)
-		)
-		(uuid "b3fc2f63-a443-5e49-af32-30cf9da53fa5")
-	)
-	(text "Valve output 3 (option, not populated)"
-		(exclude_from_sim no)
-		(at 138.66 193.27 0)
-		(effects
-			(font (size 2 2) (bold yes))
-			(justify left top)
-		)
-		(uuid "fac5d837-1caf-57c1-a46c-915ca7828aac")
-	)
-	(wire
-		(pts
-			(xy 156.21 217.17) (xy 161.29 217.17)
-		)
-		(stroke (width 0) (type default))
-		(uuid "1ac2a4ce-22d3-56c0-b657-ede717698e82")
-	)
-	(wire
-		(pts
-			(xy 161.29 222.25) (xy 158.75 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "ee5972da-9f47-5139-b9e7-235b04f10bb3")
-	)
-	(wire
-		(pts
-			(xy 158.75 222.25) (xy 158.75 224.79)
-		)
-		(stroke (width 0) (type default))
-		(uuid "b763a211-8986-5016-9025-1de91183a239")
-	)
-	(symbol
-		(lib_id "GND")
-		(at 158.75 224.79 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "138d3eab-8172-5371-80ad-4eade9711bb1")
-		(property "Reference" "#PWR013"
-			(at 158.75 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "GND"
-			(at 158.75 228.6 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" ""
-			(at 158.75 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 158.75 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 158.75 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "ki_keywords" "global power"
-			(at 158.75 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "f59aa2b8-81c7-5fd6-a978-e98a2ee0c648")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR013")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 176.53 217.17) (xy 181.61 217.17)
-		)
-		(stroke (width 0) (type default))
-		(uuid "282e8b13-5bb8-5a94-a263-d1cddad5e29a")
-	)
-	(wire
-		(pts
-			(xy 186.69 217.17) (xy 191.77 217.17)
-		)
-		(stroke (width 0) (type default))
-		(uuid "4ec7632e-72f3-5a0c-9fc3-550d958a900c")
-	)
-	(wire
-		(pts
-			(xy 191.77 217.17) (xy 191.77 209.55)
-		)
-		(stroke (width 0) (type default))
-		(uuid "01862a17-b3fd-529a-9e91-9fb09724513a")
-	)
-	(wire
-		(pts
-			(xy 176.53 222.25) (xy 194.31 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "79710b4d-a907-580a-ad2a-91e186fd0964")
-	)
-	(wire
-		(pts
-			(xy 194.31 222.25) (xy 194.31 228.6)
-		)
-		(stroke (width 0) (type default))
-		(uuid "a45038d0-9bf0-500c-960d-d9bd91bca411")
-	)
-	(wire
-		(pts
-			(xy 194.31 228.6) (xy 200.66 228.6)
-		)
-		(stroke (width 0) (type default))
-		(uuid "56fbdec9-dced-5af2-9c3d-152ecd3c91c0")
-	)
-	(wire
-		(pts
-			(xy 194.31 231.14) (xy 194.31 228.6)
-		)
-		(stroke (width 0) (type default))
-		(uuid "ffcce19d-a060-571e-b465-2747023dec90")
-	)
-	(wire
-		(pts
-			(xy 194.31 236.22) (xy 194.31 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "622c8354-69a7-5d73-a59a-b91a670309f8")
-	)
-	(wire
-		(pts
-			(xy 204.47 222.25) (xy 204.47 209.55)
-		)
-		(stroke (width 0) (type default))
-		(uuid "c735d3c5-9f32-5977-8360-aef01b4e84fc")
-	)
-	(wire
-		(pts
-			(xy 204.47 229.87) (xy 204.47 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "0a6ba4bc-7d81-5402-b9e6-8e631c440e53")
-	)
-	(wire
-		(pts
-			(xy 224.79 209.55) (xy 224.79 212.09)
-		)
-		(stroke (width 0) (type default))
-		(uuid "7562e47f-b103-5b1e-8e0c-d467e1c33c58")
-	)
-	(wire
-		(pts
-			(xy 224.79 217.17) (xy 224.79 227.33)
-		)
-		(stroke (width 0) (type default))
-		(uuid "ff5d91c4-6860-52ac-bed6-f9a6b649bb1c")
-	)
-	(wire
-		(pts
-			(xy 224.79 232.41) (xy 224.79 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "530be06d-f6f0-5b96-919e-820bbba863db")
-	)
-	(wire
-		(pts
-			(xy 234.95 209.55) (xy 234.95 212.09)
-		)
-		(stroke (width 0) (type default))
-		(uuid "66ae9836-9464-5b28-abfa-61e534989601")
-	)
-	(wire
-		(pts
-			(xy 234.95 217.17) (xy 234.95 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "53ce5bd6-cb3b-5496-9641-1c842fa3ee85")
-	)
-	(wire
-		(pts
-			(xy 234.95 222.25) (xy 241.3 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "188cd575-357e-5035-841f-cc6b84d65e41")
-	)
-	(wire
-		(pts
-			(xy 241.3 227.33) (xy 238.76 227.33)
-		)
-		(stroke (width 0) (type default))
-		(uuid "84fbdcfa-ef58-5115-b79f-2faf2b37f492")
-	)
-	(wire
-		(pts
-			(xy 238.76 227.33) (xy 238.76 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "dc84f7c9-a595-5fd0-84f3-15e2533bebe9")
-	)
-	(wire
-		(pts
-			(xy 256.54 227.33) (xy 261.62 227.33)
-		)
-		(stroke (width 0) (type default))
-		(uuid "fbf549f6-c531-5007-ab4b-8e41f46bf86f")
-	)
-	(wire
-		(pts
-			(xy 261.62 227.33) (xy 261.62 229.87)
-		)
-		(stroke (width 0) (type default))
-		(uuid "739680c4-0bcb-5313-978b-207ffab0182e")
-	)
-	(symbol
-		(lib_id "GND")
-		(at 261.62 229.87 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "8fb9f8a5-0396-5fa8-8fa0-489e4e71e641")
-		(property "Reference" "#PWR014"
-			(at 261.62 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "GND"
-			(at 261.62 233.68 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" ""
-			(at 261.62 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 261.62 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 261.62 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "ki_keywords" "global power"
-			(at 261.62 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "4ef0ec2a-297b-5e80-9f4a-6ad15afa1e90")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR014")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 191.77 209.55) (xy 248.92 209.55)
-		)
-		(stroke (width 0) (type default))
-		(uuid "325456f2-c21d-56fd-bd8a-59e3ff47961f")
-	)
-	(wire
-		(pts
-			(xy 248.92 209.55) (xy 248.92 204.47)
-		)
-		(stroke (width 0) (type default))
-		(uuid "b1c1a387-7c94-5f67-a410-7caa8d470228")
-	)
-	(wire
-		(pts
-			(xy 248.92 204.47) (xy 256.54 204.47)
-		)
-		(stroke (width 0) (type default))
-		(uuid "b55ceae5-30d8-5db7-9c58-f5274330b50d")
-	)
-	(wire
-		(pts
-			(xy 189.23 240.03) (xy 238.76 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "840bd9a9-50ce-535a-9ff6-68df6af48e30")
-	)
-	(label "AC_B"
-		(at 189.23 240.03 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "cde4840b-4a56-56ed-aacb-97f01768c162")
-	)
-	(text "logic side"
-		(exclude_from_sim no)
-		(at 139.16 242.57 0)
-		(effects
-			(font (size 1.27 1.27))
-			(justify left top)
-		)
-		(uuid "bcf0e199-5a8a-54d6-a9e6-32054d5a7ecc")
-	)
-	(text "logic side"
-		(exclude_from_sim no)
-		(at 243.16 242.57 0)
-		(effects
-			(font (size 1.27 1.27))
-			(justify left top)
-		)
-		(uuid "e025835b-a0ba-5e48-9b97-efa16a172e3c")
-	)
-	(text "24 VAC side"
-		(exclude_from_sim no)
-		(at 197.16 242.57 0)
-		(effects
-			(font (size 1.27 1.27))
-			(justify left top)
-		)
-		(uuid "1e803b7b-db91-5cd7-8c20-d983c0f0274e")
-	)
-	(rectangle
-		(start 271.78 191.77)
-		(end 403.86 247.65)
-		(stroke (width 0.15) (type dash))
-		(fill
-			(type none)
-		)
-		(uuid "d6efc255-ca37-5987-8346-01e8f5749061")
-	)
-	(text "Valve output 4 (option, not populated)"
-		(exclude_from_sim no)
-		(at 273.28 193.27 0)
-		(effects
-			(font (size 2 2) (bold yes))
-			(justify left top)
-		)
-		(uuid "c5c823cb-369b-5607-a723-b4b13df310d0")
-	)
-	(wire
-		(pts
-			(xy 290.83 217.17) (xy 295.91 217.17)
-		)
-		(stroke (width 0) (type default))
-		(uuid "fd8b0a8c-9c2b-5d5f-aaad-65ac88b6e876")
-	)
-	(wire
-		(pts
-			(xy 295.91 222.25) (xy 293.37 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "e93dc245-c6a7-54a0-8bc5-57d3e0b44bd3")
-	)
-	(wire
-		(pts
-			(xy 293.37 222.25) (xy 293.37 224.79)
-		)
-		(stroke (width 0) (type default))
-		(uuid "2c459e7b-27fc-5a8c-b044-d45ca25ff25c")
-	)
-	(symbol
-		(lib_id "GND")
-		(at 293.37 224.79 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "d088c347-4a32-50ad-b725-c370786955af")
-		(property "Reference" "#PWR015"
-			(at 293.37 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "GND"
-			(at 293.37 228.6 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" ""
-			(at 293.37 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 293.37 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 293.37 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "ki_keywords" "global power"
-			(at 293.37 224.79 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "e717820a-90b6-585f-b8b9-0c173abfde04")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR015")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 311.15 217.17) (xy 316.23 217.17)
-		)
-		(stroke (width 0) (type default))
-		(uuid "70c00b4a-d935-5b19-8589-fa9139f5ab97")
-	)
-	(wire
-		(pts
-			(xy 321.31 217.17) (xy 326.39 217.17)
-		)
-		(stroke (width 0) (type default))
-		(uuid "ae0aa260-e40a-592c-9f73-c04ddf0035f4")
-	)
-	(wire
-		(pts
-			(xy 326.39 217.17) (xy 326.39 209.55)
-		)
-		(stroke (width 0) (type default))
-		(uuid "45d6259e-c40a-59a8-8718-2b75ec8baa58")
-	)
-	(wire
-		(pts
-			(xy 311.15 222.25) (xy 328.93 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "6599d0c0-6cd3-5c5b-9b06-44950f092d09")
-	)
-	(wire
-		(pts
-			(xy 328.93 222.25) (xy 328.93 228.6)
-		)
-		(stroke (width 0) (type default))
-		(uuid "af12a5c9-9521-5038-b7a1-51a157d608e1")
-	)
-	(wire
-		(pts
-			(xy 328.93 228.6) (xy 335.28 228.6)
-		)
-		(stroke (width 0) (type default))
-		(uuid "cb0d3fe3-bc20-5747-9e1d-7ba6be102f60")
-	)
-	(wire
-		(pts
-			(xy 328.93 231.14) (xy 328.93 228.6)
-		)
-		(stroke (width 0) (type default))
-		(uuid "d21817bd-8bfa-5bc6-bd95-16ff93608ee9")
-	)
-	(wire
-		(pts
-			(xy 328.93 236.22) (xy 328.93 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "928f2741-059c-58bf-aa54-367036555105")
-	)
-	(wire
-		(pts
-			(xy 339.09 222.25) (xy 339.09 209.55)
-		)
-		(stroke (width 0) (type default))
-		(uuid "9a7c4f12-171c-5e8b-8995-63f3118e11ba")
-	)
-	(wire
-		(pts
-			(xy 339.09 229.87) (xy 339.09 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "81c544f6-2699-5e04-b4e3-fc5d8590b947")
-	)
-	(wire
-		(pts
-			(xy 359.41 209.55) (xy 359.41 212.09)
-		)
-		(stroke (width 0) (type default))
-		(uuid "04003702-08b0-5dd8-b10d-0bcecd351098")
-	)
-	(wire
-		(pts
-			(xy 359.41 217.17) (xy 359.41 227.33)
-		)
-		(stroke (width 0) (type default))
-		(uuid "08db33de-9d2b-58dd-ac39-a73eafc51f48")
-	)
-	(wire
-		(pts
-			(xy 359.41 232.41) (xy 359.41 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "4907942e-ab6d-57c0-978d-99ff43a9abed")
-	)
-	(wire
-		(pts
-			(xy 369.57 209.55) (xy 369.57 212.09)
-		)
-		(stroke (width 0) (type default))
-		(uuid "cf0826d2-8f17-596b-bfc7-e802b6662bcb")
-	)
-	(wire
-		(pts
-			(xy 369.57 217.17) (xy 369.57 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "b0978bd5-587d-5421-b4d9-06777729012e")
-	)
-	(wire
-		(pts
-			(xy 369.57 222.25) (xy 375.92 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "354463b1-4de9-55f2-986d-72cf22095608")
-	)
-	(wire
-		(pts
-			(xy 375.92 227.33) (xy 373.38 227.33)
-		)
-		(stroke (width 0) (type default))
-		(uuid "960487b6-3e3b-568a-81d9-301dad17af22")
-	)
-	(wire
-		(pts
-			(xy 373.38 227.33) (xy 373.38 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "230d3b02-93e1-5ba2-8788-e7b5c7e820bb")
-	)
-	(wire
-		(pts
-			(xy 391.16 227.33) (xy 396.24 227.33)
-		)
-		(stroke (width 0) (type default))
-		(uuid "f42a8212-0596-5a85-8e63-dd12c87e6ffe")
-	)
-	(wire
-		(pts
-			(xy 396.24 227.33) (xy 396.24 229.87)
-		)
-		(stroke (width 0) (type default))
-		(uuid "26986126-d22b-53d7-b2d8-1a75cbd80924")
-	)
-	(symbol
-		(lib_id "GND")
-		(at 396.24 229.87 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "80bd4faf-4ac1-545b-8a18-cb1c4422bd06")
-		(property "Reference" "#PWR016"
-			(at 396.24 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Value" "GND"
-			(at 396.24 233.68 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Footprint" ""
-			(at 396.24 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Datasheet" ""
-			(at 396.24 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 396.24 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(property "ki_keywords" "global power"
-			(at 396.24 229.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font (size 1.27 1.27))
-			)
-		)
-		(pin "1"
-			(uuid "bd3c5b23-86b3-5ca2-90e9-8435e7c045bc")
-		)
-		(instances
-			(project "valve-node"
-				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR016")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 326.39 209.55) (xy 383.54 209.55)
-		)
-		(stroke (width 0) (type default))
-		(uuid "0db56eb8-4c3e-5379-9691-aad36bfbc524")
-	)
-	(wire
-		(pts
-			(xy 383.54 209.55) (xy 383.54 204.47)
-		)
-		(stroke (width 0) (type default))
-		(uuid "b6856fb4-b28e-5a7d-a397-0159efc64ac3")
-	)
-	(wire
-		(pts
-			(xy 383.54 204.47) (xy 391.16 204.47)
-		)
-		(stroke (width 0) (type default))
-		(uuid "26609cb5-bd4b-5fe0-81f0-5ffa9c826152")
-	)
-	(wire
-		(pts
-			(xy 323.85 240.03) (xy 373.38 240.03)
-		)
-		(stroke (width 0) (type default))
-		(uuid "903d4c2d-1334-56cf-bf26-a0226ac2e4d3")
-	)
-	(label "AC_B"
-		(at 323.85 240.03 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "ca7e4cbd-16f3-56bf-83b7-7fb5ea775842")
-	)
-	(text "logic side"
-		(exclude_from_sim no)
-		(at 273.78 242.57 0)
-		(effects
-			(font (size 1.27 1.27))
-			(justify left top)
-		)
-		(uuid "dc2ce218-17a3-5e3f-97f4-f9427aa9bd63")
-	)
-	(text "logic side"
-		(exclude_from_sim no)
-		(at 377.78 242.57 0)
-		(effects
-			(font (size 1.27 1.27))
-			(justify left top)
-		)
-		(uuid "94b9e957-c7f2-5f3b-88a8-a20555d1d02a")
-	)
-	(text "24 VAC side"
-		(exclude_from_sim no)
-		(at 331.78 242.57 0)
-		(effects
-			(font (size 1.27 1.27))
-			(justify left top)
-		)
-		(uuid "c8f1135b-9c1e-5b76-ad3c-8ad2ed28049b")
-	)
 	(wire
 		(pts
 			(xy 252.73 104.14) (xy 252.73 101.6)
 		)
 		(stroke (width 0) (type default))
-		(uuid "7ff66a3f-9efc-5c76-b6b9-f6a7d196eba7")
+		(uuid "56c39199-45d8-5f25-ac55-1e38162b1120")
 	)
 	(label "BUS_B"
 		(at 252.73 101.6 90)
@@ -14791,14 +12248,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "e7c6796d-e4db-5560-b3b2-852189c27ee8")
+		(uuid "aad07c02-2d7c-54af-96e1-f827f372b175")
 	)
 	(wire
 		(pts
 			(xy 252.73 114.3) (xy 252.73 116.84)
 		)
 		(stroke (width 0) (type default))
-		(uuid "34652b69-1d51-56cd-9730-b60edaf214d0")
+		(uuid "1ac2a4ce-22d3-56c0-b657-ede717698e82")
 	)
 	(label "BUS_A"
 		(at 252.73 116.84 270)
@@ -14806,14 +12263,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "7b400fa0-4930-587b-ad2a-22657a3423ff")
+		(uuid "62d1b30a-dd1e-5fb3-969f-d9ab298d4278")
 	)
 	(wire
 		(pts
 			(xy 309.88 33.02) (xy 309.88 30.48)
 		)
 		(stroke (width 0) (type default))
-		(uuid "d6b243a4-eee1-5af8-bdc4-34320d036c92")
+		(uuid "b763a211-8986-5016-9025-1de91183a239")
 	)
 	(symbol
 		(lib_id "VCC")
@@ -14826,8 +12283,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "a7d6ffc8-a4c1-5219-a93b-080741c33196")
-		(property "Reference" "#PWR017"
+		(uuid "138d3eab-8172-5371-80ad-4eade9711bb1")
+		(property "Reference" "#PWR013"
 			(at 309.88 30.48 0)
 			(hide yes)
 			(show_name no)
@@ -14881,12 +12338,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "02d97ebb-6ee4-512c-926b-be4b89e8ecb1")
+			(uuid "f59aa2b8-81c7-5fd6-a978-e98a2ee0c648")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR017")
+					(reference "#PWR013")
 					(unit 1)
 				)
 			)
@@ -14897,7 +12354,7 @@
 			(xy 309.88 38.1) (xy 309.88 40.64)
 		)
 		(stroke (width 0) (type default))
-		(uuid "9174042a-b32d-5386-adbd-ef4568b56aa1")
+		(uuid "282e8b13-5bb8-5a94-a263-d1cddad5e29a")
 	)
 	(symbol
 		(lib_id "GND")
@@ -14910,8 +12367,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "d18e3539-ab15-5583-8ebb-52d425c3532b")
-		(property "Reference" "#PWR018"
+		(uuid "f2daf6c9-1a85-565e-8773-543b434758e7")
+		(property "Reference" "#PWR014"
 			(at 309.88 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -14965,12 +12422,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "8966d279-cd10-5420-804e-fd56548961af")
+			(uuid "b8abcabc-59aa-5896-8330-edb7d1824ae9")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR018")
+					(reference "#PWR014")
 					(unit 1)
 				)
 			)
@@ -14978,25 +12435,10 @@
 	)
 	(wire
 		(pts
-			(xy 289.56 33.02) (xy 287.02 33.02)
-		)
-		(stroke (width 0) (type default))
-		(uuid "ae50f81e-02fe-55cd-b5c5-4ecbe4498c5a")
-	)
-	(label "MON3"
-		(at 287.02 33.02 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "d5b4678f-3355-5b26-b8b1-fe5d34976407")
-	)
-	(wire
-		(pts
 			(xy 151.13 160.02) (xy 148.59 160.02)
 		)
 		(stroke (width 0) (type default))
-		(uuid "e35173d7-8c2c-590f-889a-b6536ec11c9d")
+		(uuid "79710b4d-a907-580a-ad2a-91e186fd0964")
 	)
 	(label "DRIVE1"
 		(at 148.59 160.02 180)
@@ -15004,22 +12446,22 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "cae7a88e-6ab7-553a-baa9-959e06fe0330")
+		(uuid "160f362f-1688-5233-a2f3-8447d4fda694")
 	)
 	(no_connect
 		(at 298.45 162.56)
-		(uuid "1c5ba44e-e6ad-57fb-ae82-efa6cc8b3dce")
+		(uuid "c44d4b55-85c2-51df-aa72-d22bf1293c6d")
 	)
 	(no_connect
 		(at 308.61 162.56)
-		(uuid "22831f97-c762-5772-ba65-b7326a7ddf4e")
+		(uuid "cde064b3-fdef-5e18-95ff-08766045543a")
 	)
 	(wire
 		(pts
 			(xy 88.9 78.74) (xy 86.36 78.74)
 		)
 		(stroke (width 0) (type default))
-		(uuid "afcc8720-c119-5e6d-8c4d-e771d7fbd8db")
+		(uuid "622c8354-69a7-5d73-a59a-b91a670309f8")
 	)
 	(label "SPARE_2"
 		(at 86.36 78.74 180)
@@ -15027,14 +12469,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "decfef15-240e-5c01-b0fd-5167c3d35703")
+		(uuid "c08dd237-0502-5f3f-8c45-7aba4b1dcc6a")
 	)
 	(wire
 		(pts
 			(xy 99.06 78.74) (xy 101.6 78.74)
 		)
 		(stroke (width 0) (type default))
-		(uuid "7ad5a2ec-038a-57c7-9c30-b34c79348a75")
+		(uuid "0a6ba4bc-7d81-5402-b9e6-8e631c440e53")
 	)
 	(label "AC_B"
 		(at 101.6 78.74 0)
@@ -15042,29 +12484,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "5d055243-d0ff-5a1f-9114-e10a38dde9b5")
-	)
-	(wire
-		(pts
-			(xy 289.56 38.1) (xy 287.02 38.1)
-		)
-		(stroke (width 0) (type default))
-		(uuid "64b57828-1e96-5a5a-ab0d-5d49d8c73601")
-	)
-	(label "DRIVE4"
-		(at 287.02 38.1 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "6fcac26d-9916-5dbb-8b0d-dc66a5dc63da")
+		(uuid "a6fbb06e-d01a-50eb-8329-dd1d826be8a3")
 	)
 	(wire
 		(pts
 			(xy 149.86 99.06) (xy 147.32 99.06)
 		)
 		(stroke (width 0) (type default))
-		(uuid "6422de93-57c7-5df4-8257-60e7466b4000")
+		(uuid "ff5d91c4-6860-52ac-bed6-f9a6b649bb1c")
 	)
 	(label "BUS_A"
 		(at 147.32 99.06 180)
@@ -15072,14 +12499,29 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "85fd3955-3c59-5106-938c-8539ebd0c490")
+		(uuid "e4cd02b2-413e-562e-976b-c6682baa91f0")
+	)
+	(wire
+		(pts
+			(xy 289.56 38.1) (xy 287.02 38.1)
+		)
+		(stroke (width 0) (type default))
+		(uuid "66ae9836-9464-5b28-abfa-61e534989601")
+	)
+	(label "PB4"
+		(at 287.02 38.1 180)
+		(effects
+			(font (size 1.27 1.27))
+			(justify right bottom)
+		)
+		(uuid "4f563ee1-06e3-5bb4-9ace-7eb197c87fd8")
 	)
 	(wire
 		(pts
 			(xy 198.12 91.44) (xy 195.58 91.44)
 		)
 		(stroke (width 0) (type default))
-		(uuid "01744337-78ea-50d6-a181-cf3570e2fcdd")
+		(uuid "188cd575-357e-5035-841f-cc6b84d65e41")
 	)
 	(label "RXD"
 		(at 195.58 91.44 180)
@@ -15087,14 +12529,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "046c4efd-f91f-569d-a81e-9ec92138c79c")
+		(uuid "6872661e-c5ac-5fee-9127-34f2ae087805")
 	)
 	(wire
 		(pts
 			(xy 198.12 101.6) (xy 195.58 101.6)
 		)
 		(stroke (width 0) (type default))
-		(uuid "b93956bd-e46e-594f-817a-8c308baf4a37")
+		(uuid "dc84f7c9-a595-5fd0-84f3-15e2533bebe9")
 	)
 	(label "TXD"
 		(at 195.58 101.6 180)
@@ -15102,14 +12544,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "6b5b920a-d0f8-5760-a781-728731667a9f")
+		(uuid "5f0234dc-2d23-52fa-b580-d0dac2077ded")
 	)
 	(wire
 		(pts
 			(xy 208.28 111.76) (xy 208.28 114.3)
 		)
 		(stroke (width 0) (type default))
-		(uuid "94c9f237-7adb-5c8f-9146-e5e47b9c99cb")
+		(uuid "739680c4-0bcb-5313-978b-207ffab0182e")
 	)
 	(symbol
 		(lib_id "GND")
@@ -15122,8 +12564,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "dc4c0532-c464-5ed3-b495-cf9c9c958ca4")
-		(property "Reference" "#PWR019"
+		(uuid "8fb9f8a5-0396-5fa8-8fa0-489e4e71e641")
+		(property "Reference" "#PWR015"
 			(at 208.28 114.3 0)
 			(hide yes)
 			(show_name no)
@@ -15177,12 +12619,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "47d2229a-ea65-5c6d-9d38-2f21038ebaa3")
+			(uuid "4ef0ec2a-297b-5e80-9f4a-6ad15afa1e90")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR019")
+					(reference "#PWR015")
 					(unit 1)
 				)
 			)
@@ -15193,7 +12635,7 @@
 			(xy 208.28 81.28) (xy 208.28 78.74)
 		)
 		(stroke (width 0) (type default))
-		(uuid "c47e0143-f829-5781-8a3b-73b62f69668d")
+		(uuid "325456f2-c21d-56fd-bd8a-59e3ff47961f")
 	)
 	(symbol
 		(lib_id "VCC")
@@ -15206,8 +12648,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "d47f4810-7b42-596f-99ab-a59f21f422b8")
-		(property "Reference" "#PWR020"
+		(uuid "a9fb7a06-cbc8-5f76-bf4d-d09c8f703cc9")
+		(property "Reference" "#PWR016"
 			(at 208.28 78.74 0)
 			(hide yes)
 			(show_name no)
@@ -15261,12 +12703,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "e72342da-fef3-58b2-a455-8524af58fdfa")
+			(uuid "0315e697-1444-5b6b-bb3b-5f2969567dfe")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR020")
+					(reference "#PWR016")
 					(unit 1)
 				)
 			)
@@ -15277,7 +12719,7 @@
 			(xy 391.16 30.48) (xy 388.62 30.48)
 		)
 		(stroke (width 0) (type default))
-		(uuid "fce7c54d-c8a3-5c38-8998-5d971697f7f2")
+		(uuid "840bd9a9-50ce-535a-9ff6-68df6af48e30")
 	)
 	(label "UPDI"
 		(at 388.62 30.48 180)
@@ -15285,22 +12727,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "2d9db019-115a-5268-baf8-5bd93e2082f6")
-	)
-	(no_connect
-		(at 163.83 219.71)
-		(uuid "1657b6f7-5f2b-54e7-9fd8-5c24458a8cdf")
-	)
-	(no_connect
-		(at 173.99 219.71)
-		(uuid "cd9b0cec-7cda-56f4-90cb-3d3cde01a63b")
+		(uuid "cde4840b-4a56-56ed-aacb-97f01768c162")
 	)
 	(wire
 		(pts
 			(xy 375.92 81.28) (xy 373.38 81.28)
 		)
 		(stroke (width 0) (type default))
-		(uuid "71242256-3396-56ec-b79e-c12fcb4b21df")
+		(uuid "89b3e189-60d3-546c-a65e-a8c10c32d063")
 	)
 	(label "LED"
 		(at 373.38 81.28 180)
@@ -15308,14 +12742,29 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "c8f448c9-df32-55bc-bc56-c3e84b3cb678")
+		(uuid "0fbc058a-2d87-5eb9-b55f-e55863378ab7")
+	)
+	(wire
+		(pts
+			(xy 289.56 33.02) (xy 287.02 33.02)
+		)
+		(stroke (width 0) (type default))
+		(uuid "970365e0-7a2f-5b17-90e2-27c335725123")
+	)
+	(label "PB1"
+		(at 287.02 33.02 180)
+		(effects
+			(font (size 1.27 1.27))
+			(justify right bottom)
+		)
+		(uuid "308e714a-7af0-5b31-af7a-00022e1e5b31")
 	)
 	(wire
 		(pts
 			(xy 256.54 149.86) (xy 254 149.86)
 		)
 		(stroke (width 0) (type default))
-		(uuid "a3f6befd-a04a-5553-807b-ca0a34b6a88a")
+		(uuid "796eab2c-a59f-5df7-b1c8-d42e41e3f019")
 	)
 	(label "AC_COM"
 		(at 254 149.86 180)
@@ -15323,14 +12772,29 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "2814dd43-b6b6-50bd-ae2e-7bf29bec5bc4")
+		(uuid "5c04b50e-3f9e-502e-b13f-19dbe6335424")
+	)
+	(wire
+		(pts
+			(xy 289.56 43.18) (xy 287.02 43.18)
+		)
+		(stroke (width 0) (type default))
+		(uuid "e93dc245-c6a7-54a0-8bc5-57d3e0b44bd3")
+	)
+	(label "PB5"
+		(at 287.02 43.18 180)
+		(effects
+			(font (size 1.27 1.27))
+			(justify right bottom)
+		)
+		(uuid "7aaccc06-b660-5c37-9449-b15a16d52f55")
 	)
 	(wire
 		(pts
 			(xy 256.54 165.1) (xy 259.08 165.1)
 		)
 		(stroke (width 0) (type default))
-		(uuid "9eb27591-f494-52d5-b1d8-a40c663408f2")
+		(uuid "bd9f5dcb-b364-5461-9d63-04ae71c677bd")
 	)
 	(label "MON1"
 		(at 259.08 165.1 0)
@@ -15338,14 +12802,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "5fcdf26c-6b64-5c0c-aea1-f3449f9f4643")
+		(uuid "c542b053-f416-5fa7-a119-f56adbf23a05")
 	)
 	(wire
 		(pts
 			(xy 233.68 71.12) (xy 233.68 68.58)
 		)
 		(stroke (width 0) (type default))
-		(uuid "112264c2-e9bf-5fe7-950e-5b760fbd38c2")
+		(uuid "70c00b4a-d935-5b19-8589-fa9139f5ab97")
 	)
 	(symbol
 		(lib_id "VCC")
@@ -15358,8 +12822,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "2e488abd-7d3a-581d-94e0-f145cdddbf77")
-		(property "Reference" "#PWR021"
+		(uuid "cb1300cb-ba40-5c05-82bb-4cf866e60196")
+		(property "Reference" "#PWR017"
 			(at 233.68 68.58 0)
 			(hide yes)
 			(show_name no)
@@ -15413,12 +12877,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "1cc2f6b5-66ec-5aa7-99a8-f372e222ce8b")
+			(uuid "84de22b0-8ef5-5ca1-beae-806f3a75f07c")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR021")
+					(reference "#PWR017")
 					(unit 1)
 				)
 			)
@@ -15429,7 +12893,7 @@
 			(xy 391.16 165.1) (xy 393.7 165.1)
 		)
 		(stroke (width 0) (type default))
-		(uuid "84b1d1a0-aad6-50cc-9a5f-fd8a8eac76f1")
+		(uuid "6599d0c0-6cd3-5c5b-9b06-44950f092d09")
 	)
 	(label "MON2"
 		(at 393.7 165.1 0)
@@ -15437,14 +12901,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "34299345-7963-534a-a25d-b3712ae88f72")
+		(uuid "b869230a-096c-5694-aea8-e8fc3145468a")
 	)
 	(wire
 		(pts
 			(xy 38.1 172.72) (xy 38.1 175.26)
 		)
 		(stroke (width 0) (type default))
-		(uuid "f6eb1bbe-e62d-50c2-a7be-6bd24bde4b35")
+		(uuid "cb0d3fe3-bc20-5747-9e1d-7ba6be102f60")
 	)
 	(label "AC_A"
 		(at 38.1 175.26 270)
@@ -15452,14 +12916,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "c4bcf515-8329-5fef-b31a-2f01707da74a")
+		(uuid "150c2344-ded6-554f-b2a9-da6d728edd6a")
 	)
 	(wire
 		(pts
 			(xy 38.1 165.1) (xy 38.1 162.56)
 		)
 		(stroke (width 0) (type default))
-		(uuid "ccd7377e-a48e-5297-a973-c8a7f40287a9")
+		(uuid "928f2741-059c-58bf-aa54-367036555105")
 	)
 	(label "AC_B"
 		(at 38.1 162.56 90)
@@ -15467,14 +12931,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "8c52f469-e3a9-500b-b633-2f48f8f5140c")
+		(uuid "b4a6283d-a53a-5c4e-9c9f-379362ba564c")
 	)
 	(wire
 		(pts
 			(xy 285.75 160.02) (xy 283.21 160.02)
 		)
 		(stroke (width 0) (type default))
-		(uuid "18bc48e9-f79d-5e9a-b02f-470c9ec4c635")
+		(uuid "81c544f6-2699-5e04-b4e3-fc5d8590b947")
 	)
 	(label "DRIVE2"
 		(at 283.21 160.02 180)
@@ -15482,14 +12946,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "0afaf211-e990-5c31-b86f-1bdf738e9ae3")
+		(uuid "517568db-17a8-584b-ae04-3e15cf366ad5")
 	)
 	(wire
 		(pts
 			(xy 153.67 33.02) (xy 151.13 33.02)
 		)
 		(stroke (width 0) (type default))
-		(uuid "50755298-432e-5814-ac00-b648950bb0e5")
+		(uuid "08db33de-9d2b-58dd-ac39-a73eafc51f48")
 	)
 	(label "BUS_12V"
 		(at 151.13 33.02 180)
@@ -15497,29 +12961,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "555220ea-378a-52f3-94e5-b7d033fde506")
-	)
-	(wire
-		(pts
-			(xy 151.13 217.17) (xy 148.59 217.17)
-		)
-		(stroke (width 0) (type default))
-		(uuid "3664e6f7-8962-5141-aa39-1af4b6a59cfb")
-	)
-	(label "DRIVE3"
-		(at 148.59 217.17 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "bd330c7c-777f-5cd0-8c29-c28f36e948d6")
+		(uuid "ae87672b-0097-52b8-a1eb-44527f0e41ee")
 	)
 	(wire
 		(pts
 			(xy 170.18 99.06) (xy 172.72 99.06)
 		)
 		(stroke (width 0) (type default))
-		(uuid "455336a8-1184-52cd-b2eb-3ec005ac0a09")
+		(uuid "cf0826d2-8f17-596b-bfc7-e802b6662bcb")
 	)
 	(label "BUS_B"
 		(at 172.72 99.06 0)
@@ -15527,29 +12976,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "b485f436-1e3b-5589-8ec8-3e85a82f1cfa")
-	)
-	(wire
-		(pts
-			(xy 391.16 222.25) (xy 393.7 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "45dc8413-ac22-59b1-997b-04539572568b")
-	)
-	(label "MON4"
-		(at 393.7 222.25 0)
-		(effects
-			(font (size 1.27 1.27))
-			(justify left bottom)
-		)
-		(uuid "658da7eb-585f-5b7d-af88-a1798d2ac921")
+		(uuid "0ec8728c-e888-5b41-b5d3-8cfbd34f649a")
 	)
 	(wire
 		(pts
 			(xy 363.22 40.64) (xy 365.76 40.64)
 		)
 		(stroke (width 0) (type default))
-		(uuid "3b8582b2-fe2d-543a-98fd-ddd2d932ac2a")
+		(uuid "354463b1-4de9-55f2-986d-72cf22095608")
 	)
 	(label "LED"
 		(at 365.76 40.64 0)
@@ -15557,29 +12991,29 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "559bfee8-bff7-5d13-92ed-283259eeab5d")
+		(uuid "03b131f6-3a58-5e99-a66e-ccfb14143cb0")
 	)
 	(wire
 		(pts
 			(xy 363.22 68.58) (xy 365.76 68.58)
 		)
 		(stroke (width 0) (type default))
-		(uuid "3c8464d4-3d03-5a61-98e5-3cdad8457085")
+		(uuid "230d3b02-93e1-5ba2-8788-e7b5c7e820bb")
 	)
-	(label "MON3"
+	(label "PB4"
 		(at 365.76 68.58 0)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "e62b2dd2-9645-565d-9f2f-9d8181466a83")
+		(uuid "6f7cd69c-bf32-539e-aa06-df08681fac81")
 	)
 	(wire
 		(pts
 			(xy 363.22 66.04) (xy 365.76 66.04)
 		)
 		(stroke (width 0) (type default))
-		(uuid "98182a48-ade5-5ec3-bf16-624a55131737")
+		(uuid "26986126-d22b-53d7-b2d8-1a75cbd80924")
 	)
 	(label "RXD"
 		(at 365.76 66.04 0)
@@ -15587,14 +13021,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "d4d36cd0-5819-550f-a0a1-982d065ee327")
+		(uuid "72f436d8-4d23-5ebb-8f99-25e63a4b0619")
 	)
 	(wire
 		(pts
 			(xy 363.22 63.5) (xy 365.76 63.5)
 		)
 		(stroke (width 0) (type default))
-		(uuid "92fc0bfe-0354-5df2-acb1-e4e7c088348b")
+		(uuid "e3bc82e6-068b-5497-8379-79b243b02f03")
 	)
 	(label "TXD"
 		(at 365.76 63.5 0)
@@ -15602,29 +13036,29 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "a2b2bf29-c75b-5f6b-b984-6d8213f8dae3")
+		(uuid "6264f247-21e6-58f3-81fc-87efe205bd6f")
 	)
 	(wire
 		(pts
 			(xy 363.22 60.96) (xy 365.76 60.96)
 		)
 		(stroke (width 0) (type default))
-		(uuid "dc562a70-9100-5e42-a520-58fe64e2c547")
+		(uuid "b6856fb4-b28e-5a7d-a397-0159efc64ac3")
 	)
-	(label "DRIVE4"
+	(label "PB1"
 		(at 365.76 60.96 0)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "2ff6104a-5948-522f-86e5-97c9024e161e")
+		(uuid "7034aa37-cc2f-52c5-b197-545000dd1728")
 	)
 	(wire
 		(pts
 			(xy 363.22 58.42) (xy 365.76 58.42)
 		)
 		(stroke (width 0) (type default))
-		(uuid "673e67dd-c204-53e0-ad5a-3efcc384d263")
+		(uuid "903d4c2d-1334-56cf-bf26-a0226ac2e4d3")
 	)
 	(label "XDIR"
 		(at 365.76 58.42 0)
@@ -15632,14 +13066,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "b3341184-e10e-5d24-8d6a-4f2f876a712f")
+		(uuid "ca7e4cbd-16f3-56bf-83b7-7fb5ea775842")
 	)
 	(wire
 		(pts
 			(xy 363.22 35.56) (xy 365.76 35.56)
 		)
 		(stroke (width 0) (type default))
-		(uuid "6ebb46d2-c6e9-5414-bc54-6c9eafc68a77")
+		(uuid "37f7792a-e7de-5adf-ba41-2bf984a9c651")
 	)
 	(label "UPDI"
 		(at 365.76 35.56 0)
@@ -15647,29 +13081,29 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "4c9a0580-f69b-5069-8a58-14ee8d0ae85c")
+		(uuid "137316e1-5592-5b50-9427-8e5dc285c555")
 	)
 	(wire
 		(pts
 			(xy 363.22 43.18) (xy 365.76 43.18)
 		)
 		(stroke (width 0) (type default))
-		(uuid "54381842-3f8c-5a82-abd8-cbe2c4de2bb8")
+		(uuid "3c291197-3392-5eae-8e9b-0bb8836c54cb")
 	)
-	(label "MON4"
+	(label "PA3"
 		(at 365.76 43.18 0)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "12864af5-4e7f-5cbf-8806-6124dfe3f5f0")
+		(uuid "abd6ab4f-c6ff-5460-81f2-1b63f7b9e9a0")
 	)
 	(wire
 		(pts
 			(xy 363.22 38.1) (xy 365.76 38.1)
 		)
 		(stroke (width 0) (type default))
-		(uuid "996e0a65-f7ef-510f-874c-2ca1dd0f6134")
+		(uuid "47a51913-be61-5523-a027-9a6293316c00")
 	)
 	(label "MOIST"
 		(at 365.76 38.1 0)
@@ -15677,14 +13111,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "c9445bb0-17c7-5b8a-87fe-dd1942f24917")
+		(uuid "3c49900e-5b2f-5cc6-8fc7-8092b277832a")
 	)
 	(wire
 		(pts
 			(xy 347.98 76.2) (xy 347.98 78.74)
 		)
 		(stroke (width 0) (type default))
-		(uuid "4eb8343e-c354-5e66-b836-ff11229873d1")
+		(uuid "a20f409d-a50e-5993-a9ad-bd8d550dc898")
 	)
 	(symbol
 		(lib_id "GND")
@@ -15697,8 +13131,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "40acb468-bf0e-558d-a860-74122e79a341")
-		(property "Reference" "#PWR022"
+		(uuid "e16c8ce8-56b2-5c8e-84e1-cc9dc05f2101")
+		(property "Reference" "#PWR018"
 			(at 347.98 78.74 0)
 			(hide yes)
 			(show_name no)
@@ -15752,12 +13186,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "d0e5ef12-7654-5ed0-aa20-aa31e28e9df6")
+			(uuid "6cb672d4-47d7-5c7a-947a-d06c3cf7e125")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR022")
+					(reference "#PWR018")
 					(unit 1)
 				)
 			)
@@ -15768,7 +13202,7 @@
 			(xy 347.98 30.48) (xy 347.98 27.94)
 		)
 		(stroke (width 0) (type default))
-		(uuid "ae4013a8-40b6-5460-ac8e-c07ee3130042")
+		(uuid "ee2330cb-faa5-546e-b04e-bb7c2b4f11bd")
 	)
 	(symbol
 		(lib_id "VCC")
@@ -15781,8 +13215,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "c41e2484-053c-5f50-ae9b-3d330731ced0")
-		(property "Reference" "#PWR023"
+		(uuid "78380546-55bd-5c9b-bff3-71f5065212e2")
+		(property "Reference" "#PWR019"
 			(at 347.98 27.94 0)
 			(hide yes)
 			(show_name no)
@@ -15836,12 +13270,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "e3e2f2f5-7a95-5e9d-a7cc-8cc83dde7d9f")
+			(uuid "a2025092-fcf4-5038-bdcb-56999ab4ead2")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR023")
+					(reference "#PWR019")
 					(unit 1)
 				)
 			)
@@ -15852,7 +13286,7 @@
 			(xy 363.22 45.72) (xy 365.76 45.72)
 		)
 		(stroke (width 0) (type default))
-		(uuid "6b336d48-5564-599d-843c-cf4c179308a6")
+		(uuid "5935c8dc-5b3e-5701-92d6-12146e052b25")
 	)
 	(label "DRIVE1"
 		(at 365.76 45.72 0)
@@ -15860,14 +13294,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "9492c769-9061-5694-b58b-81d700102f23")
+		(uuid "2b1c7878-01ab-564f-a96a-a3c891d034d4")
 	)
 	(wire
 		(pts
 			(xy 363.22 48.26) (xy 365.76 48.26)
 		)
 		(stroke (width 0) (type default))
-		(uuid "8e376b36-4db7-5df3-b18a-f34f6bcda713")
+		(uuid "722c196a-c434-5f2a-ae75-2b2a1483de0b")
 	)
 	(label "MON1"
 		(at 365.76 48.26 0)
@@ -15875,14 +13309,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "7bba88c7-7603-5f6e-b193-b91f246dc87a")
+		(uuid "3684a1bc-9180-5563-abc4-0a63cbb96d24")
 	)
 	(wire
 		(pts
 			(xy 363.22 50.8) (xy 365.76 50.8)
 		)
 		(stroke (width 0) (type default))
-		(uuid "2fe3de07-5809-5293-9158-65e3952f6acf")
+		(uuid "76eb5552-7cde-5f4b-aa69-eb10d7832496")
 	)
 	(label "DRIVE2"
 		(at 365.76 50.8 0)
@@ -15890,14 +13324,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "8ea6578e-ac41-577d-a7e0-3a12090de509")
+		(uuid "b1397f6d-aaa4-50f9-bda9-0a28874a2ea4")
 	)
 	(wire
 		(pts
 			(xy 363.22 53.34) (xy 365.76 53.34)
 		)
 		(stroke (width 0) (type default))
-		(uuid "f980ca7a-50a2-53fe-b359-fd85cc0cac07")
+		(uuid "1c6c4522-1bef-5581-ab9f-697b116623a3")
 	)
 	(label "MON2"
 		(at 365.76 53.34 0)
@@ -15905,29 +13339,29 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "1420b72c-a62f-5392-8aab-b5ff41a9b5ad")
+		(uuid "397ba539-5621-5774-a55b-a30e924cfd06")
 	)
 	(wire
 		(pts
 			(xy 363.22 71.12) (xy 365.76 71.12)
 		)
 		(stroke (width 0) (type default))
-		(uuid "d2ebdafb-fd47-5957-99cd-e61d7dc43439")
+		(uuid "d699ed07-1e9c-5681-9191-8e835543ebc5")
 	)
-	(label "DRIVE3"
+	(label "PB5"
 		(at 365.76 71.12 0)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "53087bb0-dabb-5ebe-8765-474a96c547aa")
+		(uuid "a39e54ea-d3a1-5e5f-89ec-979b6da4555d")
 	)
 	(wire
 		(pts
 			(xy 73.66 119.38) (xy 71.12 119.38)
 		)
 		(stroke (width 0) (type default))
-		(uuid "c91fa658-264b-54f2-8cf6-0596a29db64e")
+		(uuid "d462980e-fba0-5f8b-8709-6b518da60bbb")
 	)
 	(symbol
 		(lib_id "GND")
@@ -15940,8 +13374,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "2c004829-5b1f-5a63-947d-bbc537697913")
-		(property "Reference" "#PWR024"
+		(uuid "30d71ecf-f5e7-54e0-a8a9-881e963b9347")
+		(property "Reference" "#PWR020"
 			(at 71.12 119.38 0)
 			(hide yes)
 			(show_name no)
@@ -15995,12 +13429,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "943a08c8-6281-5061-a190-eceacc040237")
+			(uuid "f1a597f6-cf92-5203-987f-b7d12341d50d")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR024")
+					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -16011,7 +13445,7 @@
 			(xy 88.9 119.38) (xy 91.44 119.38)
 		)
 		(stroke (width 0) (type default))
-		(uuid "1e147939-728f-54b1-970d-83d9287eecbc")
+		(uuid "6422de93-57c7-5df4-8257-60e7466b4000")
 	)
 	(symbol
 		(lib_id "VCC")
@@ -16024,8 +13458,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "030f54e4-f994-5973-b555-2dfd629df13b")
-		(property "Reference" "#PWR025"
+		(uuid "3907bc46-437b-55d7-84af-7f10b3e6bf78")
+		(property "Reference" "#PWR021"
 			(at 91.44 119.38 0)
 			(hide yes)
 			(show_name no)
@@ -16079,12 +13513,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "de000d1e-3df7-5fa8-847e-1769bda088d5")
+			(uuid "cdcafa90-a805-570c-b81b-48bc57aac690")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR025")
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -16095,7 +13529,7 @@
 			(xy 81.28 124.46) (xy 81.28 127)
 		)
 		(stroke (width 0) (type default))
-		(uuid "469096b0-49fb-5857-963a-74c1146941d6")
+		(uuid "fe25f058-8a71-5b25-a324-e9c5d07271ae")
 	)
 	(label "MOIST"
 		(at 81.28 127 270)
@@ -16103,29 +13537,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "6164cdcd-f0d0-511f-8acb-dccae90e2aa5")
-	)
-	(wire
-		(pts
-			(xy 256.54 222.25) (xy 259.08 222.25)
-		)
-		(stroke (width 0) (type default))
-		(uuid "e727619f-eaf6-50d2-85c1-1b07b8ae517f")
-	)
-	(label "MON3"
-		(at 259.08 222.25 0)
-		(effects
-			(font (size 1.27 1.27))
-			(justify left bottom)
-		)
-		(uuid "7289fc93-2a5a-556a-92b2-50614ab66827")
+		(uuid "4de1ad53-486e-5fc8-8b3e-ac37fd7d8b17")
 	)
 	(wire
 		(pts
 			(xy 245.11 73.66) (xy 245.11 71.12)
 		)
 		(stroke (width 0) (type default))
-		(uuid "a8ec5299-dcda-5cdc-9f9f-fac060c9cb3e")
+		(uuid "58c9ff9e-cd5b-5933-b705-b14ee1a0d0b7")
 	)
 	(label "BUS_A"
 		(at 245.11 71.12 90)
@@ -16133,14 +13552,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "b8220010-3dce-5051-a6c8-9f07d12f2792")
+		(uuid "da667516-3028-55f9-bb1d-26c80e08bc04")
 	)
 	(wire
 		(pts
 			(xy 245.11 83.82) (xy 245.11 86.36)
 		)
 		(stroke (width 0) (type default))
-		(uuid "c4ccd822-de4c-5672-83ac-2506eeb27ab9")
+		(uuid "34453e4a-e491-575d-8c7f-9036beb00ce2")
 	)
 	(label "BUS_B"
 		(at 245.11 86.36 270)
@@ -16148,14 +13567,29 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "b52cd6e1-44c4-5119-afd1-ee5039bb9766")
+		(uuid "f0f35534-115e-50a4-baa0-c97363ad9205")
+	)
+	(wire
+		(pts
+			(xy 289.56 27.94) (xy 287.02 27.94)
+		)
+		(stroke (width 0) (type default))
+		(uuid "c47e0143-f829-5781-8a3b-73b62f69668d")
+	)
+	(label "PA3"
+		(at 287.02 27.94 180)
+		(effects
+			(font (size 1.27 1.27))
+			(justify right bottom)
+		)
+		(uuid "072469fd-db0b-5cfc-90b0-5a2cfe92b680")
 	)
 	(wire
 		(pts
 			(xy 96.52 132.08) (xy 96.52 134.62)
 		)
 		(stroke (width 0) (type default))
-		(uuid "bd10e918-3889-5787-849e-3d0d21dcffe6")
+		(uuid "77ba4d7b-fae5-59cc-8273-47798fe17bcb")
 	)
 	(symbol
 		(lib_id "GND")
@@ -16168,8 +13602,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "1c40eb23-80eb-5720-b16f-70eda8306761")
-		(property "Reference" "#PWR026"
+		(uuid "53251114-2391-5834-accf-5d1838cb7490")
+		(property "Reference" "#PWR022"
 			(at 96.52 134.62 0)
 			(hide yes)
 			(show_name no)
@@ -16223,46 +13657,31 @@
 			)
 		)
 		(pin "1"
-			(uuid "5f11673f-ea11-5a11-9b3c-b6541c1bd88d")
+			(uuid "fcb20803-3283-5f07-ab01-0e6e94a09070")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR026")
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(wire
-		(pts
-			(xy 289.56 27.94) (xy 287.02 27.94)
-		)
-		(stroke (width 0) (type default))
-		(uuid "f129d805-774e-5c19-85ef-1318fc1276dc")
-	)
-	(label "DRIVE3"
-		(at 287.02 27.94 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "c8cf49b6-36bd-5f07-ba7c-16c9875bbba2")
-	)
 	(no_connect
 		(at 163.83 162.56)
-		(uuid "bef1681e-7c53-5916-98eb-e6529968d422")
+		(uuid "1657b6f7-5f2b-54e7-9fd8-5c24458a8cdf")
 	)
 	(no_connect
 		(at 173.99 162.56)
-		(uuid "78408066-b1c8-50d7-ae8f-4a11dd66610f")
+		(uuid "cd9b0cec-7cda-56f4-90cb-3d3cde01a63b")
 	)
 	(wire
 		(pts
 			(xy 80.01 168.91) (xy 77.47 168.91)
 		)
 		(stroke (width 0) (type default))
-		(uuid "233f5131-7315-5b00-ba66-11d6fe99dc8f")
+		(uuid "71242256-3396-56ec-b79e-c12fcb4b21df")
 	)
 	(label "AC_A"
 		(at 77.47 168.91 180)
@@ -16270,14 +13689,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "61cdbeca-4c06-5c7f-8732-530ad528519e")
+		(uuid "c8f448c9-df32-55bc-bc56-c3e84b3cb678")
 	)
 	(wire
 		(pts
 			(xy 87.63 168.91) (xy 90.17 168.91)
 		)
 		(stroke (width 0) (type default))
-		(uuid "e66a7bc5-0c36-5bf7-820c-463e8f3da543")
+		(uuid "a3f6befd-a04a-5553-807b-ca0a34b6a88a")
 	)
 	(label "AC_COM"
 		(at 90.17 168.91 0)
@@ -16285,22 +13704,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "a2deaef8-e9c7-5259-ba0d-7aab0b9aa1b4")
-	)
-	(no_connect
-		(at 298.45 219.71)
-		(uuid "e5817e12-4c27-5321-a9b4-ecfbdd5b066b")
-	)
-	(no_connect
-		(at 308.61 219.71)
-		(uuid "e20d72bb-ca61-55ea-ba75-1c95a84c364d")
+		(uuid "2814dd43-b6b6-50bd-ae2e-7bf29bec5bc4")
 	)
 	(wire
 		(pts
 			(xy 233.68 116.84) (xy 233.68 119.38)
 		)
 		(stroke (width 0) (type default))
-		(uuid "bce2e47a-5819-522b-81ef-6f6e1da85c35")
+		(uuid "9eb27591-f494-52d5-b1d8-a40c663408f2")
 	)
 	(symbol
 		(lib_id "GND")
@@ -16313,8 +13724,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "ac9d1b2b-d56e-5a6f-bb04-19e407ce9e91")
-		(property "Reference" "#PWR027"
+		(uuid "d51bb513-7572-553e-9c1a-bcee69ed48c6")
+		(property "Reference" "#PWR023"
 			(at 233.68 119.38 0)
 			(hide yes)
 			(show_name no)
@@ -16368,12 +13779,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "4b1b07cd-b999-5d85-8d74-dd024fd56b94")
+			(uuid "e11d40ee-8052-58e8-b970-28ae2196d77a")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR027")
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -16381,25 +13792,10 @@
 	)
 	(wire
 		(pts
-			(xy 391.16 207.01) (xy 388.62 207.01)
-		)
-		(stroke (width 0) (type default))
-		(uuid "527e71c1-9b77-5683-81b3-51738dd94718")
-	)
-	(label "AC_COM"
-		(at 388.62 207.01 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "28a75241-ebc8-5d09-a475-f674c4f6d50c")
-	)
-	(wire
-		(pts
 			(xy 38.1 78.74) (xy 35.56 78.74)
 		)
 		(stroke (width 0) (type default))
-		(uuid "41c123ea-d59d-533d-bcf6-d114709c725d")
+		(uuid "5176d197-4a5f-5333-b42e-9218372d5f13")
 	)
 	(label "SPARE_1"
 		(at 35.56 78.74 180)
@@ -16407,14 +13803,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "d633afb5-93b6-52a2-b860-b56d5067e237")
+		(uuid "a9541e11-be64-5606-b7a9-d23d3eba0d84")
 	)
 	(wire
 		(pts
 			(xy 48.26 78.74) (xy 50.8 78.74)
 		)
 		(stroke (width 0) (type default))
-		(uuid "789885e9-3ab2-5f56-afc7-947c01e4133f")
+		(uuid "84b1d1a0-aad6-50cc-9a5f-fd8a8eac76f1")
 	)
 	(label "AC_A"
 		(at 50.8 78.74 0)
@@ -16422,14 +13818,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "672f8d44-0dfc-59a6-87a1-a0d940ce2133")
+		(uuid "34299345-7963-534a-a25d-b3712ae88f72")
 	)
 	(wire
 		(pts
 			(xy 148.59 76.2) (xy 146.05 76.2)
 		)
 		(stroke (width 0) (type default))
-		(uuid "470a6f21-73d5-5aec-920c-2476b7d0d7f3")
+		(uuid "f6eb1bbe-e62d-50c2-a7be-6bd24bde4b35")
 	)
 	(label "BUS_A"
 		(at 146.05 76.2 180)
@@ -16437,14 +13833,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "e19283a7-da28-57c2-8253-8263724ffa8f")
+		(uuid "c4bcf515-8329-5fef-b31a-2f01707da74a")
 	)
 	(wire
 		(pts
 			(xy 166.37 76.2) (xy 168.91 76.2)
 		)
 		(stroke (width 0) (type default))
-		(uuid "bb7662cd-fa71-527b-9b22-f4a57b90569c")
+		(uuid "ccd7377e-a48e-5297-a973-c8a7f40287a9")
 	)
 	(label "BUS_B"
 		(at 168.91 76.2 0)
@@ -16452,14 +13848,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "ec78dc06-5bfb-564c-82b2-61e54c8373e8")
+		(uuid "8c52f469-e3a9-500b-b633-2f48f8f5140c")
 	)
 	(wire
 		(pts
 			(xy 157.48 80.01) (xy 157.48 82.55)
 		)
 		(stroke (width 0) (type default))
-		(uuid "f5487fae-ce1f-5730-afaf-5c25970627ac")
+		(uuid "18bc48e9-f79d-5e9a-b02f-470c9ec4c635")
 	)
 	(symbol
 		(lib_id "GND")
@@ -16472,8 +13868,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "680f7b4f-7644-5278-a957-32c39bf8985a")
-		(property "Reference" "#PWR028"
+		(uuid "18c649fb-97a2-5908-9805-fedc637d66ca")
+		(property "Reference" "#PWR024"
 			(at 157.48 82.55 0)
 			(hide yes)
 			(show_name no)
@@ -16527,12 +13923,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "a050d42a-e7e8-5a72-8f61-7e621a7cb013")
+			(uuid "164c037f-6c0c-589e-8eff-db6f679202c7")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR028")
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -16543,7 +13939,7 @@
 			(xy 391.16 149.86) (xy 388.62 149.86)
 		)
 		(stroke (width 0) (type default))
-		(uuid "b0c096e9-3631-53f2-a069-9b983ad80276")
+		(uuid "c796d149-4cd9-506b-b841-9916b0d045cf")
 	)
 	(label "AC_COM"
 		(at 388.62 149.86 180)
@@ -16551,44 +13947,14 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "eb9b0eee-a8fd-5517-ba94-588f93d3b587")
-	)
-	(wire
-		(pts
-			(xy 289.56 43.18) (xy 287.02 43.18)
-		)
-		(stroke (width 0) (type default))
-		(uuid "96632ef6-6506-554d-9e6f-c5b6e3261dbc")
-	)
-	(label "MON4"
-		(at 287.02 43.18 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "4950a261-8728-5bc5-8c55-53ec6e3fc51e")
-	)
-	(wire
-		(pts
-			(xy 256.54 207.01) (xy 254 207.01)
-		)
-		(stroke (width 0) (type default))
-		(uuid "dfc65e21-2206-57d0-ac47-e813a6326561")
-	)
-	(label "AC_COM"
-		(at 254 207.01 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "1e63ed94-30ab-5486-b57b-aa4ffca65e27")
+		(uuid "5add8347-a486-5949-8b36-a6b8ab45a062")
 	)
 	(wire
 		(pts
 			(xy 170.18 116.84) (xy 170.18 114.3)
 		)
 		(stroke (width 0) (type default))
-		(uuid "77b2d74b-0b0b-54d7-975a-b73949be43f1")
+		(uuid "9d9cd120-ca90-59dc-aca2-a10bb3e1bff1")
 	)
 	(symbol
 		(lib_id "VCC")
@@ -16601,8 +13967,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "da96b37f-3d44-55ba-824f-7bd97a65da57")
-		(property "Reference" "#PWR029"
+		(uuid "3526ce5c-8a6c-5f0a-8709-54447f012b2a")
+		(property "Reference" "#PWR025"
 			(at 170.18 114.3 0)
 			(hide yes)
 			(show_name no)
@@ -16656,12 +14022,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "e8ecd425-717c-5f18-a643-1fba9f5154f2")
+			(uuid "f86dbd97-baf3-5384-832b-8126fcbc234b")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR029")
+					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -16672,7 +14038,7 @@
 			(xy 170.18 121.92) (xy 170.18 124.46)
 		)
 		(stroke (width 0) (type default))
-		(uuid "a9cdc7ae-4ef7-5c47-875b-575c3022f174")
+		(uuid "45dc8413-ac22-59b1-997b-04539572568b")
 	)
 	(symbol
 		(lib_id "GND")
@@ -16685,8 +14051,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "4a49de48-d0a5-5a0a-9156-4f893442b103")
-		(property "Reference" "#PWR030"
+		(uuid "15669936-1975-50af-b5cb-9baea9c9f07b")
+		(property "Reference" "#PWR026"
 			(at 170.18 124.46 0)
 			(hide yes)
 			(show_name no)
@@ -16740,12 +14106,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "3d8cd22e-c4df-5a1f-8c17-c01282f2eda6")
+			(uuid "5520b551-5954-5edd-b5b0-6d8a2244b018")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR030")
+					(reference "#PWR026")
 					(unit 1)
 				)
 			)
@@ -16753,25 +14119,10 @@
 	)
 	(wire
 		(pts
-			(xy 285.75 217.17) (xy 283.21 217.17)
-		)
-		(stroke (width 0) (type default))
-		(uuid "67605bce-07b9-5cab-a422-e0185cdaab7e")
-	)
-	(label "DRIVE4"
-		(at 283.21 217.17 180)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "00a5ad78-1fa2-504b-8cdc-0062bbeb9185")
-	)
-	(wire
-		(pts
 			(xy 152.4 116.84) (xy 152.4 114.3)
 		)
 		(stroke (width 0) (type default))
-		(uuid "9e081329-1777-5404-a7eb-6aba515aa1c8")
+		(uuid "46df0f04-a981-5da2-b66c-f234b2c79be6")
 	)
 	(label "XDIR"
 		(at 152.4 114.3 90)
@@ -16779,14 +14130,14 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "02de7ce4-6f34-5f20-8bf9-f07b1101fb4b")
+		(uuid "69e18241-8a9a-5e89-8ca1-2717a1d24b6c")
 	)
 	(wire
 		(pts
 			(xy 152.4 121.92) (xy 152.4 124.46)
 		)
 		(stroke (width 0) (type default))
-		(uuid "3cc06676-32f7-5d28-aa29-a5eda6da0c55")
+		(uuid "1209e739-5bc3-5add-b7a9-d3dd5afdf904")
 	)
 	(symbol
 		(lib_id "GND")
@@ -16799,8 +14150,8 @@
 		(in_pos_files yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "9f9d793c-b72f-5377-86d5-fa9d2f4de883")
-		(property "Reference" "#PWR031"
+		(uuid "fdcc0241-9775-5c8f-a738-fb6622124533")
+		(property "Reference" "#PWR027"
 			(at 152.4 124.46 0)
 			(hide yes)
 			(show_name no)
@@ -16854,12 +14205,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "72ba2a1e-b2dc-5248-a861-6e2630e800e5")
+			(uuid "8d77313a-903a-5864-9dce-329d2619268b")
 		)
 		(instances
 			(project "valve-node"
 				(path "/513d9cc1-d27a-514d-a37c-2f1ca04dddfa"
-					(reference "#PWR031")
+					(reference "#PWR027")
 					(unit 1)
 				)
 			)
@@ -16869,283 +14220,199 @@
 		(at 68.58 38.1)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "4d0a695d-40f8-5bad-95fd-420c026338e2")
+		(uuid "c44232cc-a5b0-5c2f-8093-49efb3c391c0")
 	)
 	(junction
 		(at 81.28 124.46)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "9a3a447f-1f70-58ef-9bca-387d739419d6")
+		(uuid "7dd7fc32-fee2-5d75-a41f-3fe2d40468aa")
 	)
 	(junction
 		(at 96.52 124.46)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "ff4d8c32-aa11-5e9d-a22a-0bc64238e88a")
+		(uuid "892e3a6c-1cf9-5523-be65-be995967bcd4")
 	)
 	(junction
 		(at 170.18 33.02)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "331c97d5-3afb-5b88-bb10-941a2e5b2324")
+		(uuid "0761dfb1-1e7b-54c2-bdbc-230f71807395")
 	)
 	(junction
 		(at 194.31 171.45)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "d1959c03-d635-5d48-9320-aa9310e6fc70")
+		(uuid "b5ae6436-c30a-5c6f-be5e-aaa024535782")
 	)
 	(junction
 		(at 194.31 182.88)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "2dcd80d7-e2ec-513e-aff1-07718262bb57")
-	)
-	(junction
-		(at 194.31 228.6)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "d3e67b67-7a1d-581f-b2c4-4a8e880b48a6")
-	)
-	(junction
-		(at 194.31 240.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "b2ba3885-07f1-5895-bb20-d2be7f45238f")
+		(uuid "cc7cef3b-17ac-5307-971c-f5762f3bbe0a")
 	)
 	(junction
 		(at 195.58 33.02)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "74954880-4636-52ff-b9c3-70c3ca0772b5")
+		(uuid "b6906ff6-8322-563b-8c41-83913d459df9")
 	)
 	(junction
 		(at 195.58 50.8)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "bee19db4-5cef-5cc7-a7fd-bb8a1b7789ef")
+		(uuid "fce459e3-fc18-5949-9345-10e812183d70")
 	)
 	(junction
 		(at 195.58 93.98)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "b7b11696-dd89-57bc-9fa0-d3e92b626b75")
+		(uuid "6c0533d8-7061-5f9e-8f22-390371fe024e")
 	)
 	(junction
 		(at 203.2 33.02)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "8af2b84b-7c56-5733-9d88-c8b5cc513625")
+		(uuid "73a54f2e-c864-54ef-b83d-554d7e518335")
 	)
 	(junction
 		(at 204.47 152.4)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "8408eedb-5093-5c5a-8087-2bb927a877f7")
+		(uuid "8bc6bcaf-20b5-50d9-8a0a-2248911c3aef")
 	)
 	(junction
 		(at 204.47 182.88)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "b4ff9b0b-b998-584e-bba3-69cd26916f93")
-	)
-	(junction
-		(at 204.47 209.55)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "81a6619b-1567-5873-979d-443e8575fe65")
-	)
-	(junction
-		(at 204.47 240.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "24244bbe-9758-5d5c-a0c1-7e634013a747")
+		(uuid "141e185b-06c0-50c7-ad36-18d6fcbb28cb")
 	)
 	(junction
 		(at 208.28 50.8)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "5869347e-6e5c-5737-8a51-0d25f691e85c")
+		(uuid "74f55f9c-7b40-53f7-a024-d4a7c3c02361")
 	)
 	(junction
 		(at 220.98 50.8)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "d013860a-5628-552c-88bd-a67620711074")
+		(uuid "d0a8770f-b792-5e34-a957-68093de154eb")
 	)
 	(junction
 		(at 224.79 152.4)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "a0cbe802-1809-5613-a651-5e161672d6fc")
+		(uuid "eb690b40-9a26-55e9-81bc-ebd1baa48503")
 	)
 	(junction
 		(at 224.79 182.88)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "6366ed99-8d6e-5d23-a0e1-3a2ba5a3f3c8")
-	)
-	(junction
-		(at 224.79 209.55)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "56f4c91b-945e-5128-8400-e1d723a7558f")
-	)
-	(junction
-		(at 224.79 240.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a9ef86db-3358-5c44-bafc-0021d724c615")
+		(uuid "ea01f218-5b4b-566f-a577-35f9264a041c")
 	)
 	(junction
 		(at 233.68 78.74)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "f1bdc037-8d54-5fc2-9a34-d1e0c9cbc56e")
+		(uuid "f6855e29-6a70-5634-8acc-31f88bb5da5a")
 	)
 	(junction
 		(at 233.68 109.22)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "6abf9d4f-becb-56f3-8f9b-448d07e303a0")
+		(uuid "74179ace-54da-5ccb-b421-65a803a9f94b")
 	)
 	(junction
 		(at 234.95 152.4)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "a876d4eb-6df1-5a56-97a6-03c369a926f4")
-	)
-	(junction
-		(at 234.95 209.55)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "fbf59ff6-d9b6-5f6d-9b13-0d6c63aa60d8")
+		(uuid "31913070-0b1f-508e-9e4f-5366eae879e3")
 	)
 	(junction
 		(at 238.76 33.02)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "b1fb8180-b344-5479-9853-65810683fd2c")
+		(uuid "16f4eaea-f10a-5d04-85d8-27d3cabda33b")
 	)
 	(junction
 		(at 238.76 50.8)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "57007e4f-e5bf-5f11-a420-ec45a4866aee")
+		(uuid "9c8b60fd-c96a-5dce-839e-f2f59d415d12")
 	)
 	(junction
 		(at 246.38 33.02)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "c549148c-0c50-542e-8a0c-b1d11b73c70c")
+		(uuid "336ec287-4e82-54f3-9bb2-0638d3086c16")
 	)
 	(junction
 		(at 304.8 60.96)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "fd90cf54-4dbe-5347-8cb0-bb3a03eb9f54")
+		(uuid "faa546a0-fe86-5fe6-acb8-466b83364f91")
 	)
 	(junction
 		(at 304.8 63.5)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "fb7b93ec-325b-59f8-b01f-f75e29ceff88")
+		(uuid "4bc74e18-6faa-55c0-afb7-4d710212f7e4")
 	)
 	(junction
 		(at 304.8 66.04)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "9e4fe69e-7631-5958-be9b-0eab76934fe9")
+		(uuid "862f14b9-87af-58c5-825f-da94153b4cfe")
 	)
 	(junction
 		(at 328.93 171.45)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "c7791a92-0ed8-5b56-a712-6fd0cfed8e5e")
+		(uuid "83a4b323-4ab0-5526-a918-a465bbdf7477")
 	)
 	(junction
 		(at 328.93 182.88)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "6e8953d6-3163-550d-adcb-69ce6f011799")
-	)
-	(junction
-		(at 328.93 228.6)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "06284192-e86f-5ddf-bc96-c4134bb516e9")
-	)
-	(junction
-		(at 328.93 240.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "0be71c38-26e8-55e4-99a2-52a29dacf56e")
+		(uuid "a45696f5-dcc1-5d70-94a2-61b8acea406a")
 	)
 	(junction
 		(at 339.09 152.4)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "8bcadb04-af00-564e-8af2-4e1446289ac1")
+		(uuid "9082d9e2-58d8-5911-ba3f-2fc3a328d8b7")
 	)
 	(junction
 		(at 339.09 182.88)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "88eb7758-cc8e-56a1-b874-453896a6f641")
-	)
-	(junction
-		(at 339.09 209.55)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "0b8b61ff-e5fd-5888-b68f-01ce10abf0b9")
-	)
-	(junction
-		(at 339.09 240.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "72bb19c7-ccd9-5af6-935c-7b3d4886776e")
+		(uuid "7e12c018-1c4b-550b-b388-014f14c34572")
 	)
 	(junction
 		(at 347.98 76.2)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "ef4fae89-f2e3-5ed7-a6d8-81fc8268bef8")
+		(uuid "d1a1e076-0c6f-5500-9988-b19069a96082")
 	)
 	(junction
 		(at 359.41 152.4)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "3e6ebb90-ecf5-5e5c-83a6-7b2dde3e15e6")
+		(uuid "5c896188-ec43-5046-9938-618511fa29c9")
 	)
 	(junction
 		(at 359.41 182.88)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "5162732e-0283-5a96-bb79-22295c4e3c70")
-	)
-	(junction
-		(at 359.41 209.55)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "8123701e-3a68-526a-ade0-b2ec8a8f812d")
-	)
-	(junction
-		(at 359.41 240.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "f2996bf3-a9a4-520d-8777-f6d75f45622c")
+		(uuid "4132a7b6-271c-566a-9dc4-131b870bb60c")
 	)
 	(junction
 		(at 369.57 152.4)
 		(diameter 0)
 		(color 0 0 0 0)
-		(uuid "cc700dd9-7cdb-50de-9dc4-c91c3619d931")
-	)
-	(junction
-		(at 369.57 209.55)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "03509299-4178-5073-8ab4-66eb7478dfc5")
+		(uuid "69089e1f-2410-5397-b60a-1e68a1f3aa4f")
 	)
 	(sheet_instances
 		(path "/"

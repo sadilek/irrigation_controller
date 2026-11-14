@@ -5,8 +5,7 @@ A triac switches the valve's 24 VAC. An optotriac fires it, a second optocoupler
 triac reports whether voltage lies across it. Nothing in this module connects the 24 VAC side
 to the logic ground: the two optocouplers are the isolation barrier.
 
-The board instantiates it four times. Outputs 3 and 4 are instantiated with dnp=True: footprints
-without parts.
+The board instantiates it once per valve.
 """
 
 Resistor = Module("@stdlib/generics/Resistor.zen")

@@ -99,10 +99,11 @@ labels and power symbols on the rest and frames the functional blocks
 - Three checks guard the drawing. `schlayout` refuses a drawing in which a net falls apart or two
   nets touch. Zener then compares the schematic with the source (`pcb build -D warnings`). KiCad's
   ERC runs on the result.
-- Zener keeps positions, wires and texts of an existing schematic on the next apply and repairs
-  only what the source changed. It rewrites the file in its own formatting, though, so `make apply`
-  always ends with `make arrange`: the committed schematic is the script's output, byte for byte
-  the same on every run.
+- For such a board `make apply` deletes the schematic, lets Zener create it anew and ends with
+  `make arrange`: the committed schematic is the script's output, byte for byte the same on every
+  run. Zener can also update an existing schematic in place and keep its arrangement, but that
+  path is not used: it reformats the file, and after parts were removed from the source it left a
+  library symbol renamed (`EL3053_1`) with its instances pointing at the old name.
 - Symbols are addressed by their Zener path (`OUT1.R_GATE`), not by reference designator, because
   Zener renumbers references when parts are added.
 
