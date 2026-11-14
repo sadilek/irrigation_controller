@@ -5,8 +5,9 @@ and timing of the bus are in [`bus-protocol.md`](bus-protocol.md) and are not re
 
 Sources, read on 2026-11-14: the owner's build notes of 2025-07-01, the ESPHome configuration of
 the controller, the generation-2 node firmware, the Home Assistant automations and scripts (read
-through the Home Assistant API, nothing changed), and the Hunter documents cited below. None of
-the hardware was opened or measured for this document.
+through the Home Assistant API, nothing changed), the Hunter documents cited below, and the
+owner's statements and product listings for transformer, cable and RS485 module (2026-11-14). None
+of the hardware was opened or measured for this document.
 
 ## Overview
 
@@ -27,11 +28,12 @@ The drawing shows the bus addresses, not the order of the boxes along the cable.
 
 - Wemos D1 Mini (ESP8266) running ESPHome with the `modbus_controller` component; UART on pins D1
   (TX) and D2 (RX).
-- TTL-to-RS485 adapter module with automatic direction switching.
+- TTL-to-RS485 adapter module with automatic direction switching, the same type as in every node
+  (see [RS485 adapter module](#rs485-adapter-module)).
 - USB power supply for the D1 Mini, and from the same supply a step-up converter set to 12 V that
   feeds the nodes over the cable.
-- 24 VAC transformer for the valves, connected straight to the 24 VAC pair. Its rating is not
-  documented.
+- 24 VAC transformer for the valves, connected straight to the 24 VAC pair (see
+  [Transformer](#transformer)).
 - Entities offered to Home Assistant: six valve switches named "Garten Relais 1", "2.1", "2.2",
   "3", "4.1" and "4.2" (node and valve number), one "Controller *n* offline" sensor per node, and a
   restart switch. The new controller has to offer the same switch names so that the Home Assistant
@@ -46,9 +48,10 @@ Four nodes, six valves. Each node sits in a valve box in the ground together wit
 
 | | Generation 1 | Generation 2 |
 |---|---|---|
-| Build | hand-wired modules | custom board drawn in EasyEDA |
+| In use | three nodes | one node |
+| Build | modules hand-soldered on perfboard | custom board, corrected by hand after assembly |
 | Microcontroller | Digispark ATtiny85 board, on-board regulator fed from 12 V | bare ATtiny85, 8 MHz internal oscillator |
-| RS485 | TTL-to-RS485 adapter module, automatic direction switching | automatic direction switching (firmware drives no enable pin) |
+| RS485 | adapter module, same type in every node | the same adapter module |
 | Valve outputs | 1 or 2 relay modules | 2 relay outputs on PB0 and PB1 |
 | Serial | software serial | software serial, RX on PB4, TX on PB3 |
 | Extras | soil moisture sensor | none in the firmware |
@@ -56,7 +59,9 @@ Four nodes, six valves. Each node sits in a valve box in the ground together wit
 | Firmware source | not available | available, 83 lines |
 | Address | compiled in | compiled in (`#define deviceID`) |
 
-Which of the four nodes belongs to which generation is not documented.
+The generation-2 board is deliberately not used as a reference for the new design (owner's
+decision, 2026-11-14): it was a first attempt and its schematic would only anchor the new one.
+What carries over from the existing nodes is the behaviour on the bus, not the circuit.
 
 What the generation-2 firmware does, in full: it configures the Modbus library, then in an endless
 loop processes one pending request and sets each relay pin from its setpoint register. There is no
@@ -64,8 +69,13 @@ watchdog, no timeout, no stored state and no fault handling.
 
 ### Known weaknesses
 
-Found by reading the firmware and the notes; the owner's defect list for the generation-2 board is
-still missing (see [Open points](#open-points)).
+Found by reading the firmware and the notes, and reported by the owner.
+
+- **The bus does not tolerate another node or a terminator.** The owner's attempt to convert a
+  further node made communication with all nodes collapse, and so did adding a termination
+  resistor. A likely cause is described under [RS485 adapter module](#rs485-adapter-module). The
+  new node has to be designed for this bus as it is, because old and new nodes share it during the
+  swap.
 
 - **No close on bus loss.** A node holds an open valve for as long as it has power.
 - **Both outputs can be on at once.** Nothing in the node limits it to one valve.
@@ -80,6 +90,67 @@ still missing (see [Open points](#open-points)).
   owner's calculation, six nodes and one energised relay at the far end of 100 m pull the 12 V down
   to about 6 V. That calculation is the second reason for the one-valve rule, next to the
   transformer.
+
+## Transformer
+
+Evolution BT8-8, a DIN-rail bell transformer: 220 V 50 Hz primary, secondary taps 8 V, 12 V and
+24 V, rated power **8 VA**. Source: the product listing and the print on the housing; no datasheet
+was found.
+
+- 8 VA at 24 V is 0.33 A. One PGV-101 holds at 5.0 VA and pulls 8.9 VA at switch-on (see
+  [Valves](#valves)): one valve fits the rating while holding and exceeds it briefly at switch-on,
+  two valves holding (10 VA) exceed it permanently. This is where the one-valve rule comes from.
+- Open-circuit voltage, regulation and the kind of overload protection are not known.
+- The baseline for the new controller, to feed valves, bus supply and controller from this one
+  transformer, does not fit: a holding valve leaves 3 VA for everything else. The controller
+  specification has to size a new transformer.
+
+## Cable
+
+Mr. Tronic outdoor Cat 6 installation cable, double jacket, cross separator, **AWG 24, conductors
+of copper-clad aluminium (CCA)**. Source: product listing; no datasheet with a resistance figure.
+
+The conductor material matters more than the category. Estimate from the cross-section of AWG 24
+(0.205 mm²) and the resistivities of copper and aluminium, to be replaced by a measurement:
+
+| | Copper AWG 24 | CCA AWG 24 (estimate) |
+|---|---|---|
+| Resistance per conductor | 0.084 Ω/m | about 0.13 Ω/m |
+| Loop resistance at 100 m (out and back) | 17 Ω | about 26 Ω |
+| Drop at 0.21 A (one valve holding) | 3.5 V | about 5.5 V |
+| Drop at 0.37 A (one valve at switch-on) | 6.2 V | about 9.6 V |
+
+- These figures are for a valve at the far end of 100 m; the installed cable is shorter. Even so,
+  a far valve sees clearly less than 24 V at switch-on, before the sag of an 8 VA transformer is
+  counted. That the valves pull in reliably today is an observation, not a margin.
+- The 12 V supply runs over a pair of the same kind; the estimate matches the owner's calculation
+  of a drop to about 6 V at 100 m.
+- CCA strands break more easily than copper when nicked or bent repeatedly and corrode at the
+  contact when moisture reaches it. Terminals and strain relief in the valve box have to allow for
+  that.
+- The spare blue pair could halve the resistance of one supply if it is not needed for a branch.
+
+## RS485 adapter module
+
+Every node and the controller use the same TTL-to-RS485 module with automatic direction switching
+(board marking HW-0519, sold under several brand names). Read from a product photo, not from a
+schematic:
+
+- Bus side: terminals A+, B− and ground, two resettable fuses and three protection diodes.
+- A resistor marked `121` (120 Ω) sits directly at the bus terminals.
+- An 8-pin transceiver and a 14-pin logic chip that derives the driver enable from the transmit
+  data.
+
+**Hypothesis: every module carries a fixed 120 Ω termination.** With five modules on the bus that
+is 24 Ω between the bus wires where a correctly terminated bus has 60 Ω. Modules of this kind
+drive the bus actively only for one logic level and leave the other to their bias resistors,
+which a load this heavy pulls close to zero. That would explain both observations: a sixth module
+or an extra terminator lowers the resistance further and the idle level disappears.
+
+Test, two minutes: measure the resistance between A and B on a loose spare module (expected about
+120 Ω), and between the brown wires of the powered-down bus (expected about 24 Ω). If the
+hypothesis holds, removing the resistor from the modules that are not at the ends of the cable
+repairs the existing bus, and the new node must be built without a fixed terminator.
 
 ## Valves
 
@@ -151,11 +222,9 @@ in the node, so that the rule and the run-time limit hold without Home Assistant
 
 | Point | Needed for | Who |
 |---|---|---|
-| Schematic of the generation-2 board (EasyEDA) | Valve node specification: which parts and protection exist today | Owner provides |
-| Defect list of the generation-2 board | Valve node specification: every known defect needs an answer | Owner provides |
-| Which nodes are generation 1, which generation 2 | Swap order; register map of generation 1 | Owner |
-| Rating of the 24 VAC transformer (VA, fuse) | Whether it stays, and the controller's 24 VAC input | Owner reads the type plate |
-| Conductor cross-section of the buried cable | Voltage drop on 12 V and 24 VAC over 100 m | Owner reads the cable print, or a resistance measurement |
+| Termination on the RS485 modules (test above) | Whether new nodes can join the existing bus at all | Owner, multimeter |
+| Loop resistance of the cable | Voltage at the far valve and on the 12 V supply | Short the spare blue pair at the last box and measure at the controller |
+| Open-circuit voltage of the transformer, and its voltage with one valve open | Sizing of the replacement | Measurement |
 | Current drawn by a node, idle and with a relay energised | 12 V budget during the mixed operation of old and new nodes | Measurement |
 | Solenoid inrush duration and pull-in voltage | Output switch sizing | Measurement on a spare valve |
 | Bus points listed in [`bus-protocol.md`](bus-protocol.md#open-points) | | |

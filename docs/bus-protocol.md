@@ -39,8 +39,10 @@ most 6 boxes.
   the other, so the bus stays a line electrically. The supplies may branch as a star.
 - "A" and "B" are the labels printed on the RS485 adapter modules in use. The letters are not used
   the same way by every transceiver vendor; see [Open points](#open-points).
-- Termination and bias resistors on the existing bus are not documented; see
-  [Open points](#open-points).
+- The cable has AWG 24 conductors of copper-clad aluminium; resistance and voltage drop are in
+  [`existing-system.md`](existing-system.md#cable).
+- Termination: the adapter modules probably each carry a fixed 120 Ω resistor, which would
+  overload the bus; see [`existing-system.md`](existing-system.md#rs485-adapter-module).
 
 ## Serial settings
 
@@ -171,7 +173,7 @@ waits for each response never does.
 | Point | How to close it |
 |---|---|
 | Polarity of the RS485 pair | Measure the idle bus and note which wire is positive against the other, then match that to the pin names in the new transceiver's datasheet. The letters alone do not settle it. Needed before a new transceiver is wired to the brown pair. |
-| Termination and bias on the existing bus | Inspect the adapter modules at both ends and at the controller, or measure the resistance between the bus wires with power off. |
+| Termination and bias on the existing bus | Test described in [`existing-system.md`](existing-system.md#rs485-adapter-module): resistance between A and B on a spare module and on the powered-down bus. |
 | Controller response timeout, retries, request spacing | Record the ESPHome version when the controller is next built, or capture the bus with a USB RS485 adapter. |
-| Registers of the generation-1 nodes | Their source is not available. Read registers 0 to 9 of each generation-1 node with `mbpoll`; an exception 2 marks the end of the map. |
+| Registers of the three generation-1 nodes | Their source is not available. Read registers 0 to 9 of each generation-1 node with `mbpoll`; an exception 2 marks the end of the map. |
 | The value 0xFFFF for "on" | Follows from the ESPHome source (`dev` branch, 2026-11-14), not from a capture. Confirm by reading register 0 while a valve is open. |
