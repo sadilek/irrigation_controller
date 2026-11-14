@@ -53,9 +53,10 @@ Why it has this shape:
   headers sit on one edge of the board, each opposite its entry: the plug is pushed through the
   entry and into the jack along one line, with the nut loose.
 - **14 mm between the board's connector edge and the wall.** The plug stands 9.5 mm out of the
-  jack; its rear end lies just inside the wall. That leaves no room for fingers on the latch. To
-  unplug: loosen the nuts, undo the four board screws, push the cables in and lift the board out
-  with the cables on it.
+  jack; its rear end lies just inside the wall. The jack's latch is on top (seen in the 3D model
+  of the RJHSE-5080 that the footprint carries), so with the lid off it is pressed from above. To
+  unplug: take off nut, washer and insert, press the latch, pull the cable out through the entry,
+  the way it went in. The board stays in place.
 - **Lid screws in the corners, inside the outline.** The cavity's corners are rounded with 8 mm.
   The gasket follows that curve, and each corner outside it is a solid pillar that takes a
   heat-set insert. Nothing stands out beyond the rim except the nuts.
@@ -195,7 +196,6 @@ layout, `make collide` uses the real board STEP.
 6. **Plugs are not in the collision check.** The RJ45 plugs are drawn in the pictures; the valve
    screw plugs are not modelled, and the 14 mm in front of the headers is the allowance for them.
    If a plug needs more, the headers move back on the board.
-7. **A plug cannot be pulled with the board in place.** See [The box](#the-box).
 
 ## To measure
 
