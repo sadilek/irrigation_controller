@@ -4,9 +4,10 @@ The sealed box the valve node lies in, and the board outline that follows from i
 the mounting holes and the connector positions in
 [`boards/valve-node/mech.json`](../boards/valve-node/mech.json) are the input to the layout.
 
-Status: proposal, 2026-11-14, second version: the owner asked for a box the size of a
-surface-mounted junction box and dropped the moisture sensor's cable entry. Nothing is printed
-yet. Three dimensions are assumed until the owner
+Status: approved by the owner on 2026-11-14 as input to the layout (second version: a box the
+size of a surface-mounted junction box, no cable entry for the moisture sensor). The layout exists
+now ([`valve-node-layout.md`](valve-node-layout.md)); it moved the valve headers by 0.2 mm each.
+Nothing is printed yet; the test fit is part of the layout hold point. Three dimensions are assumed until the owner
 has measured them ([To measure](#to-measure)); they are parameters at the top of
 [`enclosure.py`](../boards/valve-node/enclosure.py), and one command rebuilds everything.
 
@@ -127,7 +128,7 @@ every side. No bought nut fits, and none is meant to.
 | Clearance to the walls | 2 mm on three sides, 14 mm on the connector edge | Board drops in without tilting; the rounded corners of the cavity clear the board's corners by 0.8 mm |
 | Mounting holes | (4, 4), (92, 4), (4, 40), (92, 26), 3.2 mm for M3 | The fourth sits behind the valve headers, which occupy that corner |
 | Bus jacks | Front face on the bottom edge (y = 44), centres at x = 17 and x = 51 | 34 mm apart: two 33 mm nuts side by side. Fixed: the entries are aligned with them |
-| Valve headers | Front face on the bottom edge, centres at x = 79.92 and x = 90.08 | Their entry is at x = 85. May move along the edge; the wires are flexible |
+| Valve headers | Front face on the bottom edge, centres at x = 79.72 and x = 90.28 | Their entry is at x = 85. May move along the edge; the wires are flexible. The layout set them 0.4 mm apart instead of body against body |
 | Keep-out, top | 7 mm circle around each hole | Screw head |
 | Keep-out, bottom | 9 mm circle around each hole | Standoff, 8 mm |
 | Height above the board | 18 mm | Lid underside at 20.4 mm |
@@ -170,14 +171,16 @@ of the print; the play is sized for that.
 | Check | Result |
 |---|---|
 | Every part is a valid solid | `enclosure.py` stops otherwise |
-| Board outline with connector blocks against every part (`make collide BOARD=valve-node`) | no overlap |
+| Populated board (STEP from the layout) against every part (`make collide BOARD=valve-node`) | no overlap |
 | The same with the lid lowered by 8 mm into the jacks (`make selftest`) | overlap reported, as it must be |
 | Nut against boss thread | By construction: the nut's thread is the boss's thread grown by 0.3 mm. OpenCascade returns wrong volumes when two thread solids are intersected, so this pair is not checked by the script |
 | Soft parts against stiff parts | Not checked: gasket and inserts are meant to be compressed |
 
-Until the layout exists, the collision check runs against `build/valve-node/envelope.step`: the
-board outline from `mech.json` with each connector as a block of its datasheet size. With a
-layout, `make collide` uses the real board STEP.
+The collision check uses the board STEP that `make fab` writes. Without it (a board that has no
+layout yet) it falls back to `build/valve-node/envelope.step`: the board outline from `mech.json`
+with each connector as a block of its datasheet size. The same blocks are the printable
+`board-dummy.stl` for the test fit ([`valve-node-layout.md`](valve-node-layout.md), "Test fit").
+The pictures on this page show the real board.
 
 ## What does not hold up yet
 
@@ -189,9 +192,9 @@ layout, `make collide` uses the real board STEP.
 3. **The nuts are 1 mm apart.** They turn, but fingers do not fit between them; each is gripped
    from above and below.
 4. **Four lid screws for 320 mm of gasket.** See [Seal between base and lid](#seal-between-base-and-lid).
-5. **The height of the jack's plug opening is assumed** (7 mm above the board, the middle of a
-   13.2 mm body). The bore is 15.5 mm for a 6 mm cable, so a few millimetres do not matter; the
-   board STEP will show it.
+5. **The height of the jack's plug opening was assumed** (7 mm above the board, the middle of a
+   13.2 mm body). The section picture above now shows the jack's own 3D model: the drawn plug
+   meets the opening. The bore is 15.5 mm for a 6 mm cable, so a few millimetres do not matter.
 6. **Plugs are not in the collision check.** The RJ45 plugs are drawn in the pictures; the valve
    screw plugs are not modelled, and the 14 mm in front of the headers is the allowance for them.
    If a plug needs more, the headers move back on the board.
@@ -216,6 +219,6 @@ The owner, with a caliper, before the first print. Each value is one line at the
 - Connectors are keyed by their name in the Zener source (`J_IN`, `OUT1.J`), because Zener
   renumbers reference designators.
 - The rotation is 0° for all four connectors: the footprints' plug side is +y, which is the
-  board's bottom edge. Check it in the first board render.
+  board's bottom edge. Confirmed in the board render and in the section picture above.
 - When the layout moves a connector that is not `fixed`, it changes `mech.json`, and
   `make enclosure collide` has to pass again.

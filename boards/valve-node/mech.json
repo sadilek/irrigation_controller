@@ -7,8 +7,8 @@
     "_comment": "Keyed by the part's name in the Zener source. `at` is the footprint origin, `rotation` is KiCad's (counter-clockwise, degrees), `faces` is the board edge the plug leaves through. `fixed: true` means the enclosure's cable entry is aligned with it; the others may move along their edge.",
     "J_IN": {"at": [17.0, 35.49], "rotation": 0, "faces": "bottom", "fixed": true},
     "J_OUT": {"at": [51.0, 35.49], "rotation": 0, "faces": "bottom", "fixed": true},
-    "OUT1.J": {"at": [79.92, 32.84], "rotation": 0, "faces": "bottom", "fixed": false},
-    "OUT2.J": {"at": [90.08, 32.84], "rotation": 0, "faces": "bottom", "fixed": false}
+    "OUT1.J": {"at": [79.72, 32.84], "rotation": 0, "faces": "bottom", "fixed": false},
+    "OUT2.J": {"at": [90.28, 32.84], "rotation": 0, "faces": "bottom", "fixed": false}
   },
   "keepouts": [
     {"name": "screw head H1", "side": "top", "shape": "circle", "at": [4.0, 4.0], "diameter": 7.0},

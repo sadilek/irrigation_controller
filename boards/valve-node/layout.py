@@ -1,0 +1,367 @@
+"""Placement and routing of the valve node. Run via `make layout BOARD=valve-node`.
+
+The reasoning for every decision is in docs/valve-node-layout.md. In short:
+
+  * Logic on the left, 24 VAC on the right. The four optocouplers stand in one column at x = 64
+    and are the only parts that span the isolation gap.
+  * The eight bus wires pass from jack to jack. Logic and the spare pair run in a band of lanes
+    north of the jack pins, the 24 VAC pair south of them, +12 V on the other layer above it.
+  * Everything that carries 24 VAC, the pass-through and the surge paths are drawn here by
+    coordinates. What is left on the logic side is connected by the grid router
+    (tools/gridroute.py), inside a region that ends before any of that copper.
+
+Coordinates: millimetres from the board's top-left corner, x right, y down.
+"""
+import os
+
+import pcbnew
+from kilayout import Layout, write_rules
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+F, B = pcbnew.F_Cu, pcbnew.B_Cu
+
+# --- Rules --------------------------------------------------------------------------------------
+# Net classes (docs/valve-node-spec.md, "Layout rules"). KiCad takes the larger clearance of two
+# classes, so 0.5 mm holds inside class AC and between AC and the spare pair.
+CLASSES = {
+    "Power": {"clearance": 0.2, "track_width": 0.4},
+    "AC": {"clearance": 0.5, "track_width": 0.8, "via_diameter": 0.8, "via_drill": 0.4},
+    "Spare": {"clearance": 0.2, "track_width": 0.5, "via_diameter": 0.8, "via_drill": 0.4},
+    "BusPower": {"clearance": 0.2, "track_width": 0.8, "via_diameter": 0.8, "via_drill": 0.4},
+}
+PATTERNS = [
+    ("AC_*", "AC"),  # the 24 VAC pair and the fused valve common
+    ("VALVE*", "AC"),
+    ("OUT?.GATE", "AC"),
+    ("OUT?.OPTO", "AC"),
+    ("OUT?.SNUB", "AC"),
+    ("OUT?.MON_LED", "AC"),
+    ("OUT?.NC_U_DRV_NC5", "AC"),  # the optotriac's substrate pin, on the 24 VAC side of the part
+    ("SPARE_?", "Spare"),  # carries 24 VAC once its two solder jumpers are bridged
+    ("BUS_12V", "BusPower"),
+    ("V12_F", "BusPower"),
+    ("VIN", "Power"),
+    ("+5V", "Power"),
+    ("GND", "Power"),
+]
+RULES = """
+(version 1)
+
+# 24 VAC keeps 3 mm from everything that is not 24 VAC (docs/valve-node-spec.md, "Layout rules").
+(rule "24 VAC to logic"
+	(condition "A.NetClass == 'AC' && B.NetClass != 'AC' && B.NetClass != 'Spare'")
+	(constraint clearance (min 3mm)))
+
+# The spare pair can be bridged to the 24 VAC pair, so outside the pass-through it keeps the same
+# distance. On the pass-through it runs between the logic lanes, as it does in the cable.
+(rule "spare pair to logic"
+	(condition "A.NetClass == 'Spare' && B.NetClass != 'AC' && B.NetClass != 'Spare'")
+	(constraint clearance (min 3mm)))
+(rule "spare pair to logic on the pass-through"
+	(condition "A.NetClass == 'Spare' && B.NetClass != 'AC' && B.NetClass != 'Spare' && A.intersectsArea('passthrough')")
+	(constraint clearance (min 0.2mm)))
+
+# Inside a jack the pins are 1.02 mm apart: the one place where 24 VAC and logic are closer than
+# 3 mm. Both items have to lie in the pin field for the exception to apply.
+(rule "24 VAC to logic at the jack pins"
+	(condition "A.NetClass == 'AC' && B.NetClass != 'AC' && B.NetClass != 'Spare' && A.intersectsArea('jack') && B.intersectsArea('jack')")
+	(constraint clearance (min 0.4mm)))
+
+# Keep-outs. KiCad 10.0.1 did not report a track inside a rule area that forbids tracks
+# (`make selftest` found that), so each keep-out is also a rule of its own here.
+(rule "no copper under the optocouplers"
+	(condition "A.intersectsArea('isolation')")
+	(constraint disallow track via zone))
+(rule "screw heads and standoffs"
+	(condition "A.intersectsArea('keepout-top') || A.intersectsArea('keepout-bottom')")
+	(constraint disallow track via))
+
+# An open solder jumper is two pads 0.3 mm apart, whatever nets they are on.
+(rule "solder jumper gap"
+	(condition "A.Type == 'Pad' && B.Type == 'Pad' && A.memberOfFootprint('JP*') && B.memberOfFootprint('JP*')")
+	(constraint clearance (min 0.2mm)))
+"""
+write_rules(HERE, "valve-node", CLASSES, PATTERNS, RULES)
+
+L = Layout(HERE, "valve-node")
+L.clear()
+L.outline_from_mech()
+L.place_mounting_holes()
+L.place_connectors()  # J_IN, J_OUT, OUT1.J, OUT2.J: fixed by the enclosure (mech.json)
+
+# --- Placement: 24 VAC side ---------------------------------------------------------------------
+X_OPTO = 64.0  # the isolation gap runs along this line; logic pins at x - 4.76, 24 VAC pins at x + 4.76
+X_AC = X_OPTO + 4.76
+X_LOGIC = X_OPTO - 4.76
+X_Q = 79.0  # triacs: leads towards the optocouplers, tab towards the board's right edge
+
+# One band per output. Output 1 is the lower one, straight above its valve header.
+# y of the optotriac; the monitor optocoupler sits 7.04 mm above it, the triac level with its gate pin.
+BANDS = {"OUT1": 24.79, "OUT2": 10.70}
+for out, y in BANDS.items():
+    L.place(out + ".U_DRV", X_OPTO, y, rot=0, label=False)
+    L.place(out + ".U_MON", X_OPTO, y - 7.04, rot=180, label=False)
+    L.place(out + ".Q", X_Q, y + 0.26, rot=0, label=False)
+    L.place(out + ".R_GK", 71.4, y + 0.26, rot=90, label=False)
+    L.place(out + ".R_GATE", 73.2, y - 4.39, rot=180, label=False)
+    L.place(out + ".R_MON", 73.2, y - 6.49, rot=180, label=False)
+    L.place(out + ".R_SNUB", 77.0, y - 4.39, rot=0, label=False)
+    L.place(out + ".C_SNUB", 80.9, y - 4.39, rot=0, label=False)
+    L.place(out + ".R_LED", 56.5, y - 2.54, rot=0, label=False)
+
+# 24 VAC protection, right where the pair leaves the OUT jack.
+L.place("D4", 63.0, 39.5, rot=90, label=False)
+L.place("F2", 68.5, 40.0, rot=0, label=False)
+L.place("JP_SPARE_2", 63.0, 32.4, rot=270, label=False)
+L.place("JP_SPARE_1", 67.5, 35.5, rot=270, label=False)
+
+# --- Placement: bus protection between the jacks -------------------------------------------------
+L.place("D3", 32.0, 25.0, rot=90, label=False)
+L.place("D1", 33.0, 31.0, rot=0, label=False)
+L.place("F1", 36.0, 36.5, rot=90, label=False)
+L.place("D2", 40.0, 32.0, rot=270, label=False)
+
+# --- Placement: logic ---------------------------------------------------------------------------
+# Supply: series diode D2 (between the jacks), input capacitor, regulator, output capacitor.
+L.place("C_VIN", 38.5, 26.2, rot=180, label=False)
+L.place("U_REG", 43.0, 21.6, rot=90, label=False)
+L.place("C_5V", 48.0, 24.6, rot=0, label=False)
+# Microcontroller: outputs and monitors leave towards the optocouplers, the UART towards the transceiver.
+L.place("U_MCU", 48.5, 8.5, rot=180, label=False)
+L.place("C_MCU", 53.0, 8.1, rot=270, label=False)
+L.place("SW_ADDR", 40.5, 13.4, rot=180, label=False)
+L.place("J_UPDI", 49.5, 13.6, rot=90, label=False)
+L.place("R_LED", 53.2, 17.9, rot=0, label=False)
+L.place("D_STATUS", 56.2, 17.9, rot=180, label=False)
+# RS485: transceiver, bias footprints, A/B swap jumpers, termination, then the TVS at the lanes.
+L.place("U_RS485", 37.9, 6.4, rot=180, label=False)
+L.place("C_RS485", 33.0, 6.4, rot=90, label=False)
+L.place("R_XDIR", 43.8, 4.6, rot=0, label=False)
+L.place("R_BIAS_A", 30.4, 4.4, rot=0, label=False)
+L.place("R_BIAS_B", 30.4, 8.4, rot=0, label=False)
+L.place("JP_A", 29.5, 19.6, rot=0, label=False)
+L.place("JP_B", 34.4, 19.6, rot=0, label=False)
+L.place("R_TERM", 27.2, 25.2, rot=0, label=False)
+L.place("JP_TERM", 27.2, 22.6, rot=0, label=False)
+# Test pads: rails, and the five unused pins next to the microcontroller.
+L.place("TP_5V", 52.5, 21.0, label=False)
+L.place("TP_GND", 52.5, 24.6, label=False)
+L.place("TP_VIN", 37.0, 22.6, label=False)
+L.place("TP_PB4", 47.0, 2.6, label=False)
+L.place("TP_PB5", 49.6, 2.6, label=False)
+L.place("TP_PB1", 43.4, 8.0, label=False)
+L.place("TP_PA3", 54.0, 5.2, label=False)
+L.place("TP_PA1", 55.2, 10.4, label=False)
+L.check_all_placed()
+
+# --- Silkscreen ---------------------------------------------------------------------------------
+# Reference designators are hidden (60 parts on this board leave no room for them; the assembly
+# drawing has them). What is printed is what a person with the board in hand needs.
+S = pcbnew.B_SilkS
+L.text("BUS IN", 17.0, 25.4, 1.2)
+L.text("24VAC! NO ETHERNET", 17.0, 27.4, 0.8)
+L.text("BUS OUT", 51.0, 27.5, 1.0)
+L.text("V1", 79.7, 29.9, 1.0)
+L.text("V2", 90.3, 29.9, 1.0)
+L.text("SPARE", 69.4, 35.5, 0.8, align="left")
+L.text("SWAP A/B", 32.0, 17.4, 0.8)
+L.text("TERM", 24.9, 22.6, 0.8, align="right")
+L.text("BIAS", 30.4, 6.4, 0.8)
+L.text("ADDR", 40.5, 18.1, 0.8)
+for label, x in (("UPDI", 49.5), ("5V", 52.04), ("GND", 54.58)):
+    L.text(label, x, 16.1, 0.8)
+for label, name, dx, dy in (("5V", "TP_5V", 0, -1.5), ("GND", "TP_GND", 2.2, 0), ("VIN", "TP_VIN", -2.2, 0), ("PB4", "TP_PB4", -2.4, 0),
+                            ("PB5", "TP_PB5", 2.4, 0), ("PB1", "TP_PB1", 0, -1.6), ("PA3", "TP_PA3", 0, -1.5), ("PA1", "TP_PA1", -2.1, 0)):
+    x, y = L.pad(name, 1)
+    L.text(label, x + dx, y + dy, 0.8)
+L.text("VALVE NODE", 14.0, 11.0, 1.5)
+L.text("rev A", 14.0, 13.6, 1.0)
+L.text("JLCJLCJLCJLC", 18.0, 12.0, 1.0, layer=S)  # where JLCPCB may print its order number
+L.ruler(23.0, 50.0)
+
+# --- Areas --------------------------------------------------------------------------------------
+W, H = L.mech["board"]["width"], L.mech["board"]["height"]
+
+
+def rect(x1, y1, x2, y2):
+    return [(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
+
+
+# No copper on either layer under the optocouplers, between their pin rows.
+L.rule_area("isolation", [F, B], rect(X_LOGIC + 1.36, -1, X_AC - 1.36, 29.0))
+# Named areas the custom rules refer to; they forbid nothing themselves.
+JACK_Y = (33.5, 42.2)
+L.rule_area("jack", [F, B], rect(12.3, JACK_Y[0], 22.9, JACK_Y[1]), tracks=False, vias=False, pours=False)
+L.rule_area("jack", [F, B], rect(46.3, JACK_Y[0], 56.4, JACK_Y[1]), tracks=False, vias=False, pours=False)
+L.rule_area("passthrough", [F, B], rect(12.0, 26.3, 52.3, 37.4), tracks=False, vias=False, pours=False)
+L.keepouts_from_mech()  # screw heads on top, standoffs below
+
+# --- Bus pass-through ---------------------------------------------------------------------------
+p = {n: L.pad("J_IN", n) for n in range(1, 9)}  # 1 AC_A, 2 AC_B, 3 +12 V, 4 spare 1, 5 spare 2, 6 GND, 7 B, 8 A
+q = {n: L.pad("J_OUT", n) for n in range(1, 9)}
+SQUEEZE_Y = 33.4  # north of this a track is clear of the jack's pad rows
+IN_EDGE, OUT_EDGE = 23.2, 56.7  # where a 24 VAC track leaves the pin field of a jack ("jack" areas)
+PASS_EDGE = 53.0  # where the spare pair leaves the pass-through area
+
+# North of the pins, bottom layer: one lane per wire, nested so that nothing crosses at the IN jack.
+# At the OUT jack each lane ends in a via and drops to its pin on the top layer. The two pins of
+# the inner row (B, spare 2) pass between two pads of the outer row with a 0.2 mm track.
+LANE = {"BUS_A": 26.9, "BUS_B": 27.6, "GND": 28.6, "SPARE_2": 29.9, "SPARE_1": 31.0}
+for net, pin, width, inner_row in (("BUS_A", 8, 0.3, False), ("BUS_B", 7, 0.3, True), ("GND", 6, 0.8, False), ("SPARE_2", 5, 0.5, True)):
+    y = LANE[net]
+    for jack, layer in ((p, B), (q, F)):
+        x, ypin = jack[pin]
+        if inner_row:
+            L.track(net, layer, [(x, ypin), (x, SQUEEZE_Y)], 0.2)
+            L.track(net, layer, [(x, SQUEEZE_Y), (x, y)], width)
+        else:
+            L.track(net, layer, [(x, ypin), (x, y)], width)
+    L.track(net, B, [(p[pin][0], y), (q[pin][0], y)], width)
+    L.via(net, q[pin][0], y, *((0.8, 0.4) if width > 0.3 else (0.6, 0.3)))
+L.track("SPARE_1", B, [p[4], (p[4][0], LANE["SPARE_1"]), (q[4][0], LANE["SPARE_1"]), q[4]], 0.5)
+
+# South of the pins: the 24 VAC pair on the bottom layer, +12 V above it on the top layer.
+Y_12V, Y_ACB, Y_ACA = 41.3, 41.5, 42.9
+L.track("BUS_12V", F, [p[3], (p[3][0], Y_12V), (IN_EDGE, Y_12V)], 0.8)
+L.track("BUS_12V", F, [(IN_EDGE, Y_12V), (45.7, Y_12V)], 0.8)
+L.track("BUS_12V", F, [(45.7, Y_12V), (q[3][0], Y_12V), q[3]], 0.8)
+
+X_ACB_UP = 59.8  # 24 VAC b passes the OUT jack's peg and comes back to its pin from the right
+L.track("AC_A", B, [p[1], (IN_EDGE, p[1][1])], 0.8)
+L.track("AC_A", B, [(IN_EDGE, p[1][1]), (25.9, p[1][1]), (25.9, Y_ACA), (65.3, Y_ACA)], 0.8)
+L.track("AC_B", B, [p[2], (IN_EDGE, p[2][1])], 0.8)
+L.track("AC_B", B, [(IN_EDGE, p[2][1]), (27.2, p[2][1]), (27.2, Y_ACB), (X_ACB_UP, Y_ACB), (X_ACB_UP, q[2][1]), (OUT_EDGE, q[2][1])], 0.8)
+L.track("AC_B", B, [(OUT_EDGE, q[2][1]), q[2]], 0.8)
+
+# --- 24 VAC protection and spare jumpers, right of the OUT jack ---------------------------------
+d4_a, d4_b = L.pad("D4", 1), L.pad("D4", 2)
+f2_a, f2_com = L.pad("F2", 1), L.pad("F2", 2)
+# 24 VAC a reaches the OUT jack's pin through the TVS pad.
+L.via("AC_A", 65.3, Y_ACA, 0.8, 0.4)
+L.track("AC_A", F, [(65.3, Y_ACA), (65.3, 41.3), d4_a], 0.8)
+L.track("AC_A", F, [d4_a, (60.9, d4_a[1]), (60.9, q[1][1]), (OUT_EDGE, q[1][1])], 0.8)
+L.track("AC_A", F, [(OUT_EDGE, q[1][1]), q[1]], 0.8)
+L.track("AC_A", F, [(65.3, 41.3), (f2_a[0], 41.3)], 0.8)
+# 24 VAC b: jumper pad, via, TVS pad in one line; the bottom-layer trunk to the outputs starts at the via.
+jp2_sp, jp2_ac = L.pad("JP_SPARE_2", 1), L.pad("JP_SPARE_2", 2)
+L.track("AC_B", F, [(jp2_ac[0], jp2_ac[1] + 0.2), d4_b], 0.8)  # starts on the far half of the pad: 0.5 mm to the other one
+L.via("AC_B", jp2_ac[0], 34.8, 0.8, 0.4)
+X_TRUNK = 72.7
+L.track("AC_B", B, [(X_ACB_UP, q[2][1]), (jp2_ac[0], q[2][1]), (jp2_ac[0], 34.8)], 0.8)
+L.track("AC_B", B, [(jp2_ac[0], q[2][1]), (X_TRUNK, q[2][1]), (X_TRUNK, BANDS["OUT2"] - 8.31)], 0.8)
+# Fused valve common, under the valve headers to pin 2 of each.
+com1, com2 = L.pad("OUT1.J", 2), L.pad("OUT2.J", 2)
+L.track("AC_COM", F, [f2_com, (com1[0], f2_com[1]), com1], 0.8)
+L.track("AC_COM", F, [(com1[0], f2_com[1]), (com2[0], f2_com[1]), com2], 0.8)
+# Spare pair: its lanes continue to the two open jumpers.
+jp1_sp, jp1_ac = L.pad("JP_SPARE_1", 1), L.pad("JP_SPARE_1", 2)
+L.track("SPARE_2", B, [(q[5][0], LANE["SPARE_2"]), (PASS_EDGE, LANE["SPARE_2"])], 0.5)
+L.track("SPARE_2", B, [(PASS_EDGE, LANE["SPARE_2"]), (65.0, LANE["SPARE_2"])], 0.5)
+L.via("SPARE_2", 65.0, LANE["SPARE_2"], 0.8, 0.4)
+L.track("SPARE_2", F, [(65.0, LANE["SPARE_2"]), (65.0, jp2_sp[1]), jp2_sp], 0.5)
+L.track("SPARE_1", B, [(q[4][0], LANE["SPARE_1"]), (PASS_EDGE, LANE["SPARE_1"])], 0.5)
+L.track("SPARE_1", B, [(PASS_EDGE, LANE["SPARE_1"]), (jp1_sp[0], LANE["SPARE_1"]), (jp1_sp[0], 32.6)], 0.5)
+L.via("SPARE_1", jp1_sp[0], 32.6, 0.8, 0.4)
+L.track("SPARE_1", F, [(jp1_sp[0], 32.6), jp1_sp], 0.5)
+L.track("AC_A", F, [(jp1_ac[0], jp1_ac[1] + 0.2), (jp1_ac[0], 37.3), (f2_a[0], 38.5), f2_a], 0.8)
+
+# --- Valve outputs ------------------------------------------------------------------------------
+for out, y in BANDS.items():
+    P = lambda part, pin: L.pad(out + "." + part, pin)
+    gate, opto, drv_gate, drv_opto = out + ".GATE", out + ".OPTO", P("U_DRV", 4), P("U_DRV", 6)
+    # Gate: optotriac to triac in a straight line, the gate-to-A1 resistor beside it.
+    L.track(gate, F, [drv_gate, P("Q", 3)], 0.8)
+    L.track(gate, F, [P("R_GK", 1), (P("R_GK", 1)[0], drv_gate[1])], 0.8)
+    # 24 VAC b comes up from the bottom-layer trunk next to the triac's A1 lead.
+    gk = P("R_GK", 2)
+    L.via("AC_B", X_TRUNK, gk[1], 0.8, 0.4)
+    L.track("AC_B", F, [gk, (X_TRUNK, gk[1]), (X_TRUNK, P("Q", 1)[1]), P("Q", 1)], 0.8)
+    mon_ac = P("U_MON", 2)
+    L.track("AC_B", F, [mon_ac, (70.9, mon_ac[1])], 0.8)
+    L.via("AC_B", 70.9, mon_ac[1], 0.8, 0.4)
+    L.track("AC_B", B, [(70.9, mon_ac[1]), (X_TRUNK, mon_ac[1])], 0.8)
+    snub_ac = P("C_SNUB", 2)
+    L.track("AC_B", F, [snub_ac, (83.2, snub_ac[1])], 0.8)
+    L.via("AC_B", 83.2, snub_ac[1], 0.8, 0.4)
+    L.track("AC_B", B, [(83.2, snub_ac[1]), (X_TRUNK, snub_ac[1])], 0.8)
+    # Optotriac and monitor to their resistors in the row above the triac.
+    r_opto, r_mon = P("R_GATE", 2), P("R_MON", 2)
+    L.track(opto, F, [drv_opto, (69.9, drv_opto[1]), (69.9 + drv_opto[1] - r_opto[1], r_opto[1]), r_opto], 0.8)
+    mon_led = P("U_MON", 1)
+    L.track(out + ".MON_LED", F, [mon_led, (70.6, mon_led[1]), (70.6 + mon_led[1] - r_mon[1], r_mon[1]), r_mon], 0.8)
+    # The valve node: both resistors, the snubber and the triac's tab.
+    valve = "VALVE" + out[-1]
+    L.track(valve, F, [P("R_MON", 1), P("R_GATE", 1), P("R_SNUB", 1), (P("R_SNUB", 1)[0], y - 3.0), (77.6, y - 2.2), (78.6, y - 1.2)], 0.8)
+    L.track(out + ".SNUB", F, [P("R_SNUB", 2), P("C_SNUB", 1)], 0.8)
+
+# Tab to valve header: a wide track inside a copper area that also cools the triac
+# (ST DocID7699 Rev 9: 70 K/W assumes 0.5 cm2 of copper under the tab).
+tab1, tab2 = L.pad("OUT1.Q", 2), L.pad("OUT2.Q", 2)
+v1, v2 = L.pad("OUT1.J", 1), L.pad("OUT2.J", 1)
+L.track("VALVE1", F, [tab1, (78.5, tab1[1]), (78.5, 31.0), v1], 1.5)
+L.zone("VALVE1", F, outline=[(76.4, 21.6), (84.0, 21.6), (84.0, 28.6), (80.2, 28.6), (80.2, 34.2), (76.0, 34.2), (76.0, 28.6), (76.4, 28.6)], solid=True)
+L.track("VALVE2", F, [tab2, (86.7, tab2[1]), (86.7, 31.5), v2], 1.5)
+L.zone("VALVE2", F, outline=[(76.4, 7.6), (88.2, 7.6), (88.2, 34.2), (85.2, 34.2), (85.2, 14.4), (76.4, 14.4)], solid=True)
+
+# --- Bus protection between the jacks -----------------------------------------------------------
+# RS485: each lane rises through a via straight into its TVS pad; the TVS's ground pad goes back to
+# the ground lane with a short wide track (TI SLLSF20B, 11.1, p. 21).
+d3_a, d3_b, d3_gnd = L.pad("D3", 1), L.pad("D3", 2), L.pad("D3", 3)
+L.via("BUS_A", d3_a[0], LANE["BUS_A"])
+L.track("BUS_A", F, [(d3_a[0], LANE["BUS_A"]), d3_a], 0.3)
+L.via("BUS_B", d3_b[0], LANE["BUS_B"])
+L.track("BUS_B", F, [(d3_b[0], LANE["BUS_B"]), d3_b], 0.3)
+L.track("GND", F, [d3_gnd, (34.6, d3_gnd[1]), (34.6, LANE["GND"])], 0.8)
+L.via("GND", 34.6, LANE["GND"], 0.8, 0.4)
+# +12 V: lane, fuse, TVS to the ground lane, series diode, input capacitor.
+f1_bus, f1_out = L.pad("F1", 1), L.pad("F1", 2)
+d1_gnd, d1_12 = L.pad("D1", 1), L.pad("D1", 2)
+d2_k, d2_a = L.pad("D2", 1), L.pad("D2", 2)
+L.track("BUS_12V", F, [(f1_bus[0], Y_12V), f1_bus], 0.8)
+L.track("V12_F", F, [f1_out, (f1_out[0], 32.6), d1_12], 0.8)
+L.track("V12_F", F, [f1_out, (d2_a[0], f1_out[1]), d2_a], 0.8)
+L.track("GND", F, [d1_gnd, (d1_gnd[0], LANE["GND"])], 0.8)
+L.via("GND", d1_gnd[0], LANE["GND"], 0.8, 0.4)
+L.track("VIN", F, [d2_k, L.pad("C_VIN", 1)], 0.8)
+
+# --- Microcontroller ----------------------------------------------------------------------------
+# Ground goes inwards to the exposed pad, which a via ties to the bottom-layer ground; +5 V goes
+# straight to its capacitor.
+mcu = {n: L.pad("U_MCU", n) for n in (3, 4, 21)}
+fan = L.fanout("U_MCU", skip=("3", "4"))
+L.track("GND", F, [mcu[3], mcu[21]], 0.2)
+L.via("GND", *mcu[21])
+L.track("+5V", F, [mcu[4], (52.3, mcu[4][1]), (52.7, mcu[4][1] - 0.4)], 0.2)
+
+# --- Ground: the logic half only ----------------------------------------------------------------
+X_GND = X_LOGIC + 1.16  # up to the optocouplers' logic pads
+L.zone("GND", F, outline=[(0.5, 0.5), (X_GND, 0.5), (X_GND, 26.4), (42.6, 26.4), (42.6, 39.6), (28.5, 39.6), (28.5, 26.4), (0.5, 26.4)])
+L.zone("GND", B, outline=rect(0.5, 0.5, X_GND, 26.4))
+
+L.solid("J_UPDI", 3)
+for out in BANDS:  # ground pins between two neighbours and the isolation gap: no room for spokes
+    L.solid(out + ".U_DRV", 2)
+    L.solid(out + ".U_MON", 3)
+
+# --- The rest of the logic side: grid router -----------------------------------------------------
+# Its region ends 3 mm before any 24 VAC copper and before the lanes of the pass-through.
+# Signal tracks are 0.2 mm wide with 0.2 mm space: the microcontroller's pins are 0.4 mm apart.
+# (The Default class in the KiCad project says 0.3 mm; that is a nominal width for drawing by
+# hand, from lib/jlcpcb.zen, not a limit. The limit is 0.15 mm.)
+R = L.router((8.0, 0.6, X_GND - 0.1, 26.3))
+for net, (x, y) in fan:
+    R.reserve(net, x, y)
+R.stitch("GND", ["C_MCU.2"])  # first, while there is room next to the microcontroller
+for net in ("TXD", "RXD", "XDIR", "ADDR1", "ADDR2", "ADDR3", "ADDR4", "UPDI",
+            "DRIVE2", "MON2", "OUT2.LED_A", "DRIVE1", "MON1", "OUT1.LED_A", "LED", "LED_A",
+            "RS_A", "RS_B", "BUS_A", "BUS_B", "TERM", "PB1", "PB4", "PB5", "PA3", "PA1"):
+    R.route(net)
+for net in ("VIN", "+5V"):
+    R.route(net, width=0.4)
+# Every ground pad gets its own via to the bottom-layer zone: the top-layer zone is cut into
+# islands by the tracks above.
+R.stitch("GND", ["C_VIN.2", "C_5V.2", "C_RS485.2", "R_XDIR.2", "R_BIAS_B.2", "U_REG.1", "U_RS485.5",
+                 "SW_ADDR.5", "SW_ADDR.8", "D_STATUS.1", "TP_GND.1",
+                 "OUT1.U_DRV.2", "OUT1.U_MON.3", "OUT2.U_DRV.2", "OUT2.U_MON.3"])
+L.save()
+print("layout: %d track segments, %d vias" % (sum(1 for t in L.manual if t.GetClass() != "PCB_VIA"), sum(1 for t in L.manual if t.GetClass() == "PCB_VIA")))

@@ -17,12 +17,11 @@ enclosure) and places every order himself.
 
 **Status:** toolchain proven on a throwaway board. The valve node has a signed-off specification
 ([`docs/valve-node-spec.md`](docs/valve-node-spec.md)), a signed-off schematic with bill of
-materials ([`docs/valve-node-schematic.md`](docs/valve-node-schematic.md)) and an enclosure model
-with the board outline derived from it
-([`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md)), not printed yet. Its next stage
-is the layout, which with the enclosure forms the third hold point. It has no layout yet, so
-`make all` and `make verify` do not run for it; use
-`make apply erc schematic bom enclosure collide BOARD=valve-node`. No real board exists yet.
+materials ([`docs/valve-node-schematic.md`](docs/valve-node-schematic.md)), an enclosure model
+([`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md)) and a layout with fabrication
+data ([`docs/valve-node-layout.md`](docs/valve-node-layout.md)). Layout and enclosure are the third
+hold point: proposed, not signed off, nothing printed, nothing ordered. The whole chain runs for
+both boards (`make all BOARD=valve-node`, about two minutes). No real board exists yet.
 
 ## Rules that are not negotiable
 
@@ -53,7 +52,9 @@ make help                  # every target with its output
 
 One target per output; the table is in [`docs/toolchain.md`](docs/toolchain.md). `BOARD` defaults
 to `throwaway`, the smoke-test board: after changing a tool version or anything in `tools/`, run
-`make all && make selftest` on it before touching a real board.
+`make all && make selftest` on it before touching a real board. `make selftest` also runs checks
+on the valve node's committed files; after changing its layout, run `make all BOARD=valve-node`
+first.
 
 ## Layout
 
@@ -62,11 +63,12 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
 | `boards/<board>/<board>.zen` | Schematic source (Zener) |
 | `boards/<board>/schematic.py` | Schematic arrangement script (plain Python, `tools/schlayout.py`); optional |
 | `boards/<board>/mech.json` | Board outline and mounting holes: the one interface between board and enclosure |
-| `boards/<board>/layout.py` | Placement and routing script (runs in KiCad's Python via `tools/kipython`) |
+| `boards/<board>/layout.py` | Placement, design rules and routing (runs in KiCad's Python via `tools/kipython`) |
+| `boards/<board>/classmap.json` | Colours for the copper-by-net-class picture of `make plots`; optional |
 | `boards/<board>/enclosure.py` | Enclosure model (build123d, runs in the project venv via `uv run`) |
 | `boards/<board>/eda/` | Generated KiCad project, committed so the design opens without the toolchain |
 | `lib/` | Shared parts: copied KiCad symbols and footprints, LCSC footprints, JLCPCB design rules, part-number mapping ([`lib/README.md`](lib/README.md)) |
-| `tools/` | Shared scripts: layout helpers, fabrication outputs, collision check, printable thread, renderer for enclosure pictures |
+| `tools/` | Shared scripts: layout helpers, grid router, fabrication outputs, collision check, self-tests, printable thread, renderer for enclosure pictures |
 | `scripts/` | Setup and part fetching |
 | `docs/` | Durable documentation (Markdown) |
 | `build/` | Generated outputs, ignored by git |
@@ -81,6 +83,7 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
 | What does the valve node have to do, which parts does it use and why? | [`docs/valve-node-spec.md`](docs/valve-node-spec.md) |
 | What does the valve node's schematic add to the specification, what was checked, what goes to the layout? | [`docs/valve-node-schematic.md`](docs/valve-node-schematic.md) |
 | What does the valve node's enclosure look like, how does it seal, where do outline and connector positions come from? | [`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md) |
+| Where do the valve node's parts sit, how is 24 VAC kept from the logic, what does an order cost, how is the fit tried? | [`docs/valve-node-layout.md`](docs/valve-node-layout.md) |
 | Why Zener and not KiCad files? | [`docs/toolchain.md`](docs/toolchain.md) "Schematic format" |
 | How do I add a part and map it to an LCSC number? | [`lib/README.md`](lib/README.md) |
 | Which license covers what, and what blocks publication? | [`docs/license.md`](docs/license.md) |
@@ -99,6 +102,12 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
   `make` or as `.tools/bin/pcb +<version>`; a bare `pcb` follows the newest 0.4.x release.
 - Part numbers: every populated part carries `mpn=` (or `Part(mpn=…)`) in the `.zen` source and a
   row in `lib/jlcpcb-parts.csv`. `make fab` fails otherwise.
+- Net classes and custom design rules of a board are written by its `layout.py`
+  (`kilayout.write_rules`) into `eda/<board>.kicad_pro` and `eda/<board>.kicad_dru`. `pcb apply`
+  keeps them but resets the `Default` class from `lib/jlcpcb.zen`.
+- Two routers. The throwaway board is routed by Freerouting (`Layout.autoroute`), the valve node
+  by coordinates plus `tools/gridroute.py` (`Layout.router`). Why: `docs/toolchain.md`,
+  "Routing".
 - KiCad ERC runs with two rules disabled (`lib_symbol_issues`, `power_pin_not_driven`), set in each
   board's `.kicad_pro`; the reason is in `docs/toolchain.md`. Do not disable further rules to get a
   clean report; fix the cause or record an explicit, explained exclusion.
@@ -145,6 +154,20 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
   cross-sections instead, which is valid. Intersecting two such thread solids with each other
   still returns nonsense (zero, or the whole volume); against plain bodies it is correct. Check a
   boolean's volume against a hand estimate whenever a thread is involved.
+- **Zener does not refresh a footprint that is already on the board.** After changing a file in
+  `lib/` (pads of the bus jack), `make apply` reported "layout updated" and the board kept the
+  old pads. Delete `eda/<board>.kicad_pcb` and `eda/snapshot.layout.json`, then
+  `make apply layout`: the layout script rebuilds everything else.
+- **KiCad 10.0.1 did not report a track inside a rule area that forbids tracks.** Zones stay out
+  of such an area, a track drawn through it passed DRC. A keep-out that has to hold is also a
+  `disallow` rule in the board's `.kicad_dru`, and `make selftest` draws a track into it
+  (`tools/selftest-drc.py`). Found only because the self-test was written.
+- **Freerouting 2.5.0 does not finish a board with a 0.4 mm pitch package.** On the valve node it
+  left 8 to 13 connections open in every run and wrote tracks of 0.12 mm. More passes, narrower
+  tracks and pre-drawn stubs did not help. `tools/gridroute.py` replaced it there.
+- **Two identical connectors side by side cannot be passed through without crossings.** Each wire
+  crosses every other one once. Decide per wire on which side of the pins and on which layer it
+  runs before placing anything (`docs/valve-node-layout.md`, "The pass-through").
 - **No renderer is installed for build123d.** Pictures of an enclosure come from
   `tools/render3d.py` (numpy and Pillow, both already there). build123d's own `tessellate()`
   stops at a face the mesher left empty; the renderer meshes through OCP and skips it.

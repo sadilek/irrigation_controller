@@ -1,0 +1,5 @@
+{
+  "_comment": "Colours for `make plots` (tools/classmap.py): net classes of layout.py, and the rule areas to hatch.",
+  "classes": {"AC": "#d9480f", "Spare": "#f2b90c", "BusPower": "#1c7ed6", "Power": "#4dabf7", "Default": "#74b816"},
+  "areas": {"isolation": "no copper", "jack": "jack pins"}
+}

@@ -3,7 +3,8 @@
 The second of three hold points for the valve node. The layout does not start before the owner
 signed this page off, together with the schematic PDF and the bill of materials.
 
-Status: signed off by the owner on 2026-11-14. The next stage is the layout and enclosure. Changed
+Status: signed off by the owner on 2026-11-14. The layout that follows it is described in
+[`valve-node-layout.md`](valve-node-layout.md); it left the schematic as it is. Changed
 after sign-off, by the owner's decision: the moisture sensor input is gone (deviation 5).
 
 The circuit and the reason for every part are in [`valve-node-spec.md`](valve-node-spec.md). This
@@ -129,6 +130,9 @@ substrate that must stay open. The pins now carry different names, and the lesso
 `CLAUDE.md`.
 
 ## Handed to the layout
+
+What the layout did with each point is in [`valve-node-layout.md`](valve-node-layout.md), "24 VAC
+and logic" and "Deviations".
 
 - Net classes and the 3 mm rule of the specification's "Layout rules" are not in the source yet.
   They are set when the layout starts, before routing.

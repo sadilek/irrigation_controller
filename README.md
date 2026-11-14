@@ -7,7 +7,8 @@ it to Home Assistant.
 Everything is source text: schematics in [Zener](https://github.com/diodeinc/pcb), generated into
 KiCad 10 files, placed and routed by script, enclosures in [build123d](https://github.com/gumyr/build123d).
 
-**Status:** the toolchain works end to end on a throwaway board. The real boards are not designed yet.
+**Status:** the toolchain works end to end. The valve node is designed up to fabrication data and
+waits for the owner's sign-off; nothing is ordered or printed. The controller is not designed yet.
 
 ## Quick start
 
@@ -16,10 +17,11 @@ Requires macOS on Apple Silicon, KiCad 10 in `/Applications`, [`uv`](https://doc
 ```bash
 make setup    # pinned tools into .tools/, nothing installed system-wide
 make all      # throwaway board: schematic -> checks -> layout -> fabrication data -> enclosure -> collision check
+make all BOARD=valve-node   # the same for the valve node
 make help     # one command per output
 ```
 
-Outputs land in `build/throwaway/`. The generated KiCad project in `boards/throwaway/eda/` opens in
+Outputs land in `build/<board>/`. The generated KiCad project in `boards/<board>/eda/` opens in
 KiCad 10 without any of the tools above.
 
 ## Documentation
@@ -27,6 +29,9 @@ KiCad 10 without any of the tools above.
 - [`docs/toolchain.md`](docs/toolchain.md): the chain, every command, tool choices, known weaknesses
 - [`docs/bus-protocol.md`](docs/bus-protocol.md): cable, addresses, registers and timing of the RS485/Modbus bus
 - [`docs/existing-system.md`](docs/existing-system.md): the installation being replaced, valve data, known weaknesses, open points
+- [`docs/valve-node-spec.md`](docs/valve-node-spec.md), [`docs/valve-node-schematic.md`](docs/valve-node-schematic.md),
+  [`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md), [`docs/valve-node-layout.md`](docs/valve-node-layout.md):
+  the valve node, one page per hold point
 - [`lib/README.md`](lib/README.md): part libraries and the JLCPCB part mapping
 - [`docs/license.md`](docs/license.md): which license covers what, and what must be settled before publishing
 - [`CLAUDE.md`](CLAUDE.md): rules and conventions for agents and contributors

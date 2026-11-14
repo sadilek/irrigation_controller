@@ -12,6 +12,8 @@ edge, the jacks sit 34 mm apart, all cables enter through one wall, the moisture
 cable entry, and only the bus inserts are slit. After the sign-off the owner dropped the moisture
 sensor input from the board altogether (2026-11-14, schematic deviation 5); R13, the pin
 assignment and the current budget below say so, the outline section is superseded by the enclosure.
+How the "Layout rules" below are met is in [`valve-node-layout.md`](valve-node-layout.md); the
+layout used none of the pin swaps this page allows.
 
 The node replaces every existing node on the buried cable. Cable, wiring, addresses and registers
 stay as described in [`bus-protocol.md`](bus-protocol.md). The installation it goes into, with

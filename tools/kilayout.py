@@ -341,7 +341,7 @@ class Layout:
         t.SetLayer(layer)
         t.SetPosition(self.pt(x, y))
         t.SetTextSize(pcbnew.VECTOR2I(mm(size), mm(size)))
-        t.SetTextThickness(mm(max(0.12, size * 0.15)))
+        t.SetTextThickness(mm(max(0.15, size * 0.15)))  # JLCPCB prints lines from 0.15 mm
         t.SetTextAngleDegrees(angle)
         t.SetHorizJustify({"left": pcbnew.GR_TEXT_H_ALIGN_LEFT, "center": pcbnew.GR_TEXT_H_ALIGN_CENTER, "right": pcbnew.GR_TEXT_H_ALIGN_RIGHT}[align])
         if layer in (pcbnew.B_SilkS, pcbnew.B_Cu):

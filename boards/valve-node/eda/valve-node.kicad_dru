@@ -1,0 +1,35 @@
+(version 1)
+
+# 24 VAC keeps 3 mm from everything that is not 24 VAC (docs/valve-node-spec.md, "Layout rules").
+(rule "24 VAC to logic"
+	(condition "A.NetClass == 'AC' && B.NetClass != 'AC' && B.NetClass != 'Spare'")
+	(constraint clearance (min 3mm)))
+
+# The spare pair can be bridged to the 24 VAC pair, so outside the pass-through it keeps the same
+# distance. On the pass-through it runs between the logic lanes, as it does in the cable.
+(rule "spare pair to logic"
+	(condition "A.NetClass == 'Spare' && B.NetClass != 'AC' && B.NetClass != 'Spare'")
+	(constraint clearance (min 3mm)))
+(rule "spare pair to logic on the pass-through"
+	(condition "A.NetClass == 'Spare' && B.NetClass != 'AC' && B.NetClass != 'Spare' && A.intersectsArea('passthrough')")
+	(constraint clearance (min 0.2mm)))
+
+# Inside a jack the pins are 1.02 mm apart: the one place where 24 VAC and logic are closer than
+# 3 mm. Both items have to lie in the pin field for the exception to apply.
+(rule "24 VAC to logic at the jack pins"
+	(condition "A.NetClass == 'AC' && B.NetClass != 'AC' && B.NetClass != 'Spare' && A.intersectsArea('jack') && B.intersectsArea('jack')")
+	(constraint clearance (min 0.4mm)))
+
+# Keep-outs. KiCad 10.0.1 did not report a track inside a rule area that forbids tracks
+# (`make selftest` found that), so each keep-out is also a rule of its own here.
+(rule "no copper under the optocouplers"
+	(condition "A.intersectsArea('isolation')")
+	(constraint disallow track via zone))
+(rule "screw heads and standoffs"
+	(condition "A.intersectsArea('keepout-top') || A.intersectsArea('keepout-bottom')")
+	(constraint disallow track via))
+
+# An open solder jumper is two pads 0.3 mm apart, whatever nets they are on.
+(rule "solder jumper gap"
+	(condition "A.Type == 'Pad' && B.Type == 'Pad' && A.memberOfFootprint('JP*') && B.memberOfFootprint('JP*')")
+	(constraint clearance (min 0.2mm)))

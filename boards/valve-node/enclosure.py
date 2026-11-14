@@ -11,10 +11,11 @@ holes and connector positions come from mech.json, the same file the layout read
 
 Written to build/valve-node/:
   enclosure/*.step   every part where it sits in the assembly, nuts hand-tight
-  print/*.stl        one of each printed part, lying the way it is printed
+  print/*.stl        one of each printed part, lying the way it is printed; `board-dummy` is the
+                     board's outline with the connectors as blocks, for a test fit before boards exist
   envelope.step      the board as mech.json describes it, with connectors as blocks: stands in
                      for the board STEP in `make collide` until the layout exists
-  views/*.png        pictures
+  views/*.png        pictures; with a board STEP from `make fab` they show the real board
 
 --lid-drop lowers the lid into the box; `make selftest` uses it to prove that the collision check
 fails when the lid hits a connector.
@@ -347,6 +348,8 @@ PRINT = {
     "gasket-tpu": gasket,
     "nut-3x": flip * one_nut,  # end wall on the bed, thread axis upright
 }
+# Stand-in for the board in a test fit: the outline with its holes and the connectors as blocks.
+PRINT["board-dummy"] = compound([board_plate.part] + [body for body, _ in blocks])
 for pattern in PATTERNS:
     PRINT[f"insert-{pattern}-tpu"] = flip * insert(pattern)  # large end on the bed
     PRINT[f"washer-{pattern}"] = washer(pattern)
@@ -368,6 +371,13 @@ if not args.no_views and not args.lid_drop:
     BODY, LID, SOFT, NUT, WASHER = (92, 98, 108), (150, 158, 170), (236, 120, 40), (60, 64, 72), (205, 210, 216)
     PCB, PART, CABLE = (40, 130, 70), (40, 40, 44), (120, 150, 190)
     board_items = [(board_plate.part, PCB)] + [(b, PART) for b, _ in blocks]
+    board_step = BUILD / "fab" / f"{HERE.name}.step"
+    if board_step.exists():  # with a layout, show the real board instead of the blocks
+        from build123d import import_step
+
+        solids = import_step(str(board_step)).solids()
+        plate = max(solids, key=lambda s: s.bounding_box().size.X * s.bounding_box().size.Y)
+        board_items = [(s, PCB if s is plate else PART) for s in solids]
     entry_items = [(n, NUT) for n in nuts] + [(w, WASHER) for w in washers] + [(i, SOFT) for i in inserts]
     plug_out = 9.5  # how far the plug stands out of the jack
     cables = [entry_frame(x) * Pos(0, 0, -(CABLE_SPACE - plug_out)) * Cylinder(BUS_CABLE_D / 2, 70, align=ZMIN) for x, p in ENTRIES if p == "bus"]

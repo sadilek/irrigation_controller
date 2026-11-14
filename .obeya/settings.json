@@ -3,9 +3,9 @@
   "push": true,
   "language": "en",
   "setup": "scripts/setup.sh",
-  "checks": ["make verify", "make selftest"],
+  "checks": ["make verify", "make verify BOARD=valve-node", "make selftest"],
   "app": {
-    "run": "There is no app to start. This repository produces files: `make all BOARD=<board>` (about 15 seconds for the throwaway board) runs the whole chain and writes everything to `build/<board>/`: the schematic PDF, ERC and DRC reports, board renders (`render-top.png`, `render-bottom.png`), fabrication data under `fab/` and enclosure STEP/STL under `enclosure/`. To show work, put those outputs (renders, the schematic PDF converted to an image, the report summaries) on an HTML page for the owner; a board or enclosure is never shown by opening KiCad or a CAD program. `make help` lists one command per output; `docs/toolchain.md` explains the chain. Nothing runs in the background, so there is nothing to stop. Never upload to or order from JLCPCB."
+    "run": "There is no app to start. This repository produces files: `make all BOARD=<board>` (about 15 seconds for the throwaway board, two minutes for the valve node) runs the whole chain and writes everything to `build/<board>/`: the schematic PDF, ERC and DRC reports, board renders (`render-top.png`, `render-bottom.png`, `render-angle.png`), flat drawings under `plots/`, fabrication data under `fab/` and enclosure STEP/STL under `enclosure/`. To show work, put those outputs (renders, the schematic PDF converted to an image, the report summaries) on an HTML page for the owner; a board or enclosure is never shown by opening KiCad or a CAD program. `make help` lists one command per output; `docs/toolchain.md` explains the chain. Nothing runs in the background, so there is nothing to stop. Never upload to or order from JLCPCB."
   },
   "demo": { "language": "de" }
 }
