@@ -26,5 +26,10 @@ KiCad 10 without any of the tools above.
 
 - [`docs/toolchain.md`](docs/toolchain.md): the chain, every command, tool choices, known weaknesses
 - [`lib/README.md`](lib/README.md): part libraries and the JLCPCB part mapping
-- [`docs/license.md`](docs/license.md): license proposal (no license has been chosen yet)
+- [`docs/license.md`](docs/license.md): which license covers what, and what must be settled before publishing
 - [`CLAUDE.md`](CLAUDE.md): rules and conventions for agents and contributors
+
+## License
+
+Hardware: [CERN-OHL-P-2.0](LICENSES/CERN-OHL-P-2.0.txt). Software: [MIT](LICENSES/MIT.txt).
+Documentation: [CC-BY-4.0](LICENSES/CC-BY-4.0.txt). Details and exceptions in [`docs/license.md`](docs/license.md).

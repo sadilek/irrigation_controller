@@ -67,7 +67,7 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
 | How does the chain work, what does each command produce, where is it weak? | [`docs/toolchain.md`](docs/toolchain.md) |
 | Why Zener and not KiCad files? | [`docs/toolchain.md`](docs/toolchain.md) "Schematic format" |
 | How do I add a part and map it to an LCSC number? | [`lib/README.md`](lib/README.md) |
-| Which license, and what blocks publication? | [`docs/license.md`](docs/license.md) |
+| Which license covers what, and what blocks publication? | [`docs/license.md`](docs/license.md) |
 
 ## Cross-cutting facts
 

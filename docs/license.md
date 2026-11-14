@@ -1,13 +1,13 @@
-# License proposal
+# Licenses
 
-**Status: proposal. No license is in effect and the repository is private.** Choosing licenses and
-publishing are two separate decisions by the owner.
+Decided by the owner on 2026-11-14. The repository is still private; publishing is a separate
+decision.
 
-## Proposal
+Copyright (c) 2026 The irrigation_controller authors. The full texts are in [`LICENSES/`](../LICENSES/).
 
 | Content | License | SPDX |
 |---|---|---|
-| Hardware: board sources (`boards/`, `lib/` except fetched LCSC parts), enclosure models | CERN Open Hardware Licence v2, Permissive | `CERN-OHL-P-2.0` |
+| Hardware: board sources and generated KiCad files (`boards/`), `lib/` except fetched LCSC parts, enclosure models | CERN Open Hardware Licence v2, Permissive | `CERN-OHL-P-2.0` |
 | Software: firmware, `tools/`, `scripts/`, `Makefile` | MIT | `MIT` |
 | Documentation (`docs/`, READMEs) | Creative Commons Attribution 4.0 | `CC-BY-4.0` |
 
@@ -37,5 +37,9 @@ publishing are two separate decisions by the owner.
 5. **Tools are not redistributed.** Freerouting (GPL-3.0) and Konnect (AGPL-3.0) are downloaded by
    `scripts/setup.sh` and are not part of the repository, so their licenses do not affect it.
 
-When the owner decides: add `LICENSE` files (one per license under `LICENSES/`, REUSE layout), an
-SPDX header convention, and replace this page's status line.
+## Conventions
+
+- New source files do not need a header; the table above assigns a license by path. A file that
+  leaves the repository on its own (a published STL, a firmware release) carries an
+  `SPDX-License-Identifier` line or a note naming its license.
+- `lib/lcsc/` is not covered by these licenses (see point 1 above).
