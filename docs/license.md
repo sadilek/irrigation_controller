@@ -7,7 +7,7 @@ Copyright (c) 2026 The irrigation_controller authors. The full texts are in [`LI
 
 | Content | License | SPDX |
 |---|---|---|
-| Hardware: board sources and generated KiCad files (`boards/`), `lib/` except fetched LCSC parts, enclosure models | CERN Open Hardware Licence v2, Permissive | `CERN-OHL-P-2.0` |
+| Hardware: board sources and generated KiCad files (`boards/`), `lib/` except fetched LCSC parts and copied KiCad library files, enclosure models | CERN Open Hardware Licence v2, Permissive | `CERN-OHL-P-2.0` |
 | Software: firmware, `tools/`, `scripts/`, `Makefile` | MIT | `MIT` |
 | Documentation (`docs/`, READMEs) | Creative Commons Attribution 4.0 | `CC-BY-4.0` |
 
@@ -30,7 +30,9 @@ Copyright (c) 2026 The irrigation_controller authors. The full texts are in [`LI
    Options: redraw the few parts needed from datasheets (clean), or keep `lib/lcsc/` out of the
    published repository and document `scripts/fetch-lcsc.sh` as a build step.
 2. **KiCad library content** copied into the generated files (`boards/*/eda/`) is CC-BY-SA 4.0 with
-   KiCad's exception that designs using the libraries are not bound by it. No action needed.
+   KiCad's exception that designs using the libraries are not bound by it. No action needed. The
+   copies in `lib/kicad/` are library files themselves and stay under CC-BY-SA 4.0, not under the
+   licenses above.
 3. **Git history.** Commits carry the author's name and e-mail address. Publish with the existing
    history only if that is acceptable; otherwise publish a squashed history.
 4. **Private data.** Rerun the check from `CLAUDE.md` over the whole history, not only the tree.

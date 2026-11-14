@@ -15,9 +15,11 @@ fabricated and assembled by JLCPCB. Enclosures are modelled in build123d. An age
 in files; the owner reviews each board at three hold points (specification, schematic, layout and
 enclosure) and places every order himself.
 
-**Status:** toolchain proven on a throwaway board. The valve node has a specification
-([`docs/valve-node-spec.md`](docs/valve-node-spec.md)); its schematic waits for the owner's sign-off.
-No real board exists yet.
+**Status:** toolchain proven on a throwaway board. The valve node has a signed-off specification
+([`docs/valve-node-spec.md`](docs/valve-node-spec.md)) and a schematic with bill of materials
+([`docs/valve-node-schematic.md`](docs/valve-node-schematic.md)) that waits for the owner's sign-off.
+It has no layout yet, so `make all` and `make verify` do not run for it; use
+`make apply erc schematic bom BOARD=valve-node`. No real board exists yet.
 
 ## Rules that are not negotiable
 
@@ -32,7 +34,8 @@ No real board exists yet.
   one. Each hold point shows the reasoning, not just the result; the hard part of this project is
   switching 24 VAC and surviving surges on a long buried cable, not routing.
 - **Do not edit generated files by hand.** `boards/*/eda/` is written by `make apply`,
-  `make layout` and `make drc`. Change the `.zen` source, `layout.py` or `mech.json` instead.
+  `make arrange`, `make layout` and `make drc`. Change the `.zen` source, `schematic.py`,
+  `layout.py` or `mech.json` instead.
 
 ## Commands
 
@@ -52,11 +55,12 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
 | Path | Content |
 |---|---|
 | `boards/<board>/<board>.zen` | Schematic source (Zener) |
+| `boards/<board>/schematic.py` | Schematic arrangement script (plain Python, `tools/schlayout.py`); optional |
 | `boards/<board>/mech.json` | Board outline and mounting holes: the one interface between board and enclosure |
 | `boards/<board>/layout.py` | Placement and routing script (runs in KiCad's Python via `tools/kipython`) |
 | `boards/<board>/enclosure.py` | Enclosure model (build123d, runs in the project venv via `uv run`) |
 | `boards/<board>/eda/` | Generated KiCad project, committed so the design opens without the toolchain |
-| `lib/` | Shared parts: LCSC symbols and footprints, JLCPCB design rules, part-number mapping ([`lib/README.md`](lib/README.md)) |
+| `lib/` | Shared parts: copied KiCad symbols and footprints, LCSC footprints, JLCPCB design rules, part-number mapping ([`lib/README.md`](lib/README.md)) |
 | `tools/` | Shared scripts: layout helpers, fabrication outputs, collision check |
 | `scripts/` | Setup and part fetching |
 | `docs/` | Durable documentation (Markdown) |
@@ -70,6 +74,7 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
 | What is on the bus: wiring, addresses, registers, timing? | [`docs/bus-protocol.md`](docs/bus-protocol.md) |
 | What does the installed system look like, what are its weaknesses, what is still unknown? | [`docs/existing-system.md`](docs/existing-system.md) |
 | What does the valve node have to do, which parts does it use and why? | [`docs/valve-node-spec.md`](docs/valve-node-spec.md) |
+| What does the valve node's schematic add to the specification, what was checked, what goes to the layout? | [`docs/valve-node-schematic.md`](docs/valve-node-schematic.md) |
 | Why Zener and not KiCad files? | [`docs/toolchain.md`](docs/toolchain.md) "Schematic format" |
 | How do I add a part and map it to an LCSC number? | [`lib/README.md`](lib/README.md) |
 | Which license covers what, and what blocks publication? | [`docs/license.md`](docs/license.md) |
@@ -118,5 +123,12 @@ to `throwaway`, the smoke-test board: after changing a tool version or anything 
 - **easyeda2kicad output is not usable as fetched.** Always go through `scripts/fetch-lcsc.sh`
   (format upgrade, embedded 3D model, offset fix, no absolute paths), then check pin types and
   footprint against the datasheet.
+- **Zener joins pins that share a name into one net.** KiCad's optotriac symbol calls both unused
+  pins `NC`; the board netlist tied pin 3 to pin 5 (the substrate). Give such pins distinct names
+  when copying the symbol (`scripts/copy-kicad.py`), and read `eda/default.net` for nets named
+  `NC_…` with more than one node.
+- **Zener's generated schematic is a netlist, not a drawing.** A board that a person has to review
+  needs a `schematic.py`. `pcb apply` keeps the arrangement but reformats the file, so `make apply`
+  reruns the arrangement; never commit a schematic that `make apply` did not finish.
 - **A zero-violation report is only worth something if the check can fail.** `make selftest` proves
   it for the collision check. When adding a check, add the case that makes it fail.

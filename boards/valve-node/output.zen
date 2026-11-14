@@ -1,0 +1,79 @@
+"""
+One valve output of the valve node (docs/valve-node-spec.md, "Valve outputs").
+
+A triac switches the valve's 24 VAC. An optotriac fires it, a second optocoupler across the
+triac reports whether voltage lies across it. Nothing in this module connects the 24 VAC side
+to the logic ground: the two optocouplers are the isolation barrier.
+
+The board instantiates it four times. Outputs 3 and 4 are instantiated with dnp=True: footprints
+without parts.
+"""
+
+Resistor = Module("@stdlib/generics/Resistor.zen")
+Capacitor = Module("@stdlib/generics/Capacitor.zen")
+
+# Logic side
+DRIVE = io(Net, help="From the microcontroller: high opens the valve")
+MON = io(Net, help="To the microcontroller (internal pull-up): low while voltage lies across the triac")
+GND = io(Ground)
+
+# 24 VAC side
+AC_B = io(Net, help="24 VAC b, the switched side of the supply")
+AC_COM = io(Net, help="Valve common: 24 VAC a behind the fuse")
+VALVE = io(Net, help="Valve terminal")
+
+LED_A = Net()
+GATE = Net()
+OPTO = Net()
+SNUB = Net()
+MON_LED = Net()
+
+# Drive: 16 mA typical through the optotriac's LED from a 5 V pin; the optotriac needs 5 mA.
+Resistor(name="R_LED", value="220", package="0603", mpn="0603WAF2200T5E", manufacturer="UNI-ROYAL", P1=DRIVE, P2=LED_A)
+
+# Random-phase optotriac. Pins 3 and 5 stay open (5 is the substrate).
+Component(
+    name="U_DRV",
+    symbol=Symbol("../../lib/kicad/symbols/EL3053.kicad_sym"),
+    footprint=File("../../lib/kicad/footprints.pretty/SMDIP-6_W9.53mm.kicad_mod"),
+    pins={"1": LED_A, "2": GND, "4": GATE, "6": OPTO},
+    part=Part(mpn="EL3053S1(TA)-V", manufacturer="Everlight"),
+)
+
+# Gate current comes from A2 through the optotriac, so it has the load current's sign (quadrants I and III).
+# 150 R limits the optotriac's current to 0.5 A at the 77 V clamp level of the 24 VAC TVS.
+Resistor(name="R_GATE", value="150", package="0805", mpn="0805W8F1500T5E", manufacturer="UNI-ROYAL", P1=VALVE, P2=OPTO)
+Resistor(name="R_GK", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=GATE, P2=AC_B)
+
+Component(
+    name="Q",
+    prefix="Q",
+    symbol=Symbol("../../lib/kicad/symbols/T410-600B.kicad_sym"),
+    footprint=File("../../lib/kicad/footprints.pretty/TO-252-2.kicad_mod"),
+    pins={"A1": AC_B, "A2": VALVE, "G": GATE},
+    part=Part(mpn="T410-600B-TR", manufacturer="STMicroelectronics"),
+)
+
+# Snubber across the triac: limits dV/dt at a surge.
+Resistor(name="R_SNUB", value="100", package="0805", mpn="0805W8F1000T5E", manufacturer="UNI-ROYAL", P1=VALVE, P2=SNUB)
+Capacitor(name="C_SNUB", value="100nF", package="0805", voltage="100V", dielectric="X7R", mpn="CC0805KKX7R0BB104", manufacturer="YAGEO", P1=SNUB, P2=AC_B)
+
+# Monitor: AC optocoupler across the triac, about 2 mA peak through 15 k while the triac is off.
+Resistor(name="R_MON", value="15k", package="0805", mpn="0805W8F1502T5E", manufacturer="UNI-ROYAL", P1=VALVE, P2=MON_LED)
+Component(
+    name="U_MON",
+    symbol=Symbol("../../lib/kicad/symbols/LTV-814S.kicad_sym"),
+    footprint=File("../../lib/kicad/footprints.pretty/SMDIP-4_W9.53mm.kicad_mod"),
+    pins={"1": MON_LED, "2": AC_B, "3": GND, "4": MON},
+    part=Part(mpn="LTV-814S-TA1", manufacturer="Lite-On"),
+)
+
+# Valve plug: pin 1 output, pin 2 common.
+Component(
+    name="J",
+    prefix="J",
+    symbol=Symbol("../../lib/kicad/symbols/Screw_Terminal_01x02.kicad_sym"),
+    footprint=File("../../lib/lcsc/lcsc.pretty/CONN-TH_2P-P5.08_KF2EDGR-5.08-2P.kicad_mod"),
+    pins={"Pin_1": VALVE, "Pin_2": AC_COM},
+    part=Part(mpn="KF2EDGR-5.08-2P", manufacturer="Cixi Kefa Elec"),
+)

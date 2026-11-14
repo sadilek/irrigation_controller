@@ -19,7 +19,7 @@ FILTER := 2>&1 | grep -v -e 'memory leak' -e 'create wxApp' ; exit $${PIPESTATUS
 
 SHELL := /bin/bash
 .SHELLFLAGS := -o pipefail -c
-.PHONY: help setup check apply erc schematic layout drc render fab enclosure collide all verify selftest clean
+.PHONY: help setup check apply arrange bom erc schematic layout drc render fab enclosure collide all verify selftest clean
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/' | expand -t 12
@@ -30,8 +30,12 @@ setup: ## Install the pinned toolchain into .tools/ and .venv/
 check: ## Compile the Zener source: connectivity, typed nets, voltage checks
 	cd $(SRC) && $(PCB) build $(BOARD).zen
 
-apply: check ## Generate/update the KiCad schematic and board from the Zener source
+apply: check ## Generate/update the KiCad schematic and board from the Zener source, then arrange the schematic
 	cd $(SRC) && $(PCB) apply --no-open $(BOARD).zen
+	@$(MAKE) --no-print-directory arrange BOARD=$(BOARD)
+
+arrange: ## Arrange the schematic from boards/<board>/schematic.py (if the board has one), then compare it with the source
+	@if [ -f $(SRC)/schematic.py ]; then uv run python $(SRC)/schematic.py && cd $(SRC) && $(PCB) build -D warnings $(BOARD).zen; fi
 
 erc: ## KiCad electrical rules check on the generated schematic -> build/<board>/erc.rpt
 	@mkdir -p $(OUT)
@@ -40,6 +44,9 @@ erc: ## KiCad electrical rules check on the generated schematic -> build/<board>
 schematic: ## Schematic as PDF -> build/<board>/<board>-schematic.pdf
 	@mkdir -p $(OUT)
 	$(KICAD) sch export pdf -o $(OUT)/$(BOARD)-schematic.pdf $(EDA)/$(BOARD).kicad_sch $(QUIET)
+
+bom: ## Review BOM with LCSC numbers, assembly side and unpopulated footprints -> build/<board>/<board>-bom.csv, .md
+	@$(KIPY) tools/bom.py $(BOARD) $(FILTER)
 
 layout: ## Outline, placement, zones and autorouting from boards/<board>/layout.py
 	@$(KIPY) $(SRC)/layout.py $(FILTER)
@@ -68,10 +75,11 @@ verify: check erc ## All checks without modifying committed files (zones as last
 	$(KICAD) pcb drc --severity-all --exit-code-violations -o $(OUT)/drc.rpt $(EDA)/$(BOARD).kicad_pcb $(QUIET)
 	@$(MAKE) --no-print-directory fab enclosure collide BOARD=$(BOARD)
 
-selftest: ## Prove the collision check can fail: a lowered lid must be reported
+selftest: ## Prove the checks can fail: a lowered lid and a changed schematic must be reported
 	uv run python boards/throwaway/enclosure.py --lid-drop 6 >/dev/null
 	@if uv run python tools/collide.py throwaway >/dev/null; then echo "selftest: collision NOT detected"; exit 1; else echo "selftest: collision detected as expected"; fi
 	uv run python boards/throwaway/enclosure.py >/dev/null
+	@tools/selftest-schematic.sh valve-node $(PCB)
 
 clean: ## Remove generated outputs
 	rm -rf build

@@ -1,0 +1,299 @@
+"""
+Valve node: Modbus RTU slave on the buried RS485 cable, up to four 24 VAC valve outputs.
+
+Specification with the reasoning for every part: docs/valve-node-spec.md.
+What changed between specification and schematic: docs/valve-node-schematic.md.
+
+Population options (parts marked DNP in the schematic are footprints without parts):
+  outputs 3 and 4    not populated; populate the whole output module for a three- or four-valve box
+  moisture sensor    protection network populated, terminal J_MOIST not populated
+  termination, bias  not populated (R_TERM, R_BIAS_A, R_BIAS_B), jumper JP_TERM open
+  UPDI header        not populated
+"""
+
+load("../../lib/jlcpcb.zen", "JLCPCB_2L")
+
+Resistor = Module("@stdlib/generics/Resistor.zen")
+Capacitor = Module("@stdlib/generics/Capacitor.zen")
+Led = Module("@stdlib/generics/Led.zen")
+PinHeader = Module("@stdlib/generics/PinHeader.zen")
+TestPoint = Module("@stdlib/generics/TestPoint.zen")
+MountingHole = Module("@stdlib/generics/MountingHole.zen")
+Output = Module("output.zen")
+
+SYM = "../../lib/kicad/symbols/"
+FP = "../../lib/kicad/footprints.pretty/"
+OUTPUTS_POPULATED = 2
+
+# --- Nets ---------------------------------------------------------------------------------------
+
+GND = Ground("GND")
+V5 = Power("+5V", voltage="5V")
+VIN = Power("VIN", voltage="12V")  # behind fuse and reverse-polarity diode; a surge is clamped to 24.4 V
+
+# The eight wires of the bus cable, passed through from jack to jack.
+BUS_12V = Net("BUS_12V")
+BUS_A = Net("BUS_A")  # brown, RJ45 pin 8
+BUS_B = Net("BUS_B")  # brown/white, RJ45 pin 7
+AC_A = Net("AC_A")  # orange/white, RJ45 pin 1: feeds the valve commons through F2
+AC_B = Net("AC_B")  # orange, RJ45 pin 2: switched by the triacs
+SPARE_1 = Net("SPARE_1")  # blue, RJ45 pin 4
+SPARE_2 = Net("SPARE_2")  # blue/white, RJ45 pin 5
+
+V12_F = Net("V12_F")  # +12 V behind the fuse
+AC_COM = Net("AC_COM")  # valve common: 24 VAC a behind the fuse
+RS_A = Net("RS_A")  # transceiver side of the A/B swap jumpers
+RS_B = Net("RS_B")
+
+TXD = Net("TXD")
+RXD = Net("RXD")
+XDIR = Net("XDIR")
+UPDI = Net("UPDI")
+LED = Net("LED")
+LED_A = Net("LED_A")
+MOIST = Net("MOIST")
+MOIST_IN = Net("MOIST_IN")
+ADDR = [Net("ADDR%d" % i) for i in (1, 2, 3, 4)]
+DRIVE = [Net("DRIVE%d" % i) for i in (1, 2, 3, 4)]
+MON = [Net("MON%d" % i) for i in (1, 2, 3, 4)]
+VALVE = [Net("VALVE%d" % i) for i in (1, 2, 3, 4)]
+
+# --- Bus jacks ----------------------------------------------------------------------------------
+# T568B: 1 orange/white, 2 orange, 3 green/white, 4 blue, 5 blue/white, 6 green, 7 brown/white, 8 brown.
+
+for name in ("J_IN", "J_OUT"):
+    Component(
+        name=name,
+        prefix="J",
+        symbol=Symbol(SYM + "8P8C.kicad_sym"),
+        footprint=File("../../lib/lcsc/lcsc.pretty/RJ45-TH_RJHSE-5080.kicad_mod"),
+        pins={"1": AC_A, "2": AC_B, "3": BUS_12V, "4": SPARE_1, "5": SPARE_2, "6": GND, "7": BUS_B, "8": BUS_A},
+        part=Part(mpn="RJHSE-5080", manufacturer="Amphenol ICC"),
+    )
+
+# The spare pair can double the 24 VAC pair when the far valve does not pull in. Open by default.
+for name, spare, ac in (("JP_SPARE_1", SPARE_1, AC_A), ("JP_SPARE_2", SPARE_2, AC_B)):
+    Component(
+        name=name,
+        prefix="JP",
+        symbol=Symbol(SYM + "SolderJumper_2_Open.kicad_sym"),
+        footprint=File("@stdlib/kicad-footprints/Jumper.pretty/SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm.kicad_mod"),
+        pins={"A": spare, "B": ac},
+        skip_bom=True,
+    )
+
+# --- 12 V input and 5 V regulator ---------------------------------------------------------------
+
+# F1 takes this node off the 12 V pair when D1 or anything behind it fails short.
+Component(
+    name="F1",
+    prefix="F",
+    symbol=Symbol(SYM + "Polyfuse.kicad_sym"),
+    footprint=File(FP + "Fuse_1812_4532Metric.kicad_mod"),
+    pins={"1": BUS_12V, "2": V12_F},
+    part=Part(mpn="mSMD020-60V", manufacturer="TECHFUSE"),
+    properties={"value": "0.2A 60V"},
+)
+# Bidirectional, so a reversed supply does not short the bus through the TVS.
+Component(
+    name="D1",
+    prefix="D",
+    symbol=Symbol("@stdlib/kicad-symbols/Device.kicad_symdir/D_TVS.kicad_sym"),
+    footprint=File("@stdlib/kicad-footprints/Diode_SMD.pretty/D_SMB.kicad_mod"),
+    pins={"A1": GND, "A2": V12_F},
+    part=Part(mpn="SMBJ15CA-E3/52", manufacturer="Vishay"),
+    properties={"value": "SMBJ15CA"},
+)
+# Reverse-polarity protection.
+Component(
+    name="D2",
+    prefix="D",
+    symbol=Symbol("@stdlib/kicad-symbols/Device.kicad_symdir/D.kicad_sym"),
+    footprint=File("@stdlib/kicad-footprints/Diode_SMD.pretty/D_SMA.kicad_mod"),
+    pins={"A": V12_F, "K": VIN},
+    part=Part(mpn="M7", manufacturer="MDD"),
+    properties={"value": "M7"},
+)
+Capacitor(name="C_VIN", value="10uF", package="1206", voltage="50V", dielectric="X5R", mpn="CL31A106KBHNNNE", manufacturer="Samsung Electro-Mechanics", P1=VIN, P2=GND)
+Component(
+    name="U_REG",
+    symbol=Symbol(SYM + "HT75xx-1-SOT89.kicad_sym"),
+    footprint=File(FP + "SOT-89-3.kicad_mod"),
+    pins={"VIN": VIN, "GND": GND, "VOUT": V5},
+    part=Part(mpn="HT7550-1", manufacturer="Holtek"),
+    properties={"value": "HT7550-1"},
+)
+Capacitor(name="C_5V", value="10uF", package="0805", voltage="25V", dielectric="X5R", mpn="CL21A106KAYNNNE", manufacturer="Samsung Electro-Mechanics", P1=V5, P2=GND)
+
+# --- RS485 --------------------------------------------------------------------------------------
+
+# TVS at the jacks, before anything else on the pair.
+Component(
+    name="D3",
+    prefix="D",
+    symbol=Symbol(SYM + "SM712_SOT23.kicad_sym"),
+    footprint=File(FP + "SOT-23.kicad_mod"),
+    pins={"A1": BUS_A, "A2": BUS_B, "common": GND},
+    part=Part(mpn="PSM712-LF-T7", manufacturer="ProTek Devices"),
+    properties={"value": "PSM712"},
+)
+
+# Termination: resistor and jumper are both left open. A node at the end of a faster or longer bus
+# gets the resistor and a solder bridge.
+TERM = Net("TERM")
+Resistor(name="R_TERM", value="120", package="0603", mpn="0603WAF1200T5E", manufacturer="UNI-ROYAL", P1=BUS_A, P2=TERM, dnp=True)
+Component(
+    name="JP_TERM",
+    prefix="JP",
+    symbol=Symbol(SYM + "SolderJumper_2_Open.kicad_sym"),
+    footprint=File("@stdlib/kicad-footprints/Jumper.pretty/SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm.kicad_mod"),
+    pins={"A": TERM, "B": BUS_B},
+    skip_bom=True,
+)
+
+# A/B swap. Default (pads 1-2 bridged in copper): brown is A. To swap, cut both bridges and solder
+# pads 2-3 on both jumpers.
+for name, rs, straight, crossed in (("JP_A", RS_A, BUS_A, BUS_B), ("JP_B", RS_B, BUS_B, BUS_A)):
+    Component(
+        name=name,
+        prefix="JP",
+        symbol=Symbol(SYM + "SolderJumper_3_Bridged12.kicad_sym"),
+        footprint=File("@stdlib/kicad-footprints/Jumper.pretty/SolderJumper-3_P1.3mm_Bridged12_Pad1.0x1.5mm.kicad_mod"),
+        pins={"A": straight, "C": rs, "B": crossed},
+        skip_bom=True,
+    )
+
+# Bias for an idle bus, on the transceiver side so it follows a swap. Populated on one node only
+# if the idle voltage measured at commissioning is between 40 and 200 mV.
+Resistor(name="R_BIAS_A", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=V5, P2=RS_A, dnp=True)
+Resistor(name="R_BIAS_B", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=RS_B, P2=GND, dnp=True)
+
+Component(
+    name="U_RS485",
+    symbol=Symbol(SYM + "THVD2410DR.kicad_sym"),
+    footprint=File(FP + "SOIC-8_3.9x4.9mm_P1.27mm.kicad_mod"),
+    pins={"RO": RXD, "~{RE}": XDIR, "DE": XDIR, "DI": TXD, "GND": GND, "A": RS_A, "B": RS_B, "VCC": V5},
+    part=Part(mpn="THVD2410DR", manufacturer="Texas Instruments"),
+)
+Capacitor(name="C_RS485", value="100nF", package="0603", voltage="50V", dielectric="X7R", mpn="CC0603KRX7R9BB104", manufacturer="YAGEO", P1=V5, P2=GND)
+# Driver off and receiver on during reset, programming and a firmware crash.
+Resistor(name="R_XDIR", value="10k", package="0603", mpn="0603WAF1002T5E", manufacturer="UNI-ROYAL", P1=XDIR, P2=GND)
+
+# --- Microcontroller ----------------------------------------------------------------------------
+
+Component(
+    name="U_MCU",
+    symbol=Symbol(SYM + "ATtiny1616-M.kicad_sym"),
+    footprint=File(FP + "VQFN-20-1EP_3x3mm_P0.4mm_EP1.7x1.7mm.kicad_mod"),
+    pins={
+        "VCC": V5,
+        "GND": GND,
+        "~{RESET}/PA0": UPDI,
+        "PA1": MOIST,  # ADC0 AIN1
+        "PA2": LED,
+        "PA3": MON[3],
+        "PA4": DRIVE[0],
+        "PA5": MON[0],
+        "PA6": DRIVE[1],
+        "PA7": MON[1],
+        "PB0": XDIR,  # USART0 XDIR
+        "PB1": DRIVE[3],
+        "PB2": TXD,  # USART0 TXD
+        "PB3": RXD,  # USART0 RXD, internal pull-up
+        "PB4": MON[2],
+        "PB5": DRIVE[2],
+        "PC0": ADDR[0],
+        "PC1": ADDR[1],
+        "PC2": ADDR[2],
+        "PC3": ADDR[3],
+    },
+    part=Part(mpn="ATTINY1616-MNR", manufacturer="Microchip"),
+)
+Capacitor(name="C_MCU", value="100nF", package="0603", voltage="50V", dielectric="X7R", mpn="CC0603KRX7R9BB104", manufacturer="YAGEO", P1=V5, P2=GND)
+
+# Programming: UPDI, 5 V, ground. Footprint only; a header is soldered or pogo pins are used.
+PinHeader(name="J_UPDI", pins=3, mount="THT", P1=UPDI, P2=V5, P3=GND, dnp=True)
+
+# Address, binary, switch 1 is the lowest bit. A closed switch pulls the pin to ground (internal pull-ups).
+Component(
+    name="SW_ADDR",
+    prefix="SW",
+    symbol=Symbol(SYM + "SW_DIP_x04.kicad_sym"),
+    footprint=File(FP + "SW_DIP_SPSTx04_Slide_KingTek_DSHP04TS_W7.62mm_P1.27mm.kicad_mod"),
+    pins={"1": ADDR[0], "2": ADDR[1], "3": ADDR[2], "4": ADDR[3], "5": GND, "6": GND, "7": GND, "8": GND},
+    part=Part(mpn="DSHP04TSGET", manufacturer="Kingtek"),
+    properties={"value": "DSHP04TSGET"},
+)
+
+Resistor(name="R_LED", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=LED, P2=LED_A)
+Led(name="D_STATUS", package="0603", color="green", mpn="19-217/GHC-YR1S2/3T", manufacturer="Everlight", A=LED_A, K=GND)
+
+# --- Moisture sensor input ----------------------------------------------------------------------
+# The protection network is populated on every board; the terminal is not.
+
+Component(
+    name="J_MOIST",
+    prefix="J",
+    symbol=Symbol(SYM + "Screw_Terminal_01x03.kicad_sym"),
+    footprint=File(FP + "PhoenixContact_MC_1,5_3-G-3.81_1x03_P3.81mm_Horizontal.kicad_mod"),
+    pins={"Pin_1": V5, "Pin_2": GND, "Pin_3": MOIST_IN},
+    part=Part(mpn="KF2EDGR-3.81-3P", manufacturer="Cixi Kefa Elec"),
+    properties={"value": "KF2EDGR-3.81-3P"},
+    dnp=True,
+)
+Resistor(name="R_MOIST", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=MOIST_IN, P2=MOIST)
+Capacitor(name="C_MOIST", value="100nF", package="0603", voltage="50V", dielectric="X7R", mpn="CC0603KRX7R9BB104", manufacturer="YAGEO", P1=MOIST, P2=GND)
+# Clamp to both rails behind the series resistor: pin 1 anode, pin 2 cathode, pin 3 the common point.
+Component(
+    name="D_MOIST",
+    prefix="D",
+    symbol=Symbol(SYM + "BAV99.kicad_sym"),
+    footprint=File(FP + "SOT-23.kicad_mod"),
+    pins={"A": GND, "K": V5, "COM": MOIST},
+    part=Part(mpn="BAV99,215", manufacturer="Nexperia"),
+)
+
+# --- 24 VAC -------------------------------------------------------------------------------------
+
+Component(
+    name="D4",
+    prefix="D",
+    symbol=Symbol("@stdlib/kicad-symbols/Device.kicad_symdir/D_TVS.kicad_sym"),
+    footprint=File("@stdlib/kicad-footprints/Diode_SMD.pretty/D_SMB.kicad_mod"),
+    pins={"A1": AC_A, "A2": AC_B},
+    part=Part(mpn="SMBJ48CA", manufacturer="Littelfuse"),
+    properties={"value": "SMBJ48CA"},
+)
+# F2 takes this node's valves off the 24 VAC pair when a solenoid or valve wire is shorted.
+Component(
+    name="F2",
+    prefix="F",
+    symbol=Symbol(SYM + "Polyfuse.kicad_sym"),
+    footprint=File(FP + "Fuse_1812_4532Metric.kicad_mod"),
+    pins={"1": AC_A, "2": AC_COM},
+    part=Part(mpn="mSMD050-60V", manufacturer="TECHFUSE"),
+    properties={"value": "0.5A 60V"},
+)
+
+for i in range(4):
+    Output(
+        name="OUT%d" % (i + 1),
+        DRIVE=DRIVE[i],
+        MON=MON[i],
+        GND=GND,
+        AC_B=AC_B,
+        AC_COM=AC_COM,
+        VALVE=VALVE[i],
+        dnp=i >= OUTPUTS_POPULATED,
+    )
+
+# --- Test pads and mounting ---------------------------------------------------------------------
+
+# Supply rails, and the four pins that are free on a two-valve board.
+for name, net in (("TP_5V", V5), ("TP_GND", GND), ("TP_VIN", VIN), ("TP_DRIVE3", DRIVE[2]), ("TP_MON3", MON[2]), ("TP_DRIVE4", DRIVE[3]), ("TP_MON4", MON[3])):
+    TestPoint(name=name, variant="Pad_D1.5mm", P1=net)
+
+for i in (1, 2, 3, 4):
+    MountingHole(name="H%d" % i, diameter="M3", plating="Mechanical")
+
+Board(name="valve-node", path="eda", layers=2, config=JLCPCB_2L, copper_finish="HAL lead-free", schematic=True)

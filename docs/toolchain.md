@@ -10,7 +10,8 @@ LED) on 2026-11-13; the full chain runs in about 15 seconds.
 boards/<board>/<board>.zen ──check──▶ Zener compiler (nets, types, voltages)
         │ apply
         ▼
-eda/<board>.kicad_sch ──erc──▶ erc.rpt          ──schematic──▶ <board>-schematic.pdf
+eda/<board>.kicad_sch ◀──arrange── schematic.py (where each symbol sits; optional)
+        │ erc ──▶ erc.rpt      schematic ──▶ <board>-schematic.pdf      bom ──▶ <board>-bom.csv
 eda/<board>.kicad_pcb  (footprints and nets, unplaced)
         │ layout   ◀── layout.py (positions) ◀── mech.json (outline, holes) ──▶ enclosure.py
         ▼                                                                          │ enclosure
@@ -21,7 +22,7 @@ eda/<board>.kicad_pcb  (outline, placed, routed by Freerouting)                 
 fab/<board>-gerbers.zip, -bom-jlcpcb.csv, -cpl-jlcpcb.csv, <board>.step ──collide──┘
 ```
 
-Sources are the `.zen` file, `layout.py`, `enclosure.py` and `mech.json`. Everything under `eda/`
+Sources are the `.zen` file, `schematic.py`, `layout.py`, `enclosure.py` and `mech.json`. Everything under `eda/`
 is generated but committed, so the design opens in KiCad without any of these tools. Everything
 under `build/` is generated and ignored by git.
 
@@ -33,7 +34,9 @@ Run from the repository root. `BOARD` defaults to `throwaway`.
 |---|---|
 | `make setup` | Pinned tools in `.tools/`, Python environment in `.venv/` |
 | `make check` | Zener compile: connectivity, typed nets, voltage checks (no files written) |
-| `make apply` | `boards/<board>/eda/`: KiCad schematic, board with footprints and nets, project file |
+| `make apply` | `boards/<board>/eda/`: KiCad schematic, board with footprints and nets, project file; ends with `make arrange` |
+| `make arrange` | The schematic redrawn from `boards/<board>/schematic.py`, then compared with the Zener source; fails on any difference. Does nothing for a board without that file |
+| `make bom` | `build/<board>/<board>-bom.csv` and `.md`: every footprint with part number, LCSC number, class, assembly type and side, populated or not |
 | `make erc` | `build/<board>/erc.rpt`; fails on any violation |
 | `make schematic` | `build/<board>/<board>-schematic.pdf` |
 | `make layout` | Board outline, placement, ground zone and routed tracks in the `.kicad_pcb` |
@@ -44,7 +47,7 @@ Run from the repository root. `BOARD` defaults to `throwaway`.
 | `make collide` | Overlap volume of the populated board against each enclosure part; fails on overlap |
 | `make all` | All of the above in order |
 | `make verify` | The checks only, without touching committed files (what Obeya runs before landing) |
-| `make selftest` | Lowers the lid into the pin header and expects `collide` to fail |
+| `make selftest` | Lowers the lid into the pin header and expects `collide` to fail; renames a net label in the valve node schematic and expects the comparison with the source to fail |
 
 ## Schematic format: Zener
 
@@ -82,6 +85,27 @@ What Zener costs, and how the repo contains it:
 | If Zener disappears | `eda/` is committed and complete. The project continues in plain KiCad from that state |
 | Only a subset of the KiCad libraries is bundled | Other symbols and footprints live in `lib/` (needed for LCSC parts anyway) |
 
+## Schematic arrangement
+
+`pcb apply` writes a schematic that is electrically complete but not drawn: symbols in a grid
+sorted by part type, every pin ending in a net label. That is enough for the throwaway board and
+useless for reviewing 80 parts. A board can therefore have a `schematic.py`, the counterpart of
+`layout.py` for the schematic. It places symbols, draws wires between neighbouring pins, puts
+labels and power symbols on the rest and frames the functional blocks
+([`tools/schlayout.py`](../tools/schlayout.py)).
+
+- The script decides positions only. Which pin is on which net is read from the netlist Zener
+  writes for the board (`eda/default.net`).
+- Three checks guard the drawing. `schlayout` refuses a drawing in which a net falls apart or two
+  nets touch. Zener then compares the schematic with the source (`pcb build -D warnings`). KiCad's
+  ERC runs on the result.
+- Zener keeps positions, wires and texts of an existing schematic on the next apply and repairs
+  only what the source changed. It rewrites the file in its own formatting, though, so `make apply`
+  always ends with `make arrange`: the committed schematic is the script's output, byte for byte
+  the same on every run.
+- Symbols are addressed by their Zener path (`OUT1.R_GATE`), not by reference designator, because
+  Zener renumbers references when parts are added.
+
 ## What is installed
 
 `scripts/setup.sh` downloads pinned versions with SHA-256 checks into `.tools/` and changes nothing
@@ -99,8 +123,9 @@ else on the machine (no shell profile edits, no URL handlers, no global packages
 ## Libraries and the JLCPCB mapping
 
 See [`lib/README.md`](../lib/README.md). In short: passives and connectors come from Zener's bundled
-KiCad subset; other parts are fetched per LCSC number into `lib/lcsc/` with the 3D model embedded in
-the footprint file; `lib/jlcpcb.zen` holds design rules for JLCPCB's two-layer process; and
+KiCad subset; other standard symbols and footprints are copied from the KiCad installation into
+`lib/kicad/`; part-specific footprints are fetched per LCSC number into `lib/lcsc/` with the 3D
+model embedded in the footprint file; `lib/jlcpcb.zen` holds design rules for JLCPCB's two-layer process; and
 `lib/jlcpcb-parts.csv` maps each manufacturer part number to the LCSC number, assembly type and
 rotation correction that `make fab` writes into the BOM and placement file.
 
@@ -123,11 +148,12 @@ Found while running the chain. Ordered by how much they matter for the real boar
    file: `lib_symbol_issues` (Zener embeds symbols without a library table) and
    `power_pin_not_driven` (Zener has no `PWR_FLAG`; a power net without a source is caught by
    Zener's typed nets instead). Pin-type conflicts and unconnected pins are still checked.
+   The arrangement step adds a comparison of the drawn schematic with the Zener source.
    Schematic-parity in DRC is not used: Zener names local nets `LED_A` on the board and `/LED_A` in
    the schematic, so every local net is reported as a mismatch.
 4. **Part numbers are not in the schematic.** Zener writes `Mpn` and `Manufacturer` to the board's
-   footprints only. The schematic PDF shows values; the BOM is a separate file. A schematic review
-   needs both side by side.
+   footprints only. The schematic PDF shows values; the BOM is a separate file (`make bom`). A
+   schematic review needs both side by side.
 5. **LCSC data cannot be fully verified offline.** The community search API (jlcsearch) answered
    half the lookups with errors and reports basic/extended inconsistently. Three of the five
    throwaway parts are therefore marked `unverified`. Before an order, class, stock and price need
@@ -157,7 +183,11 @@ Found while running the chain. Ordered by how much they matter for the real boar
 11. **The collision check finds overlap, not clearance.** A part 0.05 mm from a wall passes. It
     also reports solids by position, not by reference designator. Minimum-distance checking and
     names are small additions for the enclosure work.
-12. **Small Zener rough edges.** `copper_finish` documents `"HASL Lead-free"` but only accepts
+12. **Zener joins pins that share a name.** A symbol with two pins called `NC` gets one net for
+    both, and the board would connect them. Copied symbols get distinct pin names
+    (`scripts/copy-kicad.py … 3=NC3 5=NC5`). Generic modules (`Tvs`) also write their own value
+    text ("15V TVS Diode"); a part whose value should be its type is a plain `Component`.
+13. **Small Zener rough edges.** `copper_finish` documents `"HASL Lead-free"` but only accepts
     `"HAL lead-free"`; default design rules (0.09 mm) are finer than JLCPCB's standard process and
     must be overridden (`lib/jlcpcb.zen`); a shared library must be its own package with a `pcb.toml`.
 

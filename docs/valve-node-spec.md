@@ -3,7 +3,8 @@
 What the valve node board has to do, how it is built and why. This is the first of three hold
 points for the board. The schematic does not start before the owner signed this page off.
 
-Status: proposal, 2026-11-14, not signed off.
+Status: signed off by the owner on 2026-11-14. The schematic that follows it is described in
+[`valve-node-schematic.md`](valve-node-schematic.md).
 
 The node replaces every existing node on the buried cable. Cable, wiring, addresses and registers
 stay as described in [`bus-protocol.md`](bus-protocol.md). The installation it goes into, with
