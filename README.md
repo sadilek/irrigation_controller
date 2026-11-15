@@ -7,8 +7,8 @@ it to Home Assistant.
 Everything is source text: schematics in [Zener](https://github.com/diodeinc/pcb), generated into
 KiCad 10 files, placed and routed by script, enclosures in [build123d](https://github.com/gumyr/build123d).
 
-**Status:** the toolchain works end to end. The valve node is designed up to fabrication data and
-waits for the owner's sign-off; nothing is ordered or printed. The controller is not designed yet.
+**Status:** the toolchain works end to end. The valve node is designed up to fabrication data,
+signed off by the owner; nothing is printed or ordered yet. The controller is not designed yet.
 
 ## Quick start
 

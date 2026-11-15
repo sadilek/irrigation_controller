@@ -19,8 +19,9 @@ enclosure) and places every order himself.
 ([`docs/valve-node-spec.md`](docs/valve-node-spec.md)), a signed-off schematic with bill of
 materials ([`docs/valve-node-schematic.md`](docs/valve-node-schematic.md)), an enclosure model
 ([`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md)) and a layout with fabrication
-data ([`docs/valve-node-layout.md`](docs/valve-node-layout.md)). Layout and enclosure are the third
-hold point: proposed, not signed off, nothing printed, nothing ordered. The whole chain runs for
+data ([`docs/valve-node-layout.md`](docs/valve-node-layout.md)). The owner signed off layout and
+fabrication data, the third hold point, on 2026-11-15. Nothing is printed and nothing is ordered:
+the test fit and the order are the owner's. The whole chain runs for
 both boards (`make all BOARD=valve-node`, about two minutes). No real board exists yet.
 
 ## Rules that are not negotiable

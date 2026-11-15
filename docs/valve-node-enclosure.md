@@ -5,12 +5,12 @@ the mounting holes and the connector positions in
 [`boards/valve-node/mech.json`](../boards/valve-node/mech.json) are the input to the layout.
 
 Status: approved by the owner on 2026-11-14 as input to the layout (second version: a box the
-size of a surface-mounted junction box, no cable entry for the moisture sensor). The layout exists
-now ([`valve-node-layout.md`](valve-node-layout.md)). The valve wires end in a terminal block on the board
+size of a surface-mounted junction box, no cable entry for the moisture sensor). The layout
+([`valve-node-layout.md`](valve-node-layout.md)) was approved by the owner on 2026-11-15. The valve wires end in a terminal block on the board
 instead of two pluggable screw terminals (owner, 2026-11-15): a mated plug did not fit in front of
 the board, see deviation 8. The block stands at the far side of the board and the fourth mounting
 hole moved into the corner it left (owner, 2026-11-15).
-Nothing is printed yet; the test fit is part of the layout hold point. One dimension (the plug bore) is assumed until the owner
+Nothing is printed yet; the owner does the test fit before ordering the board. One dimension (the plug bore) is assumed until the owner
 has measured it ([To measure](#to-measure)); all three are parameters at the top of
 [`enclosure.py`](../boards/valve-node/enclosure.py), and one command rebuilds everything.
 
@@ -192,7 +192,7 @@ The pictures on this page show the real board.
 1. **Nothing is printed.** Whether the slit bus insert, the printed gasket and the printed thread
    seal is decided by the water bath test (24 h under water, paper towel inside), with the real
    cable in the entries. Print one base, one lid and the entry parts before the board is ordered:
-   the same print is the test fit for the layout hold point.
+   the same print is the test fit before the order.
 2. **One dimension is assumed:** the plug bore ([To measure](#to-measure)).
 3. **The nuts are 1 mm apart.** They turn, but fingers do not fit between them; each is gripped
    from above and below.

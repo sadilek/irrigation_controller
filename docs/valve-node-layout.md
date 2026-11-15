@@ -1,9 +1,10 @@
 # Valve node: layout and fabrication data
 
-The third of three hold points for the valve node. No board is ordered before the owner signed
-this page off, together with the renders, the reports and the test fit. Only the owner orders.
+The third of three hold points for the valve node, with the renders and the reports. Only the
+owner orders, and only after the test fit.
 
-Status: proposal, 2026-11-15. Nothing is ordered, nothing is printed.
+Status: approved by the owner on 2026-11-15. Nothing is printed, nothing is ordered; the test fit
+is still open ([Open points](#open-points)).
 
 The circuit is in [`valve-node-spec.md`](valve-node-spec.md) and
 [`valve-node-schematic.md`](valve-node-schematic.md), the box and the board outline in
@@ -373,7 +374,7 @@ The same print is the first sample for the water bath test
 
 | Point | Needed for | Who, when |
 |---|---|---|
-| Test fit with a printed enclosure | Sign-off | Owner, before the order |
+| Test fit with a printed enclosure | Order | Owner, before the order |
 | Rotations, stock and class in JLCPCB's preview | Order | Owner, while ordering; corrections go into `lib/jlcpcb-parts.csv` |
 | Price of lead-free HASL, shipping, board size limit of Economic assembly | Cost | Shown in JLCPCB's quote |
 | How the four valve wires handle on 36 mm of free length, with the real wire | Handling | Owner, at the test fit: the block is a block on the dummy, the entry is real |
