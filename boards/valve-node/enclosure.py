@@ -53,8 +53,8 @@ HOLES = [(x, -y) for x, y in mech["mounting_holes"].values()]  # KiCad y down ->
 CONNECTORS = {k: v for k, v in mech["connectors"].items() if not k.startswith("_")}
 
 # --- What the owner still has to measure (assumed until then) -----------------------------------
-BUS_CABLE_D = 6.0  # outer diameter of the buried bus cable
-VALVE_WIRE_D = 2.2  # outer diameter of one valve wire, with insulation
+BUS_CABLE_D = 6.4  # outer diameter of the buried bus cable (measured by the owner)
+VALVE_WIRE_D = 2.8  # outer diameter of one valve wire, with insulation (measured by the owner)
 PLUG_BORE_D = 15.5  # smallest round hole a crimped RJ45 plug passes through (11.7 x 8.1 mm body plus latch)
 
 # --- Box ----------------------------------------------------------------------------------------

@@ -10,8 +10,8 @@ now ([`valve-node-layout.md`](valve-node-layout.md)). The valve wires end in a t
 instead of two pluggable screw terminals (owner, 2026-11-15): a mated plug did not fit in front of
 the board, see deviation 8. The block stands at the far side of the board and the fourth mounting
 hole moved into the corner it left (owner, 2026-11-15).
-Nothing is printed yet; the test fit is part of the layout hold point. Three dimensions are assumed until the owner
-has measured them ([To measure](#to-measure)); they are parameters at the top of
+Nothing is printed yet; the test fit is part of the layout hold point. One dimension (the plug bore) is assumed until the owner
+has measured it ([To measure](#to-measure)); all three are parameters at the top of
 [`enclosure.py`](../boards/valve-node/enclosure.py), and one command rebuilds everything.
 
 The requirements come from [`valve-node-spec.md`](valve-node-spec.md), "Outline and connectors"
@@ -193,13 +193,13 @@ The pictures on this page show the real board.
    seal is decided by the water bath test (24 h under water, paper towel inside), with the real
    cable in the entries. Print one base, one lid and the entry parts before the board is ordered:
    the same print is the test fit for the layout hold point.
-2. **Three dimensions are assumed** ([To measure](#to-measure)).
+2. **One dimension is assumed:** the plug bore ([To measure](#to-measure)).
 3. **The nuts are 1 mm apart.** They turn, but fingers do not fit between them; each is gripped
    from above and below.
 4. **Four lid screws for 320 mm of gasket.** See [Seal between base and lid](#seal-between-base-and-lid).
 5. **The height of the jack's plug opening was assumed** (7 mm above the board, the middle of a
    13.2 mm body). The section picture above now shows the jack's own 3D model: the drawn plug
-   meets the opening. The bore is 15.5 mm for a 6 mm cable, so a few millimetres do not matter.
+   meets the opening. The bore is 15.5 mm for a 6.4 mm cable, so a few millimetres do not matter.
 6. **Plugs were not in the collision check, and the valve plugs did not fit.** The 14 mm in
    front of the valve headers were an allowance for plugs that nobody had measured. A mated screw
    plug stands 10.6 mm out and needs 7 mm more to come free (deviation 8). The two RJ45 plugs are
@@ -209,13 +209,13 @@ The pictures on this page show the real board.
 ## To measure
 
 The owner, with a caliper, before the first print. Each value is one line at the top of
-`enclosure.py`.
+`enclosure.py`. Two are measured (owner, 2026-11-15); the plug is not bought yet.
 
-| Parameter | Assumed | What to measure |
+| Parameter | Value | What to measure |
 |---|---|---|
-| `BUS_CABLE_D` | 6.0 mm | Outer diameter of the bus cable |
-| `VALVE_WIRE_D` | 2.2 mm | Outer diameter of one valve wire with insulation |
-| `PLUG_BORE_D` | 15.5 mm | Diagonal of the crimped RJ45 plug including the pressed-down latch, plus 1 mm |
+| `BUS_CABLE_D` | 6.4 mm, measured (assumed 6.0 mm before) | Outer diameter of the bus cable |
+| `VALVE_WIRE_D` | 2.8 mm, measured (assumed 2.2 mm before) | Outer diameter of one valve wire with insulation |
+| `PLUG_BORE_D` | 15.5 mm, assumed | Diagonal of the crimped RJ45 plug including the pressed-down latch, plus 1 mm |
 | | 114 × 93 × 34 mm | Does the box fit into each valve box next to the valves? |
 
 ## Handed to the layout
