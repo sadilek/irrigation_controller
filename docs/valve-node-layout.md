@@ -3,8 +3,12 @@
 The third of three hold points for the valve node, with the renders and the reports. Only the
 owner orders, and only after the test fit.
 
-Status: approved by the owner on 2026-11-15. Nothing is printed, nothing is ordered; the test fit
-is still open ([Open points](#open-points)).
+Status: approved by the owner on 2026-11-15, then changed the same day by the owner's decision:
+termination, bias and the A/B swap jumpers left the node and JLCPCB populates the UPDI header, so
+that nothing on the node is soldered by hand ([The programming header](#the-programming-header),
+deviation 8). The changed schematic and layout are not signed off yet; until then the approved
+state no longer stands. Nothing is printed, nothing is ordered; the test fit is still open
+([Open points](#open-points)).
 
 The circuit is in [`valve-node-spec.md`](valve-node-spec.md) and
 [`valve-node-schematic.md`](valve-node-schematic.md), the box and the board outline in
@@ -46,7 +50,7 @@ positions of the two bus jacks and the valve terminal block are shared with the 
 | One column at x = 64 mm | The four optocouplers | The only parts that span the isolation gap. Their pin rows are 7.5 mm apart, and nothing else crosses that line |
 | Right of the OUT jack | 24 VAC TVS, valve fuse, the two spare-pair jumpers | The 24 VAC pair leaves the jack here, so the TVS is the first part on the pair |
 | Between the jacks | 12 V fuse, 12 V TVS, series diode; RS485 TVS just above | Every bus wire passes here on its way from jack to jack, so each TVS sits on the wire it protects |
-| Above the jacks | Regulator, transceiver with its jumpers, microcontroller, address switch, programming pads | Logic. The microcontroller's output pins face the optocouplers, its UART pins the transceiver |
+| Above the jacks | Regulator, transceiver, microcontroller, address switch, programming header | Logic. The microcontroller's output pins face the optocouplers, its UART pins the transceiver. The bus pair runs straight up from its TVS to the transceiver |
 | Left third | Empty, ground copper | The outline is as long as the enclosure needs for three cable entries; the circuit needs less |
 
 ## 24 VAC and logic
@@ -144,7 +148,7 @@ both outputs.
 
 ## The logic side
 
-Everything above is drawn in `layout.py` by coordinates. The remaining 28 logic nets are connected
+Everything above is drawn in `layout.py` by coordinates. The remaining 25 logic nets are connected
 by a small router of this repository ([`tools/gridroute.py`](../tools/gridroute.py)): 0.1 mm grid,
 two layers, 45° bends, shortest path first, no second attempts. It works inside a region that
 ends before any 24 VAC copper, so it cannot come near it.
@@ -173,10 +177,12 @@ name and a map of what blocks it.
 | The isolation gap can fail: a track drawn under an optocoupler | reported |
 | The screw head keep-out can fail: a track drawn under a screw head | reported |
 | Board STEP and the two mated bus plugs against every enclosure part (`make collide BOARD=valve-node`) | no overlap, 6 parts |
+| The programming plug on the UPDI header, lid off, against every enclosure part but the lid and against the board | no overlap |
+| The plug check can fail: the plug moved by half a pin pitch, so that the pins hit its housing (`make selftest`) | reported |
 | Height: 14.8 mm above the board's bottom face, 1.7 mm below it | limits from the enclosure: 18 mm above the board, 3.5 mm below |
 | Jack orientation in the render and in the enclosure section | plug opening faces the cable entry |
 | Schematic: unchanged by the layout, ERC | 0 violations |
-| Every populated part has an LCSC number (`make fab`) | 26 BOM lines, 38 placements |
+| Every populated part has an LCSC number (`make fab`) | 27 BOM lines, 39 placements, no footprint without a part |
 
 The second and third self-test exist because of what the first version found: KiCad 10.0.1 did
 not report a track inside a rule area that forbids tracks. The DRC report was clean and the check
@@ -191,13 +197,15 @@ was blind. Both keep-outs are now explicit rules in the rule file, and both are 
 | 1 | Bus jack footprint as fetched: pads 1.6 mm, holes 1.0 mm, pegs as plated holes of 3.3 mm | Pads 1.4 mm, holes 0.9 mm, pegs unplated 3.25 mm | Amphenol's drawing (schematic page, "Handed to the layout"); 0.65 mm instead of 0.45 mm between the 24 VAC and +12 V pads; a track fits between two pads |
 | 2 | Two pluggable screw terminals for the valve wires (headers KF2EDGR-5.08-2P with loose plugs) | One spring terminal block with four poles and push buttons, KF142R-5.08-4P, soldered to the board | See "The valve terminals" below. The schematic changed with it |
 | 3 | Fuses and triacs: the manufacturers draw longer land patterns than KiCad's (schematic page) | KiCad's patterns kept | They are the IPC-7351 patterns for reflow, which is how JLCPCB solders them. The longer ones add toe length for hand and wave soldering. The triac's cooling comes from the copper area, not from the pad |
-| 4 | Silkscreen with reference designators | Function labels only: jacks, valves, jumpers, test pads, programming pads | 59 footprints leave no room. The assembly drawing has the designators |
+| 4 | Silkscreen with reference designators | Function labels only: jacks, valves, jumpers, test pads, programming header | 54 footprints leave no room. The assembly drawing has the designators |
 | 5 | Jack and terminal block silkscreen as fetched | Outline shortened to inside the board edge and off the pads | They drew over the edge and over pads; DRC reports both |
 | 7 | 3D model of the terminal block as fetched: turned by 180°, wire openings facing the triacs | Turned and moved to match the pads, which agree with Kefa's drawing | The pads were right, the model was not. Found in the render; the collision check had passed with the wrong one |
 | 6 | Specification: one clearance for the 24 VAC class | A second class for the spare pair | Open jumpers leave it floating; bridged, it is 24 VAC. It gets the 3 mm wherever it is not between the bus lanes |
+| 8 | After the approval: terminator R14 with jumper JP5 and bias footprints R11, R12 left of the transceiver, swap jumpers JP1 and JP2 between TVS and transceiver, the UPDI header a footprint | All five gone; the bus pair runs from the TVS straight to the transceiver; the header populated. Nothing else moved | Owner, 2026-11-15: nothing on the node is soldered by hand (schematic deviations 7, 8 and 13) |
 
 Not changed: the pin assignment and the board outline. The schematic and the bill of materials
-changed in one place, the valve terminals. One mounting hole moved with them, from (92, 26) to
+changed in one place at the approval, the valve terminals, and after it in the RS485 part and
+the programming header (deviation 8). One mounting hole moved with them, from (92, 26) to
 the corner at (92, 40).
 
 ## Fabrication data
@@ -207,8 +215,8 @@ the corner at (92, 40).
 | File | Content |
 |---|---|
 | `valve-node-gerbers.zip` | Copper, mask, paste, silkscreen, outline, drill files for plated and unplated holes |
-| `valve-node-bom-jlcpcb.csv` | 26 lines with LCSC numbers |
-| `valve-node-cpl-jlcpcb.csv` | 38 placements: 35 surface-mount parts and the 3 through-hole connectors |
+| `valve-node-bom-jlcpcb.csv` | 27 lines with LCSC numbers |
+| `valve-node-cpl-jlcpcb.csv` | 39 placements: 35 surface-mount parts and the 4 through-hole connectors |
 | `valve-node.step` | The populated board, used by the collision check |
 
 To choose when ordering: 2 layers, 1.6 mm, 1 oz copper, lead-free HASL, quantity 5; "Specify a
@@ -221,7 +229,8 @@ What the files cannot guarantee, to check in JLCPCB's own preview before paying:
    packages, and only their placement preview shows it. To look at: series diode D2, tantalum
    capacitor C1 (the marked end is +), status LED D5, microcontroller U5, transceiver U7,
    optocouplers U1 to U4 (pin 1 dot towards the logic side on U1 and U3, towards the 24 VAC side
-   on U2 and U4), triacs Q1 and Q2, regulator U6, RS485 TVS D3, switch SW1. A wrong one is
+   on U2 and U4), triacs Q1 and Q2, regulator U6, RS485 TVS D3, switch SW1, programming header J3 (its row
+   runs along the board's long side, pin 1 next to the address switch). A wrong one is
    corrected with `rotation_offset` in `lib/jlcpcb-parts.csv`, then `make fab` again.
 2. **Stock and class of every part**, as listed in the specification on 2026-11-14. The jack had
    617 in stock.
@@ -238,30 +247,33 @@ and import VAT.
 |---|---|---|
 | Bare boards, 96 × 44 mm, 2 layers. From $2 for five; the surcharge for lead-free HASL was not found, $3 assumed | 5 | 8 |
 | Set-up 8.18, stencil 1.53, placement confirmation 0.45 | 10.16 | 10.16 |
-| Extended parts: 13 surface-mount part types × 3.07 | 39.91 | 39.91 |
+| Extended parts: 13 surface-mount part types and the UPDI header × 3.07 | 42.98 | 42.98 |
 | Surface-mount joints: 117 per board × 0.0016 | 0.94 | 1.87 |
 | Parts, about $9 per board | 45 | 90 |
-| Through-hole soldering by JLCPCB: 3.58 per order + 24 joints per board × 0.0164 | 5.55 | 7.52 |
-| **Sum** | **about 107** | **about 157** |
-| Per board | about 21 | about 16 |
+| Through-hole soldering by JLCPCB: 3.58 per order + 27 joints per board × 0.0164 | 5.79 | 8.01 |
+| **Sum** | **about 110** | **about 161** |
+| Per board | about 22 | about 16 |
 
 With shipping to Germany (not looked up, $15 to $25 assumed) and 19 % import VAT, five boards come
-to about $145 to $160, ten to about $205 to $220.
+to about $150 to $160, ten to about $210 to $220. The UPDI header added about $3 to a five-board
+order: one more extended part type and three joints per board.
 
-The 13 extended part types are almost 40 % of a five-board order and do not grow with the
-quantity. If JLCPCB charges the extended fee for the two through-hole part types as
-well, add $6.14. JLCPCB rounds cheap parts up to a minimum quantity; a few dollars.
+The 14 extended part types are almost 40 % of a five-board order and do not grow with the
+quantity. The sum counts the fee for the UPDI header; if JLCPCB charges it for the jack and the
+terminal block as well, add $6.14. JLCPCB rounds cheap parts up to a minimum quantity; a few dollars.
 
 Not in the sum, bought elsewhere: RJ45
 plugs for solid wire, eight M3 heat-set inserts and eight screws per enclosure, filament, a UPDI
-programmer.
+programmer with a 3-pin Dupont lead.
 
 ### Who solders the through-hole parts
 
-JLCPCB solders them (owner, 2026-11-15; open since the schematic hold point): two bus jacks and
-the valve terminal block, 24 joints per board. A footprint that does not fit a part is then found
-before the boards leave the factory, for about $6 on five boards. The three parts are marked
-`tht` in `lib/jlcpcb-parts.csv`.
+JLCPCB solders them (owner, 2026-11-15; open since the schematic hold point): two bus jacks, the
+valve terminal block and the UPDI header, 27 joints per board. A footprint that does not fit a
+part is then found before the boards leave the factory, for about $6 on five boards. The four
+parts are marked `tht` in `lib/jlcpcb-parts.csv`. The header joined them after the approval; until
+then it was a footprint for the owner to solder, as were the terminator and the bias resistors.
+Nothing on the board is soldered by hand now.
 
 ## The valve terminals
 
@@ -320,6 +332,30 @@ the openings; a real wire sags and lies on the parts.
 To connect a wire: strip 11 mm, push it through the loose insert of the cable entry and across
 the board, hold the button of its pole down, push the wire in, let go. The board comes out after
 the four wires are released the same way.
+
+## The programming header
+
+The microcontroller is programmed once per board through a straight 1×3 pin header, 2.54 mm
+pitch: UPDI, 5 V, ground, left to right. BOOMELE 2.54-1*3PPin (C49257, extended, 220,193 in
+stock on 2026-11-15, $0.03); no 1×3 header is a JLCPCB basic part. JLCPCB solders it with the
+other through-hole parts. It stands where its footprint stood, between the microcontroller and the
+optocouplers; nothing else moved.
+
+![The programming plug on its header, lid off](images/valve-node-layout-updi.png)
+
+| Property | Value | Source |
+|---|---|---|
+| Height | 2.5 mm insulator and 6 mm pins: 8.6 mm above the board in the board's STEP model | JLCPCB listing of C49257; KiCad's model |
+| Below the board | 1.4 mm of pin, within the 3.5 mm the standoffs allow | listing: 3 mm below the insulator |
+| Lid closed | The lid is 22 mm above the board's bottom face, the header's tip 10.2 mm; the lid's centring rib runs along the walls only | `enclosure.py`, collision check |
+| Plug | A 3-pin Dupont housing, 2.5 × 7.5 × 14 mm, on the insulator; its top is 18.2 mm above the board's bottom face, the wires leave upwards | modelled in `enclosure.py` |
+| Around the plug | Optocouplers 3.5 mm beside one end, 3.7 mm high; the address switch 3.6 mm beside the other, 2.5 mm high; the LED and its resistor 2.6 mm beside one long side, a capacitor 3.4 mm beside the other, none higher than 1.1 mm. Fingers take the housing above all of them | board STEP |
+
+The plug goes on and comes off with the lid off: with it, the lid does not close. The collision
+check takes the plug with 40 mm of wire straight up and checks it against the base, the cable
+entries and the board, not against the lid. The housing has a hole over each pin; moved by half a
+pitch it hits the pins, which `make selftest` proves. A plug put on one pin off, or turned round,
+fits mechanically and is not found by any check: the silkscreen names the pins.
 
 ## Test fit
 

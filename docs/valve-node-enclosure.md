@@ -35,7 +35,7 @@ revision, and the model, not its output, is the source. The pictures on this pag
 
 ## The box
 
-![Open, with the board outline and its connectors as blocks](images/valve-node-enclosure-open.png)
+![Open, with the board and the programming plug on its header](images/valve-node-enclosure-open.png)
 
 | | |
 |---|---|
@@ -225,7 +225,11 @@ The owner, with a caliper, before the first print. Each value is one line at the
   new keys for the layout script to use.
 - Connectors are keyed by their name in the Zener source (`J_IN`, `J_VALVES`), because Zener
   renumbers reference designators.
-- The rotation is 0° for all three connectors: the footprints' plug or wire side is +y, which is the
-  board's bottom edge. Confirmed in the board render and in the section picture above.
+- The rotation is 0° for the three cable connectors: the footprints' plug or wire side is +y, which
+  is the board's bottom edge. Confirmed in the board render and in the section picture above.
+- The UPDI header (`J_UPDI`, rotation 90°, `faces: top`) joined `mech.json` when it was populated
+  (2026-11-15). Its plug goes on from above with the lid off; `enclosure.py` writes it with its
+  wires to `plugs-lid-open.step`, which `make collide` checks against everything but the lid
+  ([`valve-node-layout.md`](valve-node-layout.md#the-programming-header)).
 - When the layout moves a connector that is not `fixed`, it changes `mech.json`, and
   `make enclosure collide` has to pass again.

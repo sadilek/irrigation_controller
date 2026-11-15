@@ -87,7 +87,7 @@ L = Layout(HERE, "valve-node")
 L.clear()
 L.outline_from_mech()
 L.place_mounting_holes()
-L.place_connectors()  # J_IN, J_OUT, J_VALVES: positions shared with the enclosure (mech.json)
+L.place_connectors()  # J_IN, J_OUT, J_VALVES, J_UPDI: positions shared with the enclosure (mech.json)
 
 # --- Placement: 24 VAC side ---------------------------------------------------------------------
 X_OPTO = 64.0  # the isolation gap runs along this line; logic pins at x - 4.76, 24 VAC pins at x + 4.76
@@ -142,19 +142,12 @@ L.place("C_5V", 48.0, 24.6, rot=0, label=False)
 L.place("U_MCU", 48.5, 8.5, rot=180, label=False)
 L.place("C_MCU", 53.0, 8.1, rot=270, label=False)
 L.place("SW_ADDR", 40.5, 13.4, rot=180, label=False)
-L.place("J_UPDI", 49.5, 13.6, rot=90, label=False)
 L.place("R_LED", 53.2, 17.9, rot=0, label=False)
 L.place("D_STATUS", 56.2, 17.9, rot=180, label=False)
-# RS485: transceiver, bias footprints, A/B swap jumpers, termination, then the TVS at the lanes.
+# RS485: transceiver; the pair comes straight up from the TVS at the lanes.
 L.place("U_RS485", 37.9, 6.4, rot=180, label=False)
 L.place("C_RS485", 33.0, 6.4, rot=90, label=False)
 L.place("R_XDIR", 43.8, 4.6, rot=0, label=False)
-L.place("R_BIAS_A", 30.4, 4.4, rot=0, label=False)
-L.place("R_BIAS_B", 30.4, 8.4, rot=0, label=False)
-L.place("JP_A", 29.5, 19.6, rot=0, label=False)
-L.place("JP_B", 34.4, 19.6, rot=0, label=False)
-L.place("R_TERM", 27.2, 25.2, rot=0, label=False)
-L.place("JP_TERM", 27.2, 22.6, rot=0, label=False)
 # Test pads: rails, and the five unused pins next to the microcontroller.
 L.place("TP_5V", 52.5, 21.0, label=False)
 L.place("TP_GND", 52.5, 24.6, label=False)
@@ -177,9 +170,6 @@ valve_pin_x = {n: L.pad("J_VALVES", n)[0] for n in (1, 2, 3, 4)}
 for n, label in ((1, "V1"), (2, "C"), (3, "V2"), (4, "C")):  # in front of each wire opening of the valve terminal block
     L.text(label, valve_pin_x[n], 22.85, 0.8)
 L.text("SPARE", 66.9, 32.9, 0.8)
-L.text("SWAP A/B", 32.0, 17.4, 0.8)
-L.text("TERM", 24.9, 22.6, 0.8, align="right")
-L.text("BIAS", 30.4, 6.4, 0.8)
 L.text("ADDR", 40.5, 18.1, 0.8)
 for label, x in (("UPDI", 49.5), ("5V", 52.04), ("GND", 54.58)):
     L.text(label, x, 16.1, 0.8)
@@ -405,13 +395,13 @@ R.stitch("GND", ["C_MCU.2"])  # first, while there is room next to the microcont
 R.route("+5V", width=0.4, only=["C_MCU.1", "J_UPDI.2"])  # likewise: output 2's signals pass around this capacitor
 for net in ("TXD", "RXD", "XDIR", "ADDR1", "ADDR2", "ADDR3", "ADDR4", "UPDI",
             "DRIVE2", "MON2", "OUT2.LED_A", "DRIVE1", "MON1", "OUT1.LED_A", "LED", "LED_A",
-            "RS_A", "RS_B", "BUS_A", "BUS_B", "TERM", "PB1", "PB4", "PB5", "PA3", "PA1"):
+            "BUS_A", "BUS_B", "PB1", "PB4", "PB5", "PA3", "PA1"):
     R.route(net)
 for net in ("VIN", "+5V"):
     R.route(net, width=0.4)
 # Every ground pad gets its own via to the bottom-layer zone: the top-layer zone is cut into
 # islands by the tracks above.
-R.stitch("GND", ["C_VIN.2", "C_5V.2", "C_RS485.2", "R_XDIR.2", "R_BIAS_B.2", "U_REG.1", "U_RS485.5",
+R.stitch("GND", ["C_VIN.2", "C_5V.2", "C_RS485.2", "R_XDIR.2", "U_REG.1", "U_RS485.5",
                  "SW_ADDR.5", "SW_ADDR.8", "D_STATUS.1", "TP_GND.1",
                  "OUT1.U_DRV.2", "OUT1.U_MON.3", "OUT2.U_DRV.2", "OUT2.U_MON.3"])
 L.save()

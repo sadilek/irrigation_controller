@@ -20,8 +20,11 @@ enclosure) and places every order himself.
 materials ([`docs/valve-node-schematic.md`](docs/valve-node-schematic.md)), an enclosure model
 ([`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md)) and a layout with fabrication
 data ([`docs/valve-node-layout.md`](docs/valve-node-layout.md)). The owner signed off layout and
-fabrication data, the third hold point, on 2026-11-15. Nothing is printed and nothing is ordered:
-the test fit and the order are the owner's. The whole chain runs for
+fabrication data, the third hold point, on 2026-11-15. The same day the owner moved termination
+and bias of the bus to the controller, dropped the A/B swap jumpers and had the UPDI header
+populated, so that nothing on the node is soldered by hand. That changed schematic and layout;
+they are not signed off again yet, and until they are the approved state of 2026-11-15 no longer
+stands. Nothing is printed and nothing is ordered: the test fit and the order are the owner's. The whole chain runs for
 both boards (`make all BOARD=valve-node`, about two minutes). No real board exists yet.
 
 ## Rules that are not negotiable

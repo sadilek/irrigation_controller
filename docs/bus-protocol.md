@@ -45,7 +45,9 @@ most 6 boxes.
   [`existing-system.md`](existing-system.md#cable).
 - Termination and bias: the adapter modules carry 4.7 kΩ bias resistors and a 120 Ω terminator
   that is across the bus only if a pad on the module is bridged; see
-  [`existing-system.md`](existing-system.md#rs485-adapter-module).
+  [`existing-system.md`](existing-system.md#rs485-adapter-module). The new valve nodes carry
+  neither; termination and bias sit at the controller only
+  ([`existing-system.md`](existing-system.md#bias-at-the-controller)).
 
 ## Serial settings
 
@@ -175,7 +177,7 @@ waits for each response never does.
 
 | Point | How to close it |
 |---|---|
-| Polarity of the RS485 pair | Measure the idle bus and note which wire is positive against the other, then match that to the pin names in the new transceiver's datasheet. The letters alone do not settle it. Needed before a new transceiver is wired to the brown pair. |
+| Polarity of the RS485 pair | Measure the idle bus and note which wire is positive against the other, then match that to the pin names in the new transceiver's datasheet. The letters alone do not settle it. The valve node has brown on pin A and no way to swap on the board; a reversed pair is swapped at the controller's terminals or in the plug. |
 | Termination and bias on the existing bus | A spare module was measured on 2026-11-15. Left open: whether the terminator is bridged on the controller's module; see [`existing-system.md`](existing-system.md#rs485-adapter-module). |
 | Controller response timeout, retries, request spacing | Record the ESPHome version when the controller is next built, or capture the bus with a USB RS485 adapter. |
 | Registers of the three generation-1 nodes | Their source is not available. Read registers 0 to 9 of each generation-1 node with `mbpoll`; an exception 2 marks the end of the map. |

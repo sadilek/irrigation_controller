@@ -5,7 +5,10 @@ signed this page off, together with the schematic PDF and the bill of materials.
 
 Status: signed off by the owner on 2026-11-14. The layout that follows it is described in
 [`valve-node-layout.md`](valve-node-layout.md); it changed one thing, the valve terminals (deviation 12). Changed
-after sign-off, by the owner's decision: the moisture sensor input is gone (deviation 5).
+after sign-off, by the owner's decision: the moisture sensor input is gone (deviation 5). Changed
+after the layout sign-off, by the owner's decision of 2026-11-15: termination, bias and the A/B
+swap jumpers are gone and the UPDI header is populated (deviations 7, 8 and 13). That change is
+not signed off yet.
 
 The circuit and the reason for every part are in [`valve-node-spec.md`](valve-node-spec.md). This
 page says what the schematic adds to it, where it deviates, what was checked and what is handed
@@ -16,7 +19,7 @@ to the layout.
 | Output | Command | File |
 |---|---|---|
 | Schematic, one A3 sheet | `make schematic BOARD=valve-node` | `build/valve-node/valve-node-schematic.pdf` |
-| Bill of materials, populated and unpopulated footprints | `make bom BOARD=valve-node` | `build/valve-node/valve-node-bom.csv`, `.md` |
+| Bill of materials | `make bom BOARD=valve-node` | `build/valve-node/valve-node-bom.csv`, `.md` |
 | Electrical rules check | `make erc BOARD=valve-node` | `build/valve-node/erc.rpt` |
 
 Sources: [`valve-node.zen`](../boards/valve-node/valve-node.zen) (board),
@@ -33,24 +36,28 @@ The PDF carries values, not part numbers. Review it next to the bill of material
 | KiCad ERC, with the two rules disabled that [`toolchain.md`](toolchain.md) explains | 0 violations |
 | Drawing against source: after arranging, Zener compares the schematic's netlist with the source and any difference stops the build | no difference |
 | `make selftest`: one net label is renamed and the comparison has to fail | fails as expected |
-| Every populated part has a row in `lib/jlcpcb-parts.csv` | 26 lines, 38 parts |
+| Every populated part has a row in `lib/jlcpcb-parts.csv` | 27 lines, 39 parts, no footprint without a part |
 | Run twice, `make apply` writes the same schematic byte for byte | yes |
 | Pin assignment of every part with more than two pins against its datasheet | all confirmed, see [below](#checked-against-datasheets) |
 
 ## Population options
 
-A part crossed out in the schematic is a footprint without a part. The bill of materials lists
-these footprints with "Populated: no".
+Every part on the board is populated, and JLCPCB solders all of them; nothing is soldered by
+hand (owner, 2026-11-15). Until then the schematic crossed out five footprints without parts:
+the 120 Ω terminator R14 with its open jumper JP5, the bias resistors R11 and R12, and the UPDI
+header J3. Two three-pad jumpers, JP1 and JP2, joined 1-2 in copper, swapped A and B when cut and
+re-soldered. The terminator, the bias resistors and the swap jumpers are gone; the header is
+populated. The references of the remaining jumpers and resistors moved down with it: the spare
+pair's jumpers were JP3 and JP4, the LED resistor R13, the driver-enable pull-down R15.
 
 | Option | Standard board | To use it |
 |---|---|---|
 | Outputs 3 and 4 | Not on this board (owner, 2026-11-14): the footprints would cost board area on every node. A box with more valves gets a board variant of its own; `OUTPUTS` in `valve-node.zen` is the one line that changes | |
 | Current sensing | Not on the board. The specification replaced it by the output monitor, which is populated on every output | |
-| Termination | R14 not populated, jumper JP5 open | Populate 120 Ω and bridge JP5 |
-| Bias | R11 and R12 not populated | Populate 1 kΩ each on one node, if the idle voltage measured at commissioning is between 40 and 200 mV. Expected only if the terminator on the controller's RS485 module is bridged ([specification](valve-node-spec.md#rs485), "Idle level") |
-| A/B swap | JP1 and JP2 bridged 1-2 in copper: brown is A | Cut both bridges, solder 2-3 on both |
-| Spare pair parallel to 24 VAC | JP3 and JP4 open | Bridge both, on every node |
-| Programming header | J3 not populated | Solder a 3-pin header or use spring pins: UPDI, 5 V, ground |
+| Termination and bias | Not on the node. Both sit at the controller ([specification](valve-node-spec.md#rs485), "Termination" and "Idle level") | With today's controller module, bias resistors on its perfboard if the idle voltage is between 40 and 200 mV ([`existing-system.md`](existing-system.md#bias-at-the-controller)) |
+| A/B polarity | Brown is A, no jumpers | Swap the two wires at the controller's screw terminals, or crimp the plugs the other way round |
+| Spare pair parallel to 24 VAC | JP1 and JP2 open | Bridge both, on every node |
+| Programming header | J3, a straight 1×3 pin header, populated | Plug a 3-pin Dupont lead onto it with the lid off: UPDI, 5 V, ground |
 
 ## Reference designators
 
@@ -68,14 +75,16 @@ Zener numbers the parts itself, so the references differ from the ones the speci
 | F1, F2 | F1, F2 | Fuses 12 V and valves |
 | J1, J2 | J1, J2 | Bus jacks IN and OUT |
 | J3, J4 | J4 | Valve terminals: one block with four poles since deviation 12 |
+| J5 | J3 | UPDI header, populated since deviation 13 |
 
 ## Deviations from the specification
 
-Four points change the specification, all decided by the owner: the board has two
+Seven points change the specification, all decided by the owner: the board has two
 outputs and no footprints for more, the regulator's output capacitor is a tantalum part (both at
 this hold point, 2026-11-14), the moisture sensor input is gone (after sign-off, with the
-enclosure), and the valve wires end in a spring terminal block instead of pluggable screw
-terminals (2026-11-15, with the layout).
+enclosure), the valve wires end in a spring terminal block instead of pluggable screw
+terminals (2026-11-15, with the layout), and termination, bias and the A/B swap left the node
+while the UPDI header is populated (2026-11-15, after the layout sign-off).
 Everything else is the specified circuit with the same parts, pins and values; the remaining
 points are additions or choices the specification left open.
 
@@ -88,21 +97,22 @@ points are additions or choices the specification left open.
 | 4 | "Resistors in 0603 and 0805" | 0805 for the three resistors on the 24 VAC side of each output (gate 150 Ω, snubber 100 Ω, monitor 15 kΩ), 0603 elsewhere | 150 V working voltage and 125 mW instead of 75 V and 100 mW (UNI-ROYAL listing); the monitor resistor carries the full supply voltage |
 | 5 | R13: optional input for a capacitive moisture sensor | No input: terminal, series resistor, capacitor and BAV99 clamp are gone, PA1 ends on a test pad like the other free pins. Until then the three protection parts were populated and the terminal was a footprint | Owner, 2026-11-14, after sign-off: the sensor on the installed system never worked properly, and the enclosure already has no cable entry for it ([`valve-node-enclosure.md`](valve-node-enclosure.md), deviation 3). Three populated parts fewer |
 | 6 | Status LED, no value | 1 kΩ in series, about 2 mA | Forward voltage about 2.85 V at 2 mA (Everlight DSE-0006617 Rev. 2, p. 5, read from the curve). The LED's allowed current falls to 3 to 4 mA at 85 °C |
-| 7 | Bias footprints, no value | 1 kΩ each | 5 V across 1 kΩ, 120 Ω, 1 kΩ gives 280 mV on a bus with one 120 Ω terminator, the only case in which bias is needed ([specification](valve-node-spec.md#rs485), "Idle level") |
-| 8 | A/B swap by "a pair of solder jumpers" | Two three-pad jumpers, pads 1-2 joined in copper | The standard polarity needs no soldering on any board |
+| 7 | A 120 Ω terminator behind an open solder jumper, and two empty bias footprints | Neither. Until 2026-11-15 the schematic had the terminator R14 with jumper JP5 and the bias footprints R11 and R12 with 1 kΩ each, all unpopulated | Owner, 2026-11-15: nothing on a node is soldered by hand. Termination and bias belong where the bus ends at the controller; with today's controller module the owner adds bias resistors there if needed, the new controller brings both ([specification](valve-node-spec.md#rs485), "Idle level") |
+| 8 | A/B swap by "a pair of solder jumpers" | None: brown goes straight from the TVS to pin A of the transceiver. Until 2026-11-15 two three-pad jumpers (JP1, JP2, pads 1-2 joined in copper) did it | Owner, 2026-11-15: a reversed pair is swapped at the controller's screw terminals or in the plug, not by soldering on every node |
 | 9 | Test pads on the four free pins | Five free pins with deviation 5, and three more pads: 5 V, ground, regulator input | Bring-up |
 | 10 | Exposed pad of the microcontroller not mentioned | Connected to ground | Microchip recommends it (DS40002204A, p. 16) |
 | 11 | Address switch and terminal blocks "not verified from a datasheet" | Verified | Switch: Kingtek drawing DSHP04TSGET-A, 25 mA at 24 V DC, −40 to 85 °C. Header: Cixi Kefa KF2EDGR-5.08, 300 V, 10 A, −40 to 105 °C |
 | 12 | Each output with its own pluggable screw terminal (header KF2EDGR-5.08-2P, plug ordered loose) | One spring terminal block for both valves on the board: KF142R-5.08-4P, poles valve 1, common, valve 2, common. The output module no longer contains a connector | Owner, 2026-11-15, at the layout hold point: a mated plug did not fit between board and enclosure wall and could not be pulled ([`valve-node-layout.md`](valve-node-layout.md), "The valve terminals"). Rated 250 V and 15 A, 22 to 14 AWG, −40 to +105 °C (Kefa drawing KF142R-5.08 rev A) |
+| 13 | UPDI header as a footprint without a part | Populated: straight 1×3 pin header, 2.54 mm, BOOMELE 2.54-1*3PPin (C49257, extended, through-hole), soldered by JLCPCB | Owner, 2026-11-15: nothing on the node is soldered by hand. No 1×3 header is a JLCPCB basic part; this one has the largest stock (220,193 on 2026-11-15) and costs $0.03. 2.5 mm insulator, 6 mm pins above it, 3 mm below (JLCPCB listing) |
 
 ## Bill of materials in short
 
-26 lines, 38 parts, all on the top side. 11 lines are JLCPCB basic parts, 15 are extended parts
-with a set-up fee per type. The two bus jacks and the
-valve terminal block are through-hole parts; everything else is surface-mount.
+27 lines, 39 parts, all on the top side. 11 lines are JLCPCB basic parts, 16 are extended parts
+with a set-up fee per type. The two bus jacks, the valve terminal block and the UPDI header are
+through-hole parts; everything else is surface-mount.
 
-JLCPCB solders the three through-hole parts, 24 joints per board (owner, 2026-11-15, with the cost
-estimate of the layout hold point). They are marked `tht` in `lib/jlcpcb-parts.csv`, which puts
+JLCPCB solders the four through-hole parts, 27 joints per board (owner, 2026-11-15, with the cost
+estimate of the layout hold point; the UPDI header after it). They are marked `tht` in `lib/jlcpcb-parts.csv`, which puts
 them into the JLCPCB BOM and placement file; `none` would leave them out.
 
 Class and stock come from the specification's parts search of 2026-11-14 and a community mirror.

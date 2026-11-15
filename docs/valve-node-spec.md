@@ -15,7 +15,11 @@ assignment and the current budget below say so, the outline section is supersede
 How the "Layout rules" below are met is in [`valve-node-layout.md`](valve-node-layout.md); the
 layout used none of the pin swaps this page allows. At the layout hold point the owner replaced
 the pluggable valve terminals of "Outline and connectors" and of the part list by one spring
-terminal block soldered to the board (2026-11-15, schematic deviation 12).
+terminal block soldered to the board (2026-11-15, schematic deviation 12). After the layout
+sign-off the owner moved termination and bias of the bus to the controller, dropped the A/B swap
+jumpers and had the UPDI header populated, so that nothing on the node is soldered by hand
+(2026-11-15, schematic deviations 7, 8 and 13). Decision 5, [RS485](#rs485) and the sections
+that refer to them say so.
 
 The node replaces every existing node on the buried cable. Cable, wiring, addresses and registers
 stay as described in [`bus-protocol.md`](bus-protocol.md). The installation it goes into, with
@@ -42,8 +46,10 @@ Signing this page off accepts these six points. Each one is explained in the sec
 4. **The node closes its valves on its own.** After 60 s without a valid request, after 120 min of
    run time, and when a second output of the same node is opened.
    See [Behaviour](#behaviour-input-for-the-firmware).
-5. **Termination stays open on every node.** At 9600 baud the cable needs none, and each
-   terminator costs supply current. See [RS485](#rs485).
+5. **No termination and no bias on any node.** At 9600 baud the cable needs no terminator at the
+   node, and each terminator costs supply current. Termination and bias sit at the controller
+   only (owner, 2026-11-15, after the layout sign-off). Until then each node had a 120 Ω
+   terminator behind an open solder jumper and two empty bias footprints. See [RS485](#rs485).
 6. **The bus connects through two RJ45 jacks, not screw terminals** (owner's proposal,
    2026-11-14). Both jacks sit on one short edge, the valve terminals on the opposite one. The
    cable entries are sealed with printed split inserts, so a crimped plug does not have to pass
@@ -88,8 +94,8 @@ which the 24 VAC would damage; the jacks are labelled.
  └──────────┘      │        │          │ │        │      │                └──────────┘
                  fuse F1    │      TVS D3 to GND  ├─TVS D4─┤
                    │        │          │ │        │      │
-              TVS D1 to GND │      120 Ω behind  fuse F2  │
-                   │        │      solder jumper  │      │
+              TVS D1 to GND │          │ │     fuse F2  │
+                   │        │          │ │        │      │
                diode D2     │          │ │        │      │
                    │        │    ┌─────┴─┴────┐   │      │
             ┌──────┴─────┐  │    │ RS485      │   │      │        isolation
@@ -165,7 +171,7 @@ For the whole cable, with the 26 Ω loop resistance estimated in
 | Six nodes, one valve open, a node answering into two terminators | 122 mA | 3.2 V | 8.8 V |
 
 The first three cases leave at least 1.5 V above the 8.3 V the node needs. The last case does not,
-and it is the reason for decision 5: with termination open on the nodes, the fourth line becomes
+and it is the reason for decision 5: with no terminator on the nodes, the fourth line becomes
 99 mA and 9.4 V. The real cable is shorter than 100 m and the nodes are spread along it, so the
 real drop is roughly half of each figure. The old nodes pulled the supply down to about 6 V with
 one relay energised (owner's calculation).
@@ -176,8 +182,8 @@ one relay energised (owner's calculation).
 |---|---|---|
 | Transceiver | THVD2410DR, SOIC-8, at 5 V | Bus pins withstand ±70 V, receiver works over ±25 V common mode, 1/8 unit load, fail-safe receiver, thermal shutdown, driver enable with internal pull-down (TI SLLSF20B, p. 1, 3 and 4) |
 | TVS | PSM712-LF-T7, SOT-23, at the jacks | Stand-off 7 V and 12 V, clamps at 30 V with 30 A and at 17 V with 34 A, 600 W for 8/20 µs (ProTek 05094.R8, p. 2) |
-| Termination | 120 Ω behind a solder jumper, open | |
-| Bias | Two resistor footprints, A to 5 V and B to ground, empty | |
+| Termination | None on the node; 120 Ω at the controller | |
+| Bias | None on the node; at the controller | |
 
 Why this transceiver and not a standard one. The TVS limits a surge to 30 V. A standard
 transceiver allows about 14 V on its bus pins, so the remaining 16 V would have to be absorbed by
@@ -194,11 +200,14 @@ enable is tied to the same pin, so the node does not hear its own answer.
 
 Termination. One bit at 9600 baud lasts 104 µs. A reflection on 100 m of cable has died out after
 a few microseconds, long before the receiver samples the bit, so the cable works without
-termination. Each terminator costs about 30 mA while a node transmits. All node jumpers stay open.
+termination. Each terminator costs about 30 mA while a node transmits. The node has none. Until
+2026-11-15 it had a 120 Ω resistor behind an open solder jumper for a faster or longer bus; the
+owner dropped it so that no node needs soldering, and termination belongs at the controller end.
 The existing controller module, which stays for now, carries a 120 Ω terminator that is across the
 bus only if its pad R0 is bridged; on a spare module it is not
-([`existing-system.md`](existing-system.md#rs485-adapter-module)). For the signal it does no harm
-either way; for the idle level it matters.
+([`existing-system.md`](existing-system.md#rs485-adapter-module)). The new controller brings its
+own 120 Ω terminator and bias; its specification sets them. For the signal the terminator does no
+harm either way; for the idle level it matters.
 
 Idle level. The existing controller module drives only one level and leaves the other to its bias
 resistors, 4.7 kΩ from A to its supply and from B to ground. The new receiver reads an idle bus as
@@ -216,18 +225,23 @@ voltage:
 |---|---|---|---|
 | Controller module and one new node, no terminator | 10.7 kΩ | 3.5 V (2.3 V) | "1" |
 | Controller module and six new nodes, no terminator | 6.9 kΩ | 3.0 V (2.0 V) | "1" |
-| One 120 Ω terminator: R0 bridged on the controller module, or one node's jumper | 120 Ω between the wires | 63 mV (42 mV) | not defined |
+| One 120 Ω terminator: R0 bridged on the controller module | 120 Ω between the wires | 63 mV (42 mV) | not defined |
 
-With every node jumper open and R0 open on the controller module, the idle level is far above
-200 mV and no bias is needed on any node. If R0 is bridged, the idle level is in the gap; the two
-bias footprints on one node are then populated, and 1 kΩ each brings it to at least 280 mV
-([`valve-node-schematic.md`](valve-node-schematic.md#deviations-from-the-specification),
-deviation 7). R0 on the controller module has not been looked at and its supply voltage is not
-known, so the idle voltage is measured once at commissioning, with the first new node connected.
+With R0 open on the controller module, the idle level is far above 200 mV and no bias is needed.
+If R0 is bridged, the idle level is in the gap. The bias then goes where the terminator is: one
+resistor from A to the module's supply and one from B to ground, soldered by the owner at the bus
+terminals of the controller's module on its perfboard. At 5 V, 680 Ω to 1 kΩ each bring the idle
+level to 410 to 280 mV. How to measure and size them is in
+[`existing-system.md`](existing-system.md#bias-at-the-controller). Until 2026-11-15 the node had
+two empty bias footprints for this, meant to be populated with 1 kΩ each on one node. R0 on the controller
+module has not been looked at and its supply voltage is not known, so the idle voltage is measured
+once at commissioning, with the first new node connected.
 
 Polarity. The brown wire goes to the transceiver's pin A, which is the more positive wire on an
-idle bus. If the letters on the existing module mean the opposite, a pair of solder jumpers next
-to the transceiver swaps A and B. A crimped plug cannot be rewired, so the swap is on the board.
+idle bus. If the letters on the existing module mean the opposite, the owner swaps the two wires
+at the controller's screw terminals, or crimps the plugs the other way round. The board has no
+swap. Until 2026-11-15 a pair of three-pad solder jumpers next to the transceiver did it, joined
+for brown as A in copper; the owner dropped them, so that a node never needs soldering.
 
 ## Valve outputs
 
@@ -449,8 +463,10 @@ Address switch: four positions, binary, addresses 1 to 15. Position 0 is not a v
 (broadcast); the firmware specification says what a node does with it. The switch is read at
 start-up.
 
-Programming: a three-pin header with UPDI, 5 V and ground. JLCPCB does not program the chip; the
-owner does, once per board, with a serial UPDI adapter.
+Programming: a three-pin header with UPDI, 5 V and ground, straight, 2.54 mm pitch, populated and
+soldered by JLCPCB (C49257). A 3-pin Dupont plug fits it with the lid off. JLCPCB does not
+program the chip; the owner does, once per board, with a serial UPDI adapter. Until 2026-11-15
+the header was a footprint without a part.
 
 ## Behaviour (input for the firmware)
 
@@ -538,8 +554,10 @@ What it costs:
   where the TVS D1 clamps it, and not on the 5 V logic. The 3 mm rule still holds between the
   24 VAC section and the logic.
 - The plugs must be the type for solid conductors, and crimping needs the tool.
-- Two functions that the screw plug offered by rewiring move onto the board as solder jumpers,
-  open by default: swapping A and B, and connecting the spare pair in parallel to the 24 VAC pair.
+- One function that the screw plug offered by rewiring moves onto the board as solder jumpers,
+  open by default: connecting the spare pair in parallel to the 24 VAC pair. Swapping A and B
+  was a second pair of jumpers until 2026-11-15; a reversed pair is now swapped at the
+  controller's screw terminals or in the plug.
 
 Why both jacks on one edge. The eight pass-through connections are then a few millimetres long.
 A surge that travels along the cable passes the node at its edge, and the TVS diodes sit right
@@ -586,7 +604,7 @@ before routing.
 | Protection first | Each TVS sits at the jacks, before any other part on that net, with a short and wide connection to its return (TI SLLSF20B, 11.1, p. 21) |
 | Triac cooling | At least 0.5 cm² of copper under each DPAK tab; the 70 K/W figure assumes it |
 | Spare pair | Passed through jack to jack; two open solder jumpers can connect it to the 24 VAC pair |
-| A and B | Two solder jumpers at the transceiver select which bus wire is A; default brown |
+| A and B | Brown goes straight to the transceiver's pin A, no jumpers |
 
 The 3 mm is a design choice, not a figure from a safety standard: both sides are extra-low
 voltage. It is the distance that the smallest part across the barrier allows comfortably, and it
@@ -617,11 +635,13 @@ Quantity is per board with two outputs populated.
 | LED | Green 0603, already in `lib/jlcpcb-parts.csv` | 1 | C72043 | extended | not read | |
 | J1, J2 | RJ45 jack RJHSE-5080 (Amphenol) | 2 | C599441 | extended | 617 | $0.94 |
 | J3, J4 | 2-pole header 5.08 mm, right angle | 2 | C441204 | extended | 45,581 | $0.05 |
+| J5 | Pin header 1×3, 2.54 mm, straight (BOOMELE), UPDI; added 2026-11-15 | 1 | C49257 | extended | 220,193 | $0.03 |
 | | 2-pole plug 5.08 mm | 2 | C440880 | extended | 43,965 | $0.15 |
 
 Resistors and the remaining capacitors are JLCPCB basic parts in 0603 and 0805; their numbers are
-fixed with the bill of materials. The UPDI header, the termination resistor and the bias
-resistors are footprints.
+fixed with the bill of materials. Until 2026-11-15 the UPDI header, the termination resistor and
+the bias resistors were footprints without parts; the termination and bias resistors are gone, the
+header is populated. No 1×3 header is a JLCPCB basic part; C49257 has the largest stock.
 
 Parts for one board come to about $9. Most parts are "extended", for which JLCPCB charges a
 set-up fee per part type and order; the exact amount is part of the cost estimate before the
@@ -647,7 +667,7 @@ a 150 Ω LED resistor, because it needs 10 mA.
 | SM712 | PSM712 | Same part, JLCPCB basic |
 | Triac outputs, drive not stated | Triacs fired through optotriacs, 24 VAC isolated from logic | Ground shift, surge path, fault containment |
 | Valve current sensing, optional | Voltage monitor across each triac, populated | No voltage drop; finds a broken wire before opening |
-| Termination via solder jumper | Kept, but open on every node; bias footprints added | Budget; idle level with the existing controller module |
+| Termination via solder jumper | No termination and no bias on the node; both at the controller (owner, 2026-11-15). Until then a jumper, open on every node, and two bias footprints | Budget; nothing on a node is soldered by hand |
 | Bus passed through | Kept, including the spare pair | A later branch can use the spare pair at any box |
 | Pluggable screw terminals | RJ45 jacks for the bus; screw plugs only for the valves | One plug, testable, bridged by a coupler, right termination for the cable |
 | Optional moisture input | Dropped after sign-off | The sensor on the installed system never worked properly (owner, 2026-11-14) |
@@ -679,8 +699,8 @@ Weaknesses and open points from [`existing-system.md`](existing-system.md) and
 | Solenoid tolerance, switch-on duration and pull-in voltage unknown | The triac has a margin of ten on current. The pull-in voltage stays the open risk named above and is measured on the first board. |
 | One-valve rule not enforced | In the node for its own outputs; across nodes in the controller. |
 | Maximum run time only in Home Assistant | 120 min limit in the node. |
-| RS485 polarity | Two solder jumpers swap A and B. |
-| Termination and bias on the existing bus | About 3 V idle voltage with R0 open on the controller module, no bias needed; 63 mV with R0 bridged, then one node gets its bias resistors ([Idle level](#rs485)). Measured at commissioning; bias footprints on every node. |
+| RS485 polarity | Brown is A. A reversed pair is swapped at the controller's screw terminals or in the plug; the board has no swap jumpers since 2026-11-15. |
+| Termination and bias on the existing bus | About 3 V idle voltage with R0 open on the controller module, no bias needed; 63 mV with R0 bridged, then the owner adds two bias resistors at the controller's module ([Idle level](#rs485)). Measured at commissioning. The nodes carry neither termination nor bias. |
 | Controller response timeout, retries, request spacing | The node answers within 4 ms after a request ends, faster than any ESPHome default. Recording the ESPHome version stays open for the controller. |
 | Registers of the generation-1 nodes | Not needed. The controller uses registers 0 and 2 only, and the new node implements the generation-2 map. |
 | The value 0xFFFF for "on" | Any non-zero value opens the valve and reads back as written. |
@@ -691,7 +711,7 @@ Weaknesses and open points from [`existing-system.md`](existing-system.md) and
 |---|---|---|
 | Does the farthest valve pull in through a triac? | Confirms the output design | First board, before the rest is installed |
 | Does a valve close with 2 mA of off-state current? | Monitor and snubber values | First board |
-| Idle voltage between A and B with the existing controller module: about 3 V expected, 63 mV if its R0 is bridged | Whether bias resistors are populated on one node | Owner, multimeter, at commissioning |
+| Idle voltage between A and B with the existing controller module: about 3 V expected, 63 mV if its R0 is bridged | Whether the owner adds bias resistors at the controller's module | Owner, multimeter, at commissioning |
 | Open-circuit voltage of the transformer | TVS on the 24 VAC pair | Owner, multimeter, any time |
 | Inside dimensions of the valve boxes | Size limit of the enclosure | Owner, before the enclosure is designed |
 | Diameters of bus cable and valve wire, cross-section of the RJ45 plug | Split inserts | Owner, caliper, before the enclosure is designed |

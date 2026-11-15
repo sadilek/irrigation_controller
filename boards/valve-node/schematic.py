@@ -16,7 +16,7 @@ S.title(
     "A",
     [
         "Modbus RTU over RS485, two 24 VAC valve outputs",
-        "Crossed-out parts are footprints without parts (population options)",
+        "Every part is populated; JLCPCB solders all of them",
         "Part numbers: bill of materials. Reasoning: docs/valve-node-spec.md",
     ],
 )
@@ -95,25 +95,14 @@ def rs485(x, y):
     S.place("R_XDIR", x + 15.24, y + 58.42)
     S.place("C_RS485", x + 33.02, y + 58.42, value=(1.9, 1.2))
 
-    # A/B swap jumpers and bias footprints on the transceiver side.
-    S.place("JP_A", rx + 9 * G, ya - 4 * G, rot=270, pin="2", ref=(2.5, -0.6), value=False)
-    S.place("JP_B", rx + 12 * G, yb + 6 * G, rot=270, pin="2", ref=(2.5, -0.6), value=False)
-    S.wire("U_RS485.6", (rx + 3 * G, ya), (rx + 3 * G, ya - 4 * G), "JP_A.2")
-    S.wire("U_RS485.7", (rx + 3 * G, yb), (rx + 3 * G, yb + 6 * G), "JP_B.2")
-    S.place("R_BIAS_A", rx + 6 * G, ya - 6 * G)
-    S.wire("R_BIAS_A.2", (rx + 6 * G, ya - 4 * G))
-    S.place("R_BIAS_B", rx + 6 * G, yb + 8 * G)
-    S.wire("R_BIAS_B.1", (rx + 6 * G, yb + 6 * G))
-    S.label((rx + G, ya), (1, 0), net="RS_A")
-    S.label((rx + G, yb), (1, 0), net="RS_B")
-    S.text(x + 45.0, y + 62.0, "Swap A and B: cut the bridges 1-2\nof JP1 and JP2, solder 2-3", size=1.27)
-
-    # At the jacks: TVS, and the termination that stays open.
+    # The pair from the jacks: TVS, then straight to the transceiver. Termination and bias sit at
+    # the controller.
+    S.wire("U_RS485.6", (rx + 3 * G, ya))
+    S.wire("U_RS485.7", (rx + 3 * G, yb))
+    S.label((rx + 3 * G, ya), (1, 0), net="BUS_A")
+    S.label((rx + 3 * G, yb), (1, 0), net="BUS_B")
     S.place("D3", x + 20.32, y + 15.24)
-    S.place("R_TERM", x + 15.24, y + 38.1, rot=90)
-    S.place("JP_TERM", x + 22.86, y + 38.1, pin="1", value=False)
-    S.wire("R_TERM.2", "JP_TERM.1")
-    S.text(x + G, y + 41.5, "Termination: open on every node", size=1.27)
+    S.text(x + G, y + 38.1, "No termination and no bias on the node:\nboth sit at the controller. Brown is A.", size=1.27)
 
 
 def mcu(x, y):
@@ -208,8 +197,8 @@ def notes(x, y):
     S.text(
         x + G,
         y + 22.0,
-        "Population options (crossed-out parts are not populated):\n"
-        "- termination, bias resistors, UPDI header",
+        "Every part is populated. Option: spare pair jumpers\n"
+        "(open by default).",
         size=1.27,
     )
 

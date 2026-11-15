@@ -4,9 +4,9 @@ Valve node: Modbus RTU slave on the buried RS485 cable, two 24 VAC valve outputs
 Specification with the reasoning for every part: docs/valve-node-spec.md.
 What changed between specification and schematic: docs/valve-node-schematic.md.
 
-Population options (parts marked DNP in the schematic are footprints without parts):
-  termination, bias  not populated (R_TERM, R_BIAS_A, R_BIAS_B), jumper JP_TERM open
-  UPDI header        not populated
+Every part is populated and soldered by JLCPCB; nothing on this board is soldered by hand.
+Termination and bias of the bus sit at the controller only (docs/valve-node-spec.md, "RS485").
+The one option left is the spare pair: two open solder jumpers (JP_SPARE_1, JP_SPARE_2).
 """
 
 load("../../lib/jlcpcb.zen", "JLCPCB_2L")
@@ -40,8 +40,6 @@ SPARE_2 = Net("SPARE_2")  # blue/white, RJ45 pin 5
 
 V12_F = Net("V12_F")  # +12 V behind the fuse
 AC_COM = Net("AC_COM")  # valve common: 24 VAC a behind the fuse
-RS_A = Net("RS_A")  # transceiver side of the A/B swap jumpers
-RS_B = Net("RS_B")
 
 TXD = Net("TXD")
 RXD = Net("RXD")
@@ -145,41 +143,14 @@ Component(
     properties={"value": "PSM712"},
 )
 
-# Termination: resistor and jumper are both left open. A node at the end of a faster or longer bus
-# gets the resistor and a solder bridge.
-TERM = Net("TERM")
-Resistor(name="R_TERM", value="120", package="0603", mpn="0603WAF1200T5E", manufacturer="UNI-ROYAL", P1=BUS_A, P2=TERM, dnp=True)
-Component(
-    name="JP_TERM",
-    prefix="JP",
-    symbol=Symbol(SYM + "SolderJumper_2_Open.kicad_sym"),
-    footprint=File("@stdlib/kicad-footprints/Jumper.pretty/SolderJumper-2_P1.3mm_Open_Pad1.0x1.5mm.kicad_mod"),
-    pins={"A": TERM, "B": BUS_B},
-    skip_bom=True,
-)
-
-# A/B swap. Default (pads 1-2 bridged in copper): brown is A. To swap, cut both bridges and solder
-# pads 2-3 on both jumpers.
-for name, rs, straight, crossed in (("JP_A", RS_A, BUS_A, BUS_B), ("JP_B", RS_B, BUS_B, BUS_A)):
-    Component(
-        name=name,
-        prefix="JP",
-        symbol=Symbol(SYM + "SolderJumper_3_Bridged12.kicad_sym"),
-        footprint=File("@stdlib/kicad-footprints/Jumper.pretty/SolderJumper-3_P1.3mm_Bridged12_Pad1.0x1.5mm.kicad_mod"),
-        pins={"A": straight, "C": rs, "B": crossed},
-        skip_bom=True,
-    )
-
-# Bias for an idle bus, on the transceiver side so it follows a swap. Populated on one node only
-# if the idle voltage measured at commissioning is between 40 and 200 mV.
-Resistor(name="R_BIAS_A", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=V5, P2=RS_A, dnp=True)
-Resistor(name="R_BIAS_B", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=RS_B, P2=GND, dnp=True)
-
+# The pair goes straight from the TVS to the transceiver: brown is A. No termination and no bias
+# on a node; both sit at the controller. A reversed pair is corrected in the plug or at the
+# controller's terminals, not on the board.
 Component(
     name="U_RS485",
     symbol=Symbol(SYM + "THVD2410DR.kicad_sym"),
     footprint=File(FP + "SOIC-8_3.9x4.9mm_P1.27mm.kicad_mod"),
-    pins={"RO": RXD, "~{RE}": XDIR, "DE": XDIR, "DI": TXD, "GND": GND, "A": RS_A, "B": RS_B, "VCC": V5},
+    pins={"RO": RXD, "~{RE}": XDIR, "DE": XDIR, "DI": TXD, "GND": GND, "A": BUS_A, "B": BUS_B, "VCC": V5},
     part=Part(mpn="THVD2410DR", manufacturer="Texas Instruments"),
 )
 Capacitor(name="C_RS485", value="100nF", package="0603", voltage="50V", dielectric="X7R", mpn="CC0603KRX7R9BB104", manufacturer="YAGEO", P1=V5, P2=GND)
@@ -218,8 +189,8 @@ Component(
 )
 Capacitor(name="C_MCU", value="100nF", package="0603", voltage="50V", dielectric="X7R", mpn="CC0603KRX7R9BB104", manufacturer="YAGEO", P1=V5, P2=GND)
 
-# Programming: UPDI, 5 V, ground. Footprint only; a header is soldered or pogo pins are used.
-PinHeader(name="J_UPDI", pins=3, mount="THT", P1=UPDI, P2=V5, P3=GND, dnp=True)
+# Programming: UPDI, 5 V, ground. A straight 2.54 mm header that takes a 3-pin Dupont plug.
+PinHeader(name="J_UPDI", pins=3, mount="THT", P1=UPDI, P2=V5, P3=GND, mpn="2.54-1*3PPin", manufacturer="BOOMELE")
 
 # Address, binary, switch 1 is the lowest bit. A closed switch pulls the pin to ground (internal pull-ups).
 Component(

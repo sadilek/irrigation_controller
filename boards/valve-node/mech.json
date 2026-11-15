@@ -4,10 +4,11 @@
   "mounting_holes": {"H1": [4.0, 4.0], "H2": [92.0, 4.0], "H3": [4.0, 40.0], "H4": [92.0, 40.0]},
   "clearance_to_enclosure": 2.0,
   "connectors": {
-    "_comment": "Keyed by the part's name in the Zener source. `at` is the footprint origin, `rotation` is KiCad's (counter-clockwise, degrees), `faces` is the board edge the plug leaves through. `fixed: true` means the enclosure's cable entry is aligned with it; the others may move along their edge.",
+    "_comment": "Keyed by the part's name in the Zener source. `at` is the footprint origin, `rotation` is KiCad's (counter-clockwise, degrees), `faces` is the board edge the plug leaves through, or `top` for a plug pulled upwards with the lid off. `fixed: true` means the enclosure's cable entry is aligned with it; the others may move along their edge.",
     "J_IN": {"at": [17.0, 35.49], "rotation": 0, "faces": "bottom", "fixed": true},
     "J_OUT": {"at": [51.0, 35.49], "rotation": 0, "faces": "bottom", "fixed": true},
-    "J_VALVES": {"at": [83.7, 13.5], "rotation": 0, "faces": "bottom", "fixed": false}
+    "J_VALVES": {"at": [83.7, 13.5], "rotation": 0, "faces": "bottom", "fixed": false},
+    "J_UPDI": {"at": [49.5, 13.6], "rotation": 90, "faces": "top", "fixed": false}
   },
   "keepouts": [
     {"name": "screw head H1", "side": "top", "shape": "circle", "at": [4.0, 4.0], "diameter": 7.0},

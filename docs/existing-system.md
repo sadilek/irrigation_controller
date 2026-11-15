@@ -189,7 +189,38 @@ Which transceiver the modules carry, and from which supply voltage, is not known
   carries easily. Open; one possibility is a module with R0 bridged.
 
 What it means for the new bus is in
-[`valve-node-spec.md`](valve-node-spec.md#rs485), "Idle level".
+[`valve-node-spec.md`](valve-node-spec.md#rs485), "Idle level". The new nodes carry neither
+termination nor bias; both belong at the controller.
+
+### Bias at the controller
+
+With the old nodes out, today's controller module is the only one on the bus besides the new
+nodes. If its R0 is bridged, its 120 Ω terminator pulls the idle level into the range where the
+new receivers promise nothing. The owner then adds bias at the controller, once, at
+commissioning:
+
+1. Check that the brown wire is on A+ and brown/white on B−. The module's bias pulls A+ up, so A+
+   is the positive wire on an idle bus, and the node expects that one on brown. If not, swap the
+   two wires at the module's terminals.
+2. Connect the first new node, power the bus, let it stand idle (no request running).
+3. Measure the DC voltage between A+ and B− at the module's bus terminals, red probe on A+.
+   Above 200 mV: nothing to do (the new receivers read "1" there, TI SLLSF20B, 6.7, p. 6). About
+   3 V is expected with R0 open, about 60 mV with R0 bridged.
+4. Between 40 and 200 mV: solder one resistor from A+ to the module's supply (VCC) and one from
+   B− to its ground, both at the module's bus terminals on the perfboard. 680 Ω to 1 kΩ each, 0.25 W
+   through-hole parts.
+5. Measure again. The reading has to be above 200 mV, with some margin.
+
+Size of the resistors. With 120 Ω at the controller and the rest of the bus open, the idle voltage
+is 5 V × 120 Ω / (2R + 120 Ω): 1 kΩ gives about 280 mV, 680 Ω about 410 mV, 470 Ω about 530 mV.
+The new nodes add 1/8 unit load each and change that little. The lower bound is set by the
+receiver: above 200 mV, with margin. The upper bound is the load on the driver, and the old module
+drives only one level, against the bias. 680 Ω to 1 kΩ is the sensible range. The module's own
+4.7 kΩ bias resistors are in parallel to the new ones and raise the level a little, so the second
+measurement counts, not the formula. At 3.3 V instead of 5 V everything scales by two thirds:
+1 kΩ then gives only about 190 mV, so take 680 Ω.
+
+The new controller brings termination and bias of its own; its specification sets them.
 
 ## Valves
 
@@ -261,7 +292,7 @@ in the node, so that the rule and the run-time limit hold without Home Assistant
 
 | Point | Needed for | Who |
 |---|---|---|
-| Is R0 bridged on the controller's RS485 module? (The spare module was measured on 2026-11-15, see [RS485 adapter module](#rs485-adapter-module)) | Idle level of the new bus, whether bias resistors are populated on one node; the controller's module stays on the bus | Owner, by eye or multimeter |
+| Is R0 bridged on the controller's RS485 module? (The spare module was measured on 2026-11-15, see [RS485 adapter module](#rs485-adapter-module)) | Idle level of the new bus, whether bias resistors go onto the controller's perfboard ([Bias at the controller](#bias-at-the-controller)); the controller's module stays on the bus | Owner, by eye or multimeter, or the idle voltage at commissioning |
 | Why a sixth old node made the bus collapse | Explains the old fault; the new nodes never share the bus with old ones | Not planned |
 | Loop resistance of the cable | Voltage at the far valve and on the 12 V supply | Short the spare blue pair at the last box and measure at the controller |
 | Open-circuit voltage of the transformer, and its voltage with one valve open | Sizing of the replacement | Measurement |

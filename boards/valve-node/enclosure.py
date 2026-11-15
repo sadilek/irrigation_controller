@@ -16,10 +16,13 @@ Written to build/valve-node/:
   envelope.step      the board as mech.json describes it, with connectors as blocks: stands in
                      for the board STEP in `make collide` until the layout exists
   plugs.step         the two mated RJ45 plugs as blocks; `make collide` checks them too
+  plugs-lid-open.step  the programming plug on the UPDI header with its wires, lid open;
+                     `make collide` checks it against everything but the lid, and against the board
   views/*.png        pictures; with a board STEP from `make fab` they show the real board
 
 --lid-drop lowers the lid into the box; `make selftest` uses it to prove that the collision check
-fails when the lid hits a connector.
+fails when the lid hits a connector. --updi-shift moves the programming plug along the header;
+`make selftest` uses it to prove that a plug that does not sit on its pins is found.
 """
 import argparse
 import json
@@ -42,6 +45,7 @@ warnings.filterwarnings("ignore", message="Boolean operation unable to clean")
 
 args = argparse.ArgumentParser()
 args.add_argument("--lid-drop", type=float, default=0.0)
+args.add_argument("--updi-shift", type=float, default=0.0)
 args.add_argument("--no-views", action="store_true")
 args = args.parse_args()
 
@@ -290,6 +294,7 @@ BODIES = {
     "J_IN": (-7.87, 7.87, -6.49, 8.51, 13.2, 3.3, -2.0, 4.5),  # Amphenol RJHSE-5080
     "J_OUT": (-7.87, 7.87, -6.49, 8.51, 13.2, 3.3, -2.0, 4.5),
     "J_VALVES": (-10.87, 11.99, -5.61, 8.59, 13.7, 3.3, -4.9, 4.9),  # KF142R-5.08-4P, height with its push buttons (Kefa drawing KF142R-5.08 rev A)
+    "J_UPDI": (-1.27, 1.27, -1.27, 6.35, 8.5, 1.4, -1.27, 6.35),  # 1x3 header, 2.5 mm insulator and 6 mm pins; 3 mm below the insulator (C49257 listing)
 }
 
 
@@ -330,6 +335,32 @@ envelope = [board_plate.part] + [b for pair in blocks for b in pair]
 BUS_PLUG_OUT = 9.5  # an RJ45 plug stands this far out of the jack (assumed with the plug's cross-section, see above)
 bus_plugs = [Pos(CONNECTORS[n]["at"][0] - 5.85, -H - BUS_PLUG_OUT, ENTRY_Z - 4) * Box(11.7, BUS_PLUG_OUT, 8.1, align=Align.MIN) for n in ("J_IN", "J_OUT")]
 
+# The programming plug: a 3-pin Dupont housing (2.54 mm pitch, 14 mm long) on the UPDI header,
+# with its three wires straight up. It is plugged and pulled with the lid off, so it is checked
+# against the base and the parts in it, and against the board, but not against the lid. The
+# housing has a hole over each pin, so it overlaps the board only if it misses its pins or meets a
+# neighbour. The wires stand for the 6 mm of travel the plug needs to come off the pins as well.
+DUPONT_H = 14.0
+DUPONT_Z = T + 2.6  # on the header's insulator (2.54 mm in KiCad's model), with 0.06 mm to spare
+UPDI_WIRE_D = 1.4
+UPDI_WIRE_L = 40.0
+
+
+def updi_plug(shift: float = 0.0, wire_length: float = UPDI_WIRE_L):
+    pins = [to_model("J_UPDI", 0, k * 2.54) for k in range(3)]
+    xs, ys = [p[0] for p in pins], [p[1] for p in pins]
+    cx_, cy_ = (min(xs) + max(xs)) / 2 + shift, (min(ys) + max(ys)) / 2
+    along_x = max(xs) - min(xs) > max(ys) - min(ys)
+    lx, ly = (7.5, 2.5) if along_x else (2.5, 7.5)
+    housing = Pos(cx_, cy_, DUPONT_Z) * Box(lx, ly, DUPONT_H, align=ZMIN)
+    for px, py in pins:  # the contact's opening: deeper than the pin is long
+        housing = housing - Pos(px + shift, py, DUPONT_Z - 0.1) * Box(1.0, 1.0, 6.6, align=ZMIN)
+    wires = [Pos(px + shift, py, DUPONT_Z + DUPONT_H) * Cylinder(UPDI_WIRE_D / 2, wire_length, align=ZMIN) for px, py in pins]
+    return housing, wires
+
+
+updi_housing, updi_wires = updi_plug(args.updi_shift)
+
 # --- Output ---------------------------------------------------------------------------------------
 BUILD = REPO / "build" / HERE.name
 for sub in ("enclosure", "print", "views"):
@@ -350,6 +381,7 @@ for name, part in assembly.items():
     print(f"enclosure: {name}: {bb.size.X:.1f} x {bb.size.Y:.1f} x {bb.size.Z:.1f} mm, {part.volume / 1000:.1f} cm3")
 export_step(compound(envelope), str(BUILD / "envelope.step"))
 export_step(compound(bus_plugs), str(BUILD / "plugs.step"))
+export_step(compound([updi_housing] + updi_wires), str(BUILD / "plugs-lid-open.step"))
 
 # Printed parts, each lying the way it is printed. Material and count per enclosure in the name.
 flip = Rot(180, 0, 0)
@@ -405,6 +437,9 @@ if not args.no_views and not args.lid_drop:
         wires.append(Location(Plane(origin=start, z_dir=end - start)) * Cylinder(VALVE_WIRE_D / 2, (end - start).length, align=ZMIN))
         wires.append(Pos(start) * Sphere(VALVE_WIRE_D / 2))
     cable_items = [(c, CABLE) for c in cables] + [(p, (225, 225, 225)) for p in plugs] + [(w, (200, 60, 50)) for w in wires]
+    # The programming plug, drawn with short wires so that the board stays visible from above.
+    _, short = updi_plug(args.updi_shift, wire_length=12)
+    updi_items = [(updi_housing, (30, 30, 34))] + [(w, c) for w, c in zip(short, ((230, 200, 40), (200, 60, 50), (40, 40, 44)))]
 
     def cut(items, keep):
         out = []
@@ -415,7 +450,7 @@ if not args.no_views and not args.lid_drop:
         return out
 
     V = BUILD / "views"
-    inside = [(base, BODY), (gasket, SOFT)] + entry_items + board_items + cable_items
+    inside = [(base, BODY), (gasket, SOFT)] + entry_items + board_items + cable_items + updi_items
     render([(base, BODY), (lid, LID)] + entry_items + cable_items, V / "closed.png", view=(-0.7, -1.3, 0.9))
     render(inside, V / "open.png", view=(-0.6, -1.0, 1.4))
     render(inside, V / "top.png", view=(0, 0, 1), up=(0, 1, 0))
@@ -439,4 +474,7 @@ if not args.no_views and not args.lid_drop:
     ]
     keep = Pos(bus_x[0] - 3, y0, ENTRY_Z) * Box(40, 50, 80)
     render(cut([(base, BODY)], keep) + apart, V / "entry-parts.png", view=(-1.1, -1.0, 0.8), size=(1600, 1000))
-    print(f"enclosure: 7 views -> build/{HERE.name}/views/")
+    # The programming plug on its header, lid off, with what stands around it.
+    ux, uy = to_model("J_UPDI", 0, 2.54)
+    render(cut([(base, BODY)] + board_items + updi_items, Pos(ux, uy, 0) * Box(36, 26, 80)), V / "updi.png", view=(-0.9, -1.2, 0.9), size=(1400, 1000))
+    print(f"enclosure: 8 views -> build/{HERE.name}/views/")
