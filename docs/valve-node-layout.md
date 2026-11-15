@@ -227,7 +227,8 @@ programmer.
 
 ### Who solders the through-hole parts
 
-Open since the schematic hold point. Each board has two jacks and two headers, 20 joints.
+Decided by the owner on 2026-11-15: JLCPCB solders them. The question was open since the
+schematic hold point. Each board has two jacks and two headers, 20 joints.
 
 | | JLCPCB | Owner |
 |---|---|---|
@@ -236,8 +237,9 @@ Open since the schematic hold point. Each board has two jacks and two headers, 2
 | Risk | The footprints of jack and header are checked against the drawings, never against a part. If one does not fit, JLCPCB asks before soldering | The same misfit is found at home, with five boards already made |
 | In the files | `tht` in `lib/jlcpcb-parts.csv` (as now) | `none` for both parts, then `make fab` |
 
-Recommendation: JLCPCB. It costs about as much as the shipping of the loose connectors would, and
-a footprint that does not fit is found before the boards leave the factory.
+Why JLCPCB: it costs about as much as the shipping of the loose connectors would, and a footprint
+that does not fit is found before the boards leave the factory. The files are already set that
+way, and the cost estimate above includes it.
 
 ## Test fit
 
@@ -289,7 +291,6 @@ The same print is the first sample for the water bath test
 | Point | Needed for | Who, when |
 |---|---|---|
 | Test fit with a printed enclosure | Sign-off | Owner, before the order |
-| Through-hole parts soldered by JLCPCB or by the owner | Order | Owner, at sign-off |
 | Rotations, stock and class in JLCPCB's preview | Order | Owner, while ordering; corrections go into `lib/jlcpcb-parts.csv` |
 | Price of lead-free HASL, shipping, board size limit of Economic assembly | Cost | Shown in JLCPCB's quote |
 | The points listed in the specification's and the schematic's "Open points" | | unchanged |

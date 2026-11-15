@@ -100,9 +100,9 @@ valve headers are through-hole parts; everything else is surface-mount.
 
 Not on the board and ordered loose: two plugs KF2EDGK-5.08-2P (C440880) per board.
 
-Whether JLCPCB solders the four through-hole parts (20 joints per board) or the owner does is
-decided with the cost estimate before the order (owner, 2026-11-14). They are marked `tht` in
-`lib/jlcpcb-parts.csv`, which puts them into the JLCPCB BOM; `none` leaves them out.
+JLCPCB solders the four through-hole parts, 20 joints per board (owner, 2026-11-15, with the cost
+estimate of the layout hold point). They are marked `tht` in `lib/jlcpcb-parts.csv`, which puts
+them into the JLCPCB BOM and placement file; `none` would leave them out.
 
 Class and stock come from the specification's parts search of 2026-11-14 and a community mirror.
 They are checked again on jlcpcb.com before the order, as are the placement rotations.
@@ -154,6 +154,6 @@ and logic" and "Deviations".
 | Point | Needed for | Who, when |
 |---|---|---|
 | Tantalum capacitor C1: temperature range and ESR are from the listing | C1 | Read the Kyocera AVX TAJ datasheet before the order |
-| Through-hole parts soldered by JLCPCB or by the owner | BOM | Owner, with the cost estimate |
+| Through-hole parts soldered by JLCPCB or by the owner | BOM | Decided on 2026-11-15: JLCPCB ([`valve-node-layout.md`](valve-node-layout.md), "Who solders the through-hole parts") |
 | Fuse maker: the documents linked at LCSC are from another maker than the name in the listing, and the 0.2 A type is marked "UL pending" | Order | Before the order |
 | The points listed in the specification's "Open points" | | unchanged |
