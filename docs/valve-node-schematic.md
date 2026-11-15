@@ -47,7 +47,7 @@ these footprints with "Populated: no".
 | Outputs 3 and 4 | Not on this board (owner, 2026-11-14): the footprints would cost board area on every node. A box with more valves gets a board variant of its own; `OUTPUTS` in `valve-node.zen` is the one line that changes | |
 | Current sensing | Not on the board. The specification replaced it by the output monitor, which is populated on every output | |
 | Termination | R14 not populated, jumper JP5 open | Populate 120 Ω and bridge JP5 |
-| Bias | R11 and R12 not populated | Populate 1 kΩ each on one node, if the idle voltage measured at commissioning is between 40 and 200 mV |
+| Bias | R11 and R12 not populated | Populate 1 kΩ each on one node, if the idle voltage measured at commissioning is between 40 and 200 mV. Expected only if the terminator on the controller's RS485 module is bridged ([specification](valve-node-spec.md#rs485), "Idle level") |
 | A/B swap | JP1 and JP2 bridged 1-2 in copper: brown is A | Cut both bridges, solder 2-3 on both |
 | Spare pair parallel to 24 VAC | JP3 and JP4 open | Bridge both, on every node |
 | Programming header | J3 not populated | Solder a 3-pin header or use spring pins: UPDI, 5 V, ground |
@@ -88,7 +88,7 @@ points are additions or choices the specification left open.
 | 4 | "Resistors in 0603 and 0805" | 0805 for the three resistors on the 24 VAC side of each output (gate 150 Ω, snubber 100 Ω, monitor 15 kΩ), 0603 elsewhere | 150 V working voltage and 125 mW instead of 75 V and 100 mW (UNI-ROYAL listing); the monitor resistor carries the full supply voltage |
 | 5 | R13: optional input for a capacitive moisture sensor | No input: terminal, series resistor, capacitor and BAV99 clamp are gone, PA1 ends on a test pad like the other free pins. Until then the three protection parts were populated and the terminal was a footprint | Owner, 2026-11-14, after sign-off: the sensor on the installed system never worked properly, and the enclosure already has no cable entry for it ([`valve-node-enclosure.md`](valve-node-enclosure.md), deviation 3). Three populated parts fewer |
 | 6 | Status LED, no value | 1 kΩ in series, about 2 mA | Forward voltage about 2.85 V at 2 mA (Everlight DSE-0006617 Rev. 2, p. 5, read from the curve). The LED's allowed current falls to 3 to 4 mA at 85 °C |
-| 7 | Bias footprints, no value | 1 kΩ each | 5 V across 1 kΩ, 120 Ω, 1 kΩ gives 280 mV on a bus with one terminator |
+| 7 | Bias footprints, no value | 1 kΩ each | 5 V across 1 kΩ, 120 Ω, 1 kΩ gives 280 mV on a bus with one 120 Ω terminator, the only case in which bias is needed ([specification](valve-node-spec.md#rs485), "Idle level") |
 | 8 | A/B swap by "a pair of solder jumpers" | Two three-pad jumpers, pads 1-2 joined in copper | The standard polarity needs no soldering on any board |
 | 9 | Test pads on the four free pins | Five free pins with deviation 5, and three more pads: 5 V, ground, regulator input | Bring-up |
 | 10 | Exposed pad of the microcontroller not mentioned | Connected to ground | Microchip recommends it (DS40002204A, p. 16) |

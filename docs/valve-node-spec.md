@@ -195,14 +195,35 @@ enable is tied to the same pin, so the node does not hear its own answer.
 Termination. One bit at 9600 baud lasts 104 µs. A reflection on 100 m of cable has died out after
 a few microseconds, long before the receiver samples the bit, so the cable works without
 termination. Each terminator costs about 30 mA while a node transmits. All node jumpers stay open.
-The existing controller module, which stays for now, probably carries a fixed 120 Ω; that does no
-harm.
+The existing controller module, which stays for now, carries a 120 Ω terminator that is across the
+bus only if its pad R0 is bridged; on a spare module it is not
+([`existing-system.md`](existing-system.md#rs485-adapter-module)). For the signal it does no harm
+either way; for the idle level it matters.
 
 Idle level. The existing controller module drives only one level and leaves the other to its bias
-resistors. The new receiver reads an idle bus as "1" when the voltage between A and B is above
-200 mV or within ±40 mV (SLLSF20B, 6.7, p. 6); between 40 and 200 mV the datasheet promises
-nothing. Measured once at commissioning, with the first new node connected: if the idle voltage is
-in that gap, the two bias footprints on one node are populated.
+resistors, 4.7 kΩ from A to its supply and from B to ground. The new receiver reads an idle bus as
+"1" when the voltage between A and B is above 200 mV or within ±40 mV (SLLSF20B, 6.7, p. 6);
+between 40 and 200 mV the datasheet promises nothing.
+
+The receivers load both bus wires. Worst case for the controller module, whose transceiver is not
+identified: one unit load, at least 12 kΩ per bus pin (TI SN75176B, SLLS101I, 5.5, p. 6, input
+resistance at 12 V). Each new node: at most 125 µA at 12 V (SLLSF20B, 6.7, p. 6, bus input
+current), that is at least 96 kΩ per pin. Counted as resistances to ground, they form a divider
+with the bias resistor on A; a terminator, where there is one, is far below them and alone sets the
+voltage:
+
+| Bus | Load on each wire | Idle voltage A to B, module at 5 V (3.3 V) | New receiver reads |
+|---|---|---|---|
+| Controller module and one new node, no terminator | 10.7 kΩ | 3.5 V (2.3 V) | "1" |
+| Controller module and six new nodes, no terminator | 6.9 kΩ | 3.0 V (2.0 V) | "1" |
+| One 120 Ω terminator: R0 bridged on the controller module, or one node's jumper | 120 Ω between the wires | 63 mV (42 mV) | not defined |
+
+With every node jumper open and R0 open on the controller module, the idle level is far above
+200 mV and no bias is needed on any node. If R0 is bridged, the idle level is in the gap; the two
+bias footprints on one node are then populated, and 1 kΩ each brings it to at least 280 mV
+([`valve-node-schematic.md`](valve-node-schematic.md#deviations-from-the-specification),
+deviation 7). R0 on the controller module has not been looked at and its supply voltage is not
+known, so the idle voltage is measured once at commissioning, with the first new node connected.
 
 Polarity. The brown wire goes to the transceiver's pin A, which is the more positive wire on an
 idle bus. If the letters on the existing module mean the opposite, a pair of solder jumpers next
@@ -654,12 +675,12 @@ Weaknesses and open points from [`existing-system.md`](existing-system.md) and
 | Transformer open-circuit voltage unknown | The node tolerates up to 33.9 V RMS. A measurement above 33 V changes one TVS. |
 | Cable is copper-clad aluminium, 26 Ω loop estimated | The 12 V budget holds with the estimate. For the valves the node adds about 1 V of drop that a relay did not have; tested first on the first board. If the far valve does not pull in, the spare pair can double the 24 VAC pair through two solder jumpers on each node. That gives up the branch reserve, so it is the owner's call at that point. |
 | Aluminium strands break and corrode | RJ45 plugs for solid wire cut into the conductor and need no re-tightening; the cable entry is the strain relief; sealed enclosure. |
-| Fixed 120 Ω on every RS485 module (hypothesis) | It no longer matters once the old nodes are out: the one remaining module at the controller may carry its 120 Ω. The two-minute measurement is still worth doing because it explains the old fault. |
+| Termination on the RS485 modules | Measured on a spare module: 120 Ω only with pad R0 bridged, 4.7 kΩ bias. Once the old nodes are out, the controller's module is the only one left; what its R0 means is under "Termination and bias on the existing bus" below. |
 | Solenoid tolerance, switch-on duration and pull-in voltage unknown | The triac has a margin of ten on current. The pull-in voltage stays the open risk named above and is measured on the first board. |
 | One-valve rule not enforced | In the node for its own outputs; across nodes in the controller. |
 | Maximum run time only in Home Assistant | 120 min limit in the node. |
 | RS485 polarity | Two solder jumpers swap A and B. |
-| Termination and bias on the existing bus | Idle voltage measured at commissioning; bias footprints on every node. |
+| Termination and bias on the existing bus | About 3 V idle voltage with R0 open on the controller module, no bias needed; 63 mV with R0 bridged, then one node gets its bias resistors ([Idle level](#rs485)). Measured at commissioning; bias footprints on every node. |
 | Controller response timeout, retries, request spacing | The node answers within 4 ms after a request ends, faster than any ESPHome default. Recording the ESPHome version stays open for the controller. |
 | Registers of the generation-1 nodes | Not needed. The controller uses registers 0 and 2 only, and the new node implements the generation-2 map. |
 | The value 0xFFFF for "on" | Any non-zero value opens the valve and reads back as written. |
@@ -670,7 +691,7 @@ Weaknesses and open points from [`existing-system.md`](existing-system.md) and
 |---|---|---|
 | Does the farthest valve pull in through a triac? | Confirms the output design | First board, before the rest is installed |
 | Does a valve close with 2 mA of off-state current? | Monitor and snubber values | First board |
-| Idle voltage between A and B with the existing controller module | Whether bias resistors are populated | Owner, multimeter, at commissioning |
+| Idle voltage between A and B with the existing controller module: about 3 V expected, 63 mV if its R0 is bridged | Whether bias resistors are populated on one node | Owner, multimeter, at commissioning |
 | Open-circuit voltage of the transformer | TVS on the 24 VAC pair | Owner, multimeter, any time |
 | Inside dimensions of the valve boxes | Size limit of the enclosure | Owner, before the enclosure is designed |
 | Diameters of bus cable and valve wire, cross-section of the RJ45 plug | Split inserts | Owner, caliper, before the enclosure is designed |

@@ -6,8 +6,9 @@ and timing of the bus are in [`bus-protocol.md`](bus-protocol.md) and are not re
 Sources, read on 2026-11-14: the owner's build notes of 2025-07-01, the ESPHome configuration of
 the controller, the generation-2 node firmware, the Home Assistant automations and scripts (read
 through the Home Assistant API, nothing changed), the Hunter documents cited below, and the
-owner's statements and product listings for transformer, cable and RS485 module (2026-11-14). None
-of the hardware was opened or measured for this document.
+owner's statements and product listings for transformer, cable and RS485 module (2026-11-14), and
+the owner's measurement of a loose spare RS485 module (2026-11-15). None of the installed hardware
+was opened or measured for this document.
 
 ## Overview
 
@@ -87,9 +88,10 @@ Found by reading the firmware and the notes, and reported by the owner.
 
 - **The bus does not tolerate another node or a terminator.** The owner's attempt to convert a
   further node made communication with all nodes collapse, and so did adding a termination
-  resistor. A likely cause is described under [RS485 adapter module](#rs485-adapter-module). The
-  old nodes are all removed before the first new one is connected, so the new nodes never share
-  the bus with old ones. The controller's module stays until the controller is replaced.
+  resistor. What the RS485 modules explain of it, and what not, is under
+  [RS485 adapter module](#rs485-adapter-module). The old nodes are all removed before the first
+  new one is connected, so the new nodes never share the bus with old ones. The controller's
+  module stays until the controller is replaced.
 
 - **No close on bus loss.** A node holds an open valve for as long as it has power.
 - **Both outputs can be on at once.** Nothing in the node limits it to one valve.
@@ -147,25 +149,47 @@ The conductor material matters more than the category. Estimate from the cross-s
 ## RS485 adapter module
 
 Every node and the controller use the same TTL-to-RS485 module with automatic direction switching
-(board marking HW-0519, sold under several brand names). Read from a product photo, not from a
-schematic:
+(board marking HW-0519, sold under several brand names). No schematic of the module is available;
+what follows is read from a product photo and measured on a loose spare module.
 
 - Bus side: terminals A+, B− and ground, two resettable fuses and three protection diodes.
-- A resistor marked `121` (120 Ω) sits directly at the bus terminals.
 - An 8-pin transceiver and a 14-pin logic chip that derives the driver enable from the transmit
-  data.
+  data. The transceiver's type is not legible on the photo.
+- Termination: a resistor R9 marked `121` (120 Ω) in series with an empty position R0 (two bare
+  pads). The 120 Ω is across the bus only if R0 is bridged.
+- Bias: R1 and R2, marked `472` (4.7 kΩ), from A+ to the module's supply and from B− to ground.
 
-**Hypothesis: every module carries a fixed 120 Ω termination.** With five modules on the bus that
-is 24 Ω between the bus wires where a correctly terminated bus has 60 Ω. Modules of this kind
-drive the bus actively only for one logic level and leave the other to their bias resistors,
-which a load this heavy pulls close to zero. That would explain both observations: a sixth module
-or an extra terminator lowers the resistance further and the idle level disappears.
+Measured by the owner on 2026-11-15, on the spare module without power:
 
-Test, two minutes: measure the resistance between A and B on a loose spare module (expected about
-120 Ω), and between the brown wires of the powered-down bus (expected about 24 Ω). If the
-hypothesis holds, it settles the termination of the new bus: the controller's module, which stays
-for now, terminates the controller end; the new nodes get no fixed terminator, only a switchable
-one for the node at the far end.
+| Between | Measured | Reading |
+|---|---|---|
+| A+ and B− | 40.62 kΩ | No 120 Ω across the bus: R0 is open on this module |
+| A+ and VCC | 4.7 kΩ | Bias resistor R1 |
+| B− and GND | 4.1 kΩ | Bias resistor R2; fits 4.7 kΩ read in circuit, with the rest of the module in parallel |
+
+This disproves the earlier hypothesis that every module carries a fixed 120 Ω termination, as far
+as the installed modules are like the spare one. **Not known: whether R0 is bridged on the
+installed modules**, above all the controller's, which stays on the bus for now. A look at the
+controller's module shows it, or the resistance between A+ and B− of that module without power:
+about 120 Ω if R0 is bridged, tens of kΩ if not.
+
+Modules of this kind drive the bus actively only for one logic level and leave the other, which is
+also the idle level, to their bias resistors. One module's bias against one 120 Ω terminator gives
+an idle voltage between A and B of 5 V × 120 Ω / (4.7 kΩ + 120 Ω + 4.7 kΩ) = 63 mV at a 5 V supply
+(42 mV at 3.3 V). A standard receiver switches somewhere between −200 and +200 mV (TI SN75176B,
+SLLS101I, 5.5, p. 6), so it reads that idle level as either state. If all five modules of the old
+bus carried the same bias, it was 940 Ω on each side, and one extra terminator gave 300 mV at 5 V
+and 200 mV at 3.3 V: at or just above the edge of a standard receiver, with no room for noise.
+Which transceiver the modules carry, and from which supply voltage, is not known.
+
+- **The extra terminator** that made the old bus collapse fits this: it pulled the idle level
+  down to where a receiver's reading is undefined or nearly so. Plausible, not proven.
+- **The sixth node** that made the bus collapse is not explained by it. A further module adds a
+  further pair of bias resistors, which raises the idle level, and one unit load, which the bus
+  carries easily. Open; one possibility is a module with R0 bridged.
+
+What it means for the new bus is in
+[`valve-node-spec.md`](valve-node-spec.md#rs485), "Idle level".
 
 ## Valves
 
@@ -237,7 +261,8 @@ in the node, so that the rule and the run-time limit hold without Home Assistant
 
 | Point | Needed for | Who |
 |---|---|---|
-| Termination on the RS485 modules (test above) | Termination of the new nodes; the controller's module stays on the bus | Owner, multimeter |
+| Is R0 bridged on the controller's RS485 module? (The spare module was measured on 2026-11-15, see [RS485 adapter module](#rs485-adapter-module)) | Idle level of the new bus, whether bias resistors are populated on one node; the controller's module stays on the bus | Owner, by eye or multimeter |
+| Why a sixth old node made the bus collapse | Explains the old fault; the new nodes never share the bus with old ones | Not planned |
 | Loop resistance of the cable | Voltage at the far valve and on the 12 V supply | Short the spare blue pair at the last box and measure at the controller |
 | Open-circuit voltage of the transformer, and its voltage with one valve open | Sizing of the replacement | Measurement |
 | Solenoid inrush duration and pull-in voltage | Output switch sizing | Measurement on a spare valve |
