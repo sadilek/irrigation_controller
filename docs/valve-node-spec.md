@@ -13,7 +13,9 @@ cable entry, and only the bus inserts are slit. After the sign-off the owner dro
 sensor input from the board altogether (2026-11-14, schematic deviation 5); R13, the pin
 assignment and the current budget below say so, the outline section is superseded by the enclosure.
 How the "Layout rules" below are met is in [`valve-node-layout.md`](valve-node-layout.md); the
-layout used none of the pin swaps this page allows.
+layout used none of the pin swaps this page allows. At the layout hold point the owner replaced
+the pluggable valve terminals of "Outline and connectors" and of the part list by one spring
+terminal block soldered to the board (2026-11-15, schematic deviation 12).
 
 The node replaces every existing node on the buried cable. Cable, wiring, addresses and registers
 stay as described in [`bus-protocol.md`](bus-protocol.md). The installation it goes into, with

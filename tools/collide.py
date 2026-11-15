@@ -6,6 +6,9 @@ Until a board has a layout there is no board STEP. If the enclosure script wrote
 build/<board>/envelope.step (the board outline with its connectors as blocks, from mech.json), the
 check runs against that and says so.
 
+If the enclosure script wrote build/<board>/plugs.step (the mated plugs as blocks), those are
+checked against the enclosure as well.
+
 Reports the overlapping volume per enclosure part and per board solid, and exits 1 if any overlap
 exceeds the tolerance. Faces that merely touch (board resting on its standoffs) have zero volume
 and pass. It does not check clearances: a part 0.05 mm from a wall passes.
@@ -33,6 +36,11 @@ def main(name: str) -> int:
     solids = board.solids()
     bb = board.bounding_box()
     print(f"collide: board {len(solids)} solids, x {bb.min.X:.1f}..{bb.max.X:.1f}, y {bb.min.Y:.1f}..{bb.max.Y:.1f}, z {bb.min.Z:.1f}..{bb.max.Z:.1f} mm")
+    plugs_step = build / "plugs.step"
+    if plugs_step.exists():  # mated plugs, written by the enclosure script: not on the board, but in the box
+        plugs = import_step(str(plugs_step)).solids()
+        solids = list(solids) + list(plugs)
+        print(f"collide: plus {len(plugs)} plug solids from {plugs_step.relative_to(REPO)}")
 
     failed = False
     for path in parts:

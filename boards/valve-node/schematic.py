@@ -152,9 +152,10 @@ def mcu(x, y):
 
 
 def ac_protection(x, y):
-    S.box(x, y, x + 119.38, y + 43.18, "24 VAC: clamp and valve fuse", "Isolated from the logic: no connection to GND.")
+    S.box(x, y, x + 119.38, y + 43.18, "24 VAC: clamp, valve fuse, valve terminals", "Isolated from the logic: no connection to GND.")
     S.place("D4", x + 25.4, y + 26.67, rot=90)
     S.place("F2", x + 71.12, y + 26.67, rot=90)
+    S.place("J_VALVES", x + 104.14, y + 21.59, ref=(1.3, -9.7, "right"), value=(1.3, -7.9, "right"))
 
 
 def output(n, x, y):
@@ -190,8 +191,8 @@ def output(n, x, y):
     S.wire(o + "U_MON.2", (x + 101.6, S.at(o + "U_MON.2")[1]), (x + 101.6, bottom))
     S.wire(o + "U_MON.3", (x + 124.46, S.at(o + "U_MON.3")[1]), (x + 124.46, S.at(o + "U_MON.3")[1] + G))
     S.power_symbol((x + 124.46, S.at(o + "U_MON.3")[1] + G), net="GND")
-    S.place(o + "J", x + 119.38, top - 2 * G, pin="1", ref=(1.3, -4.6, "right"), value=(1.3, -2.8, "right"))
-    S.wire((x + 54.61, top), (x + 111.76, top), (x + 111.76, top - 2 * G), o + "J.1")
+    S.wire((x + 54.61, top), (x + 111.76, top), (x + 111.76, top - 2 * G))
+    S.label((x + 111.76, top - 2 * G), (0, -1), net="VALVE%d" % n)  # to the valve terminal block
     S.wire((x + 52.07, bottom), (x + 101.6, bottom))
     S.label((x + 52.07, bottom), (-1, 0), net="AC_B")
     S.text(x + 2.0, y + 50.8, "logic side", size=1.27)

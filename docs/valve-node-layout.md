@@ -40,7 +40,7 @@ connectors on the lower edge come from the enclosure.
 
 | Area | Parts | Why there |
 |---|---|---|
-| Right third | Triacs, snubbers, gate and monitor resistors, valve headers | The 24 VAC side. Each triac's tab faces its valve header |
+| Right third | Triacs, snubbers, gate and monitor resistors, the valve terminal block | The 24 VAC side. Each triac's tab faces the board edge with the valve terminals |
 | One column at x = 64 mm | The four optocouplers | The only parts that span the isolation gap. Their pin rows are 7.5 mm apart, and nothing else crosses that line |
 | Right of the OUT jack | 24 VAC TVS, valve fuse, the two spare-pair jumpers | The 24 VAC pair leaves the jack here, so the TVS is the first part on the pair |
 | Between the jacks | 12 V fuse, 12 V TVS, series diode; RS485 TVS just above | Every bus wire passes here on its way from jack to jack, so each TVS sits on the wire it protects |
@@ -66,7 +66,7 @@ DRC checks them on every run:
 | Ground zone on the logic half only | | Two zones, both end at x = 60.4 mm and above the pass-through |
 | Bus power | 0.8 mm | +12 V and ground from jack to jack |
 | Spare pair | 3.0 mm to logic once it has left the pass-through | It can be bridged to the 24 VAC pair, so east of the OUT jack it is treated like it. Smallest distance there: 3.25 mm |
-| Triac cooling | at least 0.5 cm² under each tab | 0.77 cm² (output 1) and 1.40 cm² (output 2), each joined to its valve header pin |
+| Triac cooling | at least 0.5 cm² under each tab | 0.71 cm² (output 1) and 1.36 cm² (output 2), each joined to its valve terminal |
 
 ### The one exception: the jack
 
@@ -122,7 +122,7 @@ The two outputs are the same pattern, one above the other: optotriac, triac leve
 pin (3 mm of straight gate track between the two pads), gate-to-A1 resistor beside it, the row of gate, monitor and
 snubber parts above. 24 VAC b reaches every part from a 0.8 mm trunk on the bottom layer through
 seven vias, so the top layer needs no crossing. The valve current flows trunk, via, triac, tab,
-copper area, header pin.
+copper area, valve terminal.
 
 ## The logic side
 
@@ -154,11 +154,11 @@ name and a map of what blocks it.
 | The 3 mm rule can fail: a ground track drawn 2.5 mm from 24 VAC copper on a copy of the board (`make selftest`) | reported, as it must be |
 | The isolation gap can fail: a track drawn under an optocoupler | reported |
 | The screw head keep-out can fail: a track drawn under a screw head | reported |
-| Board STEP against every enclosure part (`make collide BOARD=valve-node`) | no overlap, 6 parts |
-| Height: 14.8 mm above the board's bottom face, 2.4 mm below it | limits from the enclosure: 18 mm above the board, 3.5 mm below |
+| Board STEP and the two mated bus plugs against every enclosure part (`make collide BOARD=valve-node`) | no overlap, 6 parts |
+| Height: 14.8 mm above the board's bottom face, 1.7 mm below it | limits from the enclosure: 18 mm above the board, 3.5 mm below |
 | Jack orientation in the render and in the enclosure section | plug opening faces the cable entry |
 | Schematic: unchanged by the layout, ERC | 0 violations |
-| Every populated part has an LCSC number (`make fab`) | 26 BOM lines, 39 placements |
+| Every populated part has an LCSC number (`make fab`) | 26 BOM lines, 38 placements |
 
 The second and third self-test exist because of what the first version found: KiCad 10.0.1 did
 not report a track inside a rule area that forbids tracks. The DRC report was clean and the check
@@ -171,13 +171,15 @@ was blind. Both keep-outs are now explicit rules in the rule file, and both are 
 | # | Before | This layout | Reason |
 |---|---|---|---|
 | 1 | Bus jack footprint as fetched: pads 1.6 mm, holes 1.0 mm, pegs as plated holes of 3.3 mm | Pads 1.4 mm, holes 0.9 mm, pegs unplated 3.25 mm | Amphenol's drawing (schematic page, "Handed to the layout"); 0.65 mm instead of 0.45 mm between the 24 VAC and +12 V pads; a track fits between two pads |
-| 2 | Valve headers at x = 79.92 and 90.08 mm | 79.72 and 90.28 mm | The two headers were exactly 10.16 mm apart, body against body by the drawing. Now there are 0.4 mm between them. `mech.json` changed, the collision check passes |
+| 2 | Two pluggable screw terminals for the valve wires (headers KF2EDGR-5.08-2P with loose plugs) | One spring terminal block with four poles and push buttons, KF142R-5.08-4P, soldered to the board | See "The valve terminals" below. The schematic changed with it |
 | 3 | Fuses and triacs: the manufacturers draw longer land patterns than KiCad's (schematic page) | KiCad's patterns kept | They are the IPC-7351 patterns for reflow, which is how JLCPCB solders them. The longer ones add toe length for hand and wave soldering. The triac's cooling comes from the copper area, not from the pad |
-| 4 | Silkscreen with reference designators | Function labels only: jacks, valves, jumpers, test pads, programming pads | 60 footprints leave no room. The assembly drawing has the designators |
-| 5 | Jack and header silkscreen as fetched | Outline shortened to inside the board edge and off the pads | They drew over the edge and over pads; DRC reports both |
+| 4 | Silkscreen with reference designators | Function labels only: jacks, valves, jumpers, test pads, programming pads | 59 footprints leave no room. The assembly drawing has the designators |
+| 5 | Jack and terminal block silkscreen as fetched | Outline shortened to inside the board edge and off the pads | They drew over the edge and over pads; DRC reports both |
+| 7 | 3D model of the terminal block as fetched: turned by 180°, wire openings facing the triacs | Turned and moved to match the pads, which agree with Kefa's drawing | The pads were right, the model was not. Found in the render; the collision check had passed with the wrong one |
 | 6 | Specification: one clearance for the 24 VAC class | A second class for the spare pair | Open jumpers leave it floating; bridged, it is 24 VAC. It gets the 3 mm wherever it is not between the bus lanes |
 
-Not changed: the schematic, the pin assignment, the bill of materials, the board outline.
+Not changed: the pin assignment and the board outline. The schematic and the bill of materials
+changed in one place, the valve terminals.
 
 ## Fabrication data
 
@@ -187,7 +189,7 @@ Not changed: the schematic, the pin assignment, the bill of materials, the board
 |---|---|
 | `valve-node-gerbers.zip` | Copper, mask, paste, silkscreen, outline, drill files for plated and unplated holes |
 | `valve-node-bom-jlcpcb.csv` | 26 lines with LCSC numbers |
-| `valve-node-cpl-jlcpcb.csv` | 39 placements: 35 surface-mount parts and the 4 through-hole connectors |
+| `valve-node-cpl-jlcpcb.csv` | 38 placements: 35 surface-mount parts and the 3 through-hole connectors |
 | `valve-node.step` | The populated board, used by the collision check |
 
 To choose when ordering: 2 layers, 1.6 mm, 1 oz copper, lead-free HASL, quantity 5; "Specify a
@@ -220,8 +222,8 @@ and import VAT.
 | Extended parts: 13 surface-mount part types × 3.07 | 39.91 | 39.91 |
 | Surface-mount joints: 117 per board × 0.0016 | 0.94 | 1.87 |
 | Parts, about $9 per board | 45 | 90 |
-| Through-hole soldering by JLCPCB: 3.58 per order + 20 joints per board × 0.0164 | 5.22 | 6.86 |
-| **Sum** | **about 106** | **about 157** |
+| Through-hole soldering by JLCPCB: 3.58 per order + 24 joints per board × 0.0164 | 5.55 | 7.52 |
+| **Sum** | **about 107** | **about 157** |
 | Per board | about 21 | about 16 |
 
 With shipping to Germany (not looked up, $15 to $25 assumed) and 19 % import VAT, five boards come
@@ -231,25 +233,59 @@ The 13 extended part types are almost 40 % of a five-board order and do not grow
 quantity. If JLCPCB charges the extended fee for the two through-hole part types as
 well, add $6.14. JLCPCB rounds cheap parts up to a minimum quantity; a few dollars.
 
-Not in the sum, bought elsewhere: two plugs KF2EDGK-5.08-2P per board (C440880, $0.15), RJ45
+Not in the sum, bought elsewhere: RJ45
 plugs for solid wire, eight M3 heat-set inserts and eight screws per enclosure, filament, a UPDI
 programmer.
 
 ### Who solders the through-hole parts
 
-Decided by the owner on 2026-11-15: JLCPCB solders them. The question was open since the
-schematic hold point. Each board has two jacks and two headers, 20 joints.
+JLCPCB solders them (owner, 2026-11-15; open since the schematic hold point): two bus jacks and
+the valve terminal block, 24 joints per board. A footprint that does not fit a part is then found
+before the boards leave the factory, for about $6 on five boards. The three parts are marked
+`tht` in `lib/jlcpcb-parts.csv`.
 
-| | JLCPCB | Owner |
+## The valve terminals
+
+The valve wires end in a spring terminal block on the board: Cixi Kefa KF142R-5.08-4P, four poles
+at 5.08 mm, one push button per pole on top, the wire parallel to the board. From left to right:
+valve 1, common, valve 2, common. It replaces two pluggable screw terminals (owner, 2026-11-15).
+
+Why the plugs went. They were never modelled, and the owner asked how a plug comes out. With the
+plug's dimensions the answer was that it does not:
+
+| | Pluggable screw terminal | Spring terminal block |
 |---|---|---|
-| Cost for five boards | $5.22, perhaps $6.14 more | nothing extra; the connectors come with the plug order from LCSC |
-| Work | none | 100 joints |
-| Risk | The footprints of jack and header are checked against the drawings, never against a part. If one does not fit, JLCPCB asks before soldering | The same misfit is found at home, with five boards already made |
-| In the files | `tht` in `lib/jlcpcb-parts.csv` (as now) | `none` for both parts, then `make fab` |
+| In front of the board edge | The mated plug stands 10.6 mm out; 3.5 mm remain to the wall | Nothing: the block ends at the board edge, 14 mm remain |
+| Taking it out with the board in place | Needs 7 mm of travel, 3.6 mm more than there are | Not taken out; a wire is released by its button |
+| Wires from the entry | The outer poles are 7.8 mm off the entry's axis; a kink within 3.5 mm | 1.2 to 8.9 mm off the axis, over 14 mm of length |
+| Lid | The centring rib touched one plug's corner by 0.1 mm | 13.7 mm high under 18.8 mm |
 
-Why JLCPCB: it costs about as much as the shipping of the loose connectors would, and a footprint
-that does not fit is found before the boards leave the factory. The files are already set that
-way, and the cost estimate above includes it.
+The alternatives were a box 8 mm deeper, the headers 8 mm further in on the board (a new 24 VAC
+corner), and terminals with latching levers (WAGO 2604-1104, in stock at JLCPCB at $5.76; the
+smaller 2601 is a pre-order part there; Kefa's lever type KF243 is 18.7 mm high). The owner chose
+the push-button block: it fits the box as it is, JLCPCB has it and solders it, and it costs $0.36.
+
+| Property | Value | Source |
+|---|---|---|
+| Wire | 22 to 14 AWG, up to 1.5 mm², strip 11 mm | Kefa drawing KF142R-5.08 rev A |
+| Valve wires | The solenoid's leads are 18 AWG | Hunter, solenoid data |
+| Ratings | 250 V and 15 A (IEC, overvoltage category III), −40 to +105 °C | Kefa drawing |
+| Size | 22.86 × 14.2 mm, 13.7 mm high with the buttons, pins 3.3 mm | Kefa drawing |
+| Pins | Two per pole, 7.62 mm apart, holes 1.4 mm (+0.1) | Kefa drawing; the footprint has 1.5 mm, which JLCPCB makes between 1.42 and 1.63 mm |
+| At JLCPCB | C475146, extended, wave soldering, 933 in stock on 2026-11-15 | jlcpcb.com parts catalogue |
+
+On the board: the block's wire face is the board edge. The fused common runs between the two pin
+rows on the top layer; each pole's two pins are joined on the bottom layer. The block is 22.86 mm
+long and the board ends 0.3 mm beside it, so its middle is 1.3 mm left of the cable entry.
+
+![Section through the valve entry](images/valve-node-layout-valve-entry.png)
+
+The section cuts through the block's third pole; the two wires are drawn straight and stop short
+of the block.
+
+To connect a wire: strip 11 mm, push it through the loose insert of the cable entry until it
+stands in front of its pole, hold the button down, push on, let go. The board comes out after
+the four wires are released the same way.
 
 ## Test fit
 
@@ -276,8 +312,9 @@ The same print is the first sample for the water bath test
 
 ## What does not hold up yet
 
-1. **No part was ever placed on these footprints.** Jack and header are fetched LCSC footprints,
-   corrected against the manufacturers' drawings by hand. The first assembled board is the test.
+1. **No part was ever placed on these footprints.** Jack and valve terminal block are fetched
+   LCSC footprints, corrected against the manufacturers' drawings by hand. The first assembled
+   board is the test.
 2. **Placement rotations are unverified** (see "Fabrication data").
 3. **The test fit is not done.** The collision check compares models, not prints.
 4. **The router has no second attempt.** A change in placement can leave a net without a way.
@@ -303,6 +340,7 @@ The same print is the first sample for the water bath test
 | Test fit with a printed enclosure | Sign-off | Owner, before the order |
 | Rotations, stock and class in JLCPCB's preview | Order | Owner, while ordering; corrections go into `lib/jlcpcb-parts.csv` |
 | Price of lead-free HASL, shipping, board size limit of Economic assembly | Cost | Shown in JLCPCB's quote |
+| How the four valve wires thread into the terminal block in 14 mm, with the real wire | Handling | Owner, at the test fit: the block is a block on the dummy, the entry is real |
 | The points listed in the specification's and the schematic's "Open points" | | unchanged |
 
 ## Sources
@@ -312,6 +350,10 @@ The same print is the first sample for the water bath test
 | JLCPCB, *What does your PCB assembly price include?*, help article, updated 2026-10-22 | Set-up, stencil, extended part, joint and hand-soldering fees |
 | JLCPCB, special offer for 1 to 2 layer boards up to 100 × 100 mm | Bare board price |
 | JLCPCB, *PCB manufacturing capabilities*, read 2026-11-15 | Tolerance of plated holes, recommended ring around a hole |
+| Cixi Kefa, drawing *KF142R-5.08*, rev A, 2020-04-09 | Valve terminal block: dimensions, pin pattern, ratings, wire range |
+| Handson Technology, *5.08mm Pluggable Terminal Block* user guide, "Mechanical Dimension" | Size of the mated screw plug that was replaced (a reseller's drawing of the KF2EDG series) |
+| WAGO, data sheet *2604-1104*, 18.02.2024, p. 3 and 5; Kefa, drawing *KF243-5.0*, rev A | The lever terminals that were considered |
+| Hunter, solenoid specification | Lead wire gauge |
 | Amphenol, *Modular Jack, RJHSE Series*, RJHSE-508X page | Hole and peg diameters of the jack |
 | STMicroelectronics, *T4 series, 4 A triacs*, DocID7699 Rev 9, table 6, p. 3 | Copper area under the tab |
 | Texas Instruments, *THVD2410, THVD2450*, SLLSF20B, 11.1, p. 21 | TVS placement and return path |

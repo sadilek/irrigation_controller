@@ -4,7 +4,7 @@ The second of three hold points for the valve node. The layout does not start be
 signed this page off, together with the schematic PDF and the bill of materials.
 
 Status: signed off by the owner on 2026-11-14. The layout that follows it is described in
-[`valve-node-layout.md`](valve-node-layout.md); it left the schematic as it is. Changed
+[`valve-node-layout.md`](valve-node-layout.md); it changed one thing, the valve terminals (deviation 12). Changed
 after sign-off, by the owner's decision: the moisture sensor input is gone (deviation 5).
 
 The circuit and the reason for every part are in [`valve-node-spec.md`](valve-node-spec.md). This
@@ -33,7 +33,7 @@ The PDF carries values, not part numbers. Review it next to the bill of material
 | KiCad ERC, with the two rules disabled that [`toolchain.md`](toolchain.md) explains | 0 violations |
 | Drawing against source: after arranging, Zener compares the schematic's netlist with the source and any difference stops the build | no difference |
 | `make selftest`: one net label is renamed and the comparison has to fail | fails as expected |
-| Every populated part has a row in `lib/jlcpcb-parts.csv` | 26 lines, 39 parts |
+| Every populated part has a row in `lib/jlcpcb-parts.csv` | 26 lines, 38 parts |
 | Run twice, `make apply` writes the same schematic byte for byte | yes |
 | Pin assignment of every part with more than two pins against its datasheet | all confirmed, see [below](#checked-against-datasheets) |
 
@@ -67,13 +67,15 @@ Zener numbers the parts itself, so the references differ from the ones the speci
 | D1 to D4 | D1 to D4 | TVS 12 V, series diode, RS485 TVS, TVS 24 VAC |
 | F1, F2 | F1, F2 | Fuses 12 V and valves |
 | J1, J2 | J1, J2 | Bus jacks IN and OUT |
-| J3, J4 | J4, J5 | Valve plug headers |
+| J3, J4 | J4 | Valve terminals: one block with four poles since deviation 12 |
 
 ## Deviations from the specification
 
-Three points change the specification, all decided by the owner (2026-11-14): the board has two
+Four points change the specification, all decided by the owner: the board has two
 outputs and no footprints for more, the regulator's output capacitor is a tantalum part (both at
-this hold point), and the moisture sensor input is gone (after sign-off, with the enclosure).
+this hold point, 2026-11-14), the moisture sensor input is gone (after sign-off, with the
+enclosure), and the valve wires end in a spring terminal block instead of pluggable screw
+terminals (2026-11-15, with the layout).
 Everything else is the specified circuit with the same parts, pins and values; the remaining
 points are additions or choices the specification left open.
 
@@ -91,16 +93,15 @@ points are additions or choices the specification left open.
 | 9 | Test pads on the four free pins | Five free pins with deviation 5, and three more pads: 5 V, ground, regulator input | Bring-up |
 | 10 | Exposed pad of the microcontroller not mentioned | Connected to ground | Microchip recommends it (DS40002204A, p. 16) |
 | 11 | Address switch and terminal blocks "not verified from a datasheet" | Verified | Switch: Kingtek drawing DSHP04TSGET-A, 25 mA at 24 V DC, −40 to 85 °C. Header: Cixi Kefa KF2EDGR-5.08, 300 V, 10 A, −40 to 105 °C |
+| 12 | Each output with its own pluggable screw terminal (header KF2EDGR-5.08-2P, plug ordered loose) | One spring terminal block for both valves on the board: KF142R-5.08-4P, poles valve 1, common, valve 2, common. The output module no longer contains a connector | Owner, 2026-11-15, at the layout hold point: a mated plug did not fit between board and enclosure wall and could not be pulled ([`valve-node-layout.md`](valve-node-layout.md), "The valve terminals"). Rated 250 V and 15 A, 22 to 14 AWG, −40 to +105 °C (Kefa drawing KF142R-5.08 rev A) |
 
 ## Bill of materials in short
 
-26 lines, 39 parts, all on the top side. 11 lines are JLCPCB basic parts, 15 are extended parts
-with a set-up fee per type. The two bus jacks and the two
-valve headers are through-hole parts; everything else is surface-mount.
+26 lines, 38 parts, all on the top side. 11 lines are JLCPCB basic parts, 15 are extended parts
+with a set-up fee per type. The two bus jacks and the
+valve terminal block are through-hole parts; everything else is surface-mount.
 
-Not on the board and ordered loose: two plugs KF2EDGK-5.08-2P (C440880) per board.
-
-JLCPCB solders the four through-hole parts, 20 joints per board (owner, 2026-11-15, with the cost
+JLCPCB solders the three through-hole parts, 24 joints per board (owner, 2026-11-15, with the cost
 estimate of the layout hold point). They are marked `tht` in `lib/jlcpcb-parts.csv`, which puts
 them into the JLCPCB BOM and placement file; `none` would leave them out.
 
@@ -122,7 +123,7 @@ Pin assignment and footprint pad numbering of each part, read from the manufactu
 | PSM712-LF-T7 | 1 and 2 lines, 3 common; a line stands off +12 V and −7 V against pin 3 | ProTek 05094.R8, p. 1 |
 | RJHSE-5080 | Pad 1 is contact 1; hole pattern within 0.02 mm | Amphenol modular jack catalogue, RJHSE-508X page; the single-part drawing could not be opened |
 | DSHP04TSGET | Land pattern identical to the footprint; switch n joins pins n and 9 − n by geometry, the drawing has no pin numbers | Kingtek DSHP04TSGET-A |
-| KF2EDGR-5.08-2P | Pitch, hole and outline | Cixi Kefa KF2EDGR-5.08 rev A |
+| KF142R-5.08-4P | Pin pattern (two pins per pole, 7.62 mm apart), holes, outline, side of the wire openings | Cixi Kefa KF142R-5.08 rev A |
 
 One fault was found this way. Zener joins pins that share a name into one net, and KiCad's symbol
 names both unused optotriac pins "NC". The board would have connected pin 3 to pin 5, the
@@ -142,11 +143,11 @@ and logic" and "Deviations".
   3.3 mm against 3.25 mm).
 - Bus jack: the plug opening is on the footprint's +y side, the latch stands 0.89 mm proud of the
   front face, the body is 13.2 mm high. Valve header: the plug enters from +y, the header is
-  12.2 mm deep and 8.4 mm high.
+  12.2 mm deep and 8.4 mm high (replaced by a terminal block, deviation 12).
 - The tantalum capacitor is polarised: pad 1 is the positive terminal.
 - Pins may be swapped among outputs, monitors and address switch if routing asks for it; the
   specification says which ones are fixed.
-- The bus jack and the valve header footprints are fetched LCSC data, the point that
+- The bus jack and the valve terminal footprints are fetched LCSC data, the point that
   [`license.md`](license.md) lists before publication.
 
 ## Open points

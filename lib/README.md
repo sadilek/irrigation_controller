@@ -12,14 +12,15 @@ pin headers, mounting holes, test points, …) behind its generics, e.g. `@stdli
 Anything else is copied from the KiCad installation into a library directory here and referenced with
 `Symbol(library=…)` and `footprint=File(…)`; Zener does not read KiCad's global library tables.
 
-Two fetched footprints are changed by hand, each against the manufacturer's drawing
+Three fetched footprints are changed by hand, each against the manufacturer's drawing
 ([`docs/valve-node-layout.md`](../docs/valve-node-layout.md), "Deviations"). Fetching them again
 with `scripts/fetch-lcsc.sh` overwrites that.
 
 | Footprint | Changed |
 |---|---|
 | `RJ45-TH_RJHSE-5080` | Pads 1.4 mm with 0.9 mm holes (fetched: 1.6 and 1.0); the two pegs are unplated holes of 3.25 mm (fetched: plated, 3.3 mm, no pad); silkscreen ends inside the board edge |
-| `CONN-TH_2P-P5.08_KF2EDGR-5.08-2P` | Silkscreen reduced to the outline behind the board edge, clear of the pads |
+| `CONN-TH_4P-P5.08_KF142R-5.08-4P` | 3D model turned by 180° and moved so that it matches the pads and Kefa's drawing (fetched: wire openings on the wrong side); silkscreen reduced to two side lines inside the board edge |
+| `CONN-TH_2P-P5.08_KF2EDGR-5.08-2P` | Silkscreen reduced to the outline behind the board edge, clear of the pads. Not used by a board since the valve node's terminals changed |
 
 A board keeps the footprint it was created with: after changing a footprint file, delete the
 board file as described in `CLAUDE.md`, "Lessons learned".

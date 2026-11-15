@@ -264,9 +264,24 @@ for i in range(OUTPUTS):
         MON=MON[i],
         GND=GND,
         AC_B=AC_B,
-        AC_COM=AC_COM,
         VALVE=VALVE[i],
     )
+
+# Valve wires: one spring terminal block, a pair of poles per valve (output, fused common). A
+# wire is pushed in from the cable entry while its button is held down; nothing is plugged, so
+# the 14 mm between the board edge and the enclosure wall stay free (docs/valve-node-layout.md).
+valve_pins = {}
+for i in range(OUTPUTS):
+    valve_pins["Pin_%d" % (2 * i + 1)] = VALVE[i]
+    valve_pins["Pin_%d" % (2 * i + 2)] = AC_COM
+Component(
+    name="J_VALVES",
+    prefix="J",
+    symbol=Symbol(SYM + "Screw_Terminal_01x04.kicad_sym"),
+    footprint=File("../../lib/lcsc/lcsc.pretty/CONN-TH_4P-P5.08_KF142R-5.08-4P.kicad_mod"),
+    pins=valve_pins,
+    part=Part(mpn="KF142R-5.08-4P", manufacturer="Cixi Kefa Elec"),
+)
 
 # --- Test pads and mounting ---------------------------------------------------------------------
 

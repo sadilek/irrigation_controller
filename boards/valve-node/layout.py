@@ -87,7 +87,7 @@ L = Layout(HERE, "valve-node")
 L.clear()
 L.outline_from_mech()
 L.place_mounting_holes()
-L.place_connectors()  # J_IN, J_OUT, OUT1.J, OUT2.J: fixed by the enclosure (mech.json)
+L.place_connectors()  # J_IN, J_OUT, J_VALVES: positions shared with the enclosure (mech.json)
 
 # --- Placement: 24 VAC side ---------------------------------------------------------------------
 X_OPTO = 64.0  # the isolation gap runs along this line; logic pins at x - 4.76, 24 VAC pins at x + 4.76
@@ -161,9 +161,10 @@ S = pcbnew.B_SilkS
 L.text("BUS IN", 17.0, 25.4, 1.2)
 L.text("24VAC! NO ETHERNET", 17.0, 27.4, 0.8)
 L.text("BUS OUT", 51.0, 27.5, 1.0)
-L.text("V1", 79.7, 29.9, 1.0)
-L.text("V2", 90.3, 29.9, 1.0)
-L.text("SPARE", 69.4, 35.5, 0.8, align="left")
+valve_pin_x = {n: L.pad("J_VALVES", n)[0] for n in (1, 2, 3, 4)}
+for n, label in ((1, "V1"), (2, "C"), (3, "V2"), (4, "C")):  # behind each pole of the valve terminal block
+    L.text(label, valve_pin_x[n], 29.25, 0.8)
+L.text("SPARE", 66.9, 32.9, 0.8)
 L.text("SWAP A/B", 32.0, 17.4, 0.8)
 L.text("TERM", 24.9, 22.6, 0.8, align="right")
 L.text("BIAS", 30.4, 6.4, 0.8)
@@ -249,10 +250,18 @@ L.via("AC_B", jp2_ac[0], 34.8, 0.8, 0.4)
 X_TRUNK = 72.7
 L.track("AC_B", B, [(X_ACB_UP, q[2][1]), (jp2_ac[0], q[2][1]), (jp2_ac[0], 34.8)], 0.8)
 L.track("AC_B", B, [(jp2_ac[0], q[2][1]), (X_TRUNK, q[2][1]), (X_TRUNK, BANDS["OUT2"] - 8.31)], 0.8)
-# Fused valve common, under the valve headers to pin 2 of each.
-com1, com2 = L.pad("OUT1.J", 2), L.pad("OUT2.J", 2)
-L.track("AC_COM", F, [f2_com, (com1[0], f2_com[1]), com1], 0.8)
-L.track("AC_COM", F, [(com1[0], f2_com[1]), (com2[0], f2_com[1]), com2], 0.8)
+# Valve terminal block: poles 1 and 3 are the valve outputs, 2 and 4 the fused common. Each pole
+# has two pins, a rear and a front one. `L.pad` returns the rear one; the front one is 7.62 mm
+# nearer to the board edge and joined to it on the bottom layer.
+PIN_ROWS = 7.62
+valve_pin = {n: L.pad("J_VALVES", n) for n in (1, 2, 3, 4)}
+for n, net in ((1, "VALVE1"), (2, "AC_COM"), (3, "VALVE2"), (4, "AC_COM")):
+    x, y = valve_pin[n]
+    L.track(net, B, [(x, y), (x, y + PIN_ROWS)], 0.8)
+# Fused valve common: between the two pin rows, under the block, to the front pins of poles 2 and 4.
+y_com = valve_pin[2][1] + PIN_ROWS / 2
+L.track("AC_COM", F, [f2_com, (f2_com[0], y_com), (valve_pin[2][0], y_com), (valve_pin[2][0], valve_pin[2][1] + PIN_ROWS)], 0.8)
+L.track("AC_COM", F, [(valve_pin[2][0], y_com), (valve_pin[4][0], y_com), (valve_pin[4][0], valve_pin[4][1] + PIN_ROWS)], 0.8)
 # Spare pair: its lanes continue to the two open jumpers.
 jp1_sp, jp1_ac = L.pad("JP_SPARE_1", 1), L.pad("JP_SPARE_1", 2)
 L.track("SPARE_2", B, [(q[5][0], LANE["SPARE_2"]), (PASS_EDGE, LANE["SPARE_2"])], 0.5)
@@ -294,14 +303,14 @@ for out, y in BANDS.items():
     L.track(valve, F, [P("R_MON", 1), P("R_GATE", 1), P("R_SNUB", 1), (P("R_SNUB", 1)[0], y - 3.0), (77.6, y - 2.2), (78.6, y - 1.2)], 0.8)
     L.track(out + ".SNUB", F, [P("R_SNUB", 2), P("C_SNUB", 1)], 0.8)
 
-# Tab to valve header: a wide track inside a copper area that also cools the triac
+# Tab to valve terminal: a wide track inside a copper area that also cools the triac
 # (ST DocID7699 Rev 9: 70 K/W assumes 0.5 cm2 of copper under the tab).
 tab1, tab2 = L.pad("OUT1.Q", 2), L.pad("OUT2.Q", 2)
-v1, v2 = L.pad("OUT1.J", 1), L.pad("OUT2.J", 1)
-L.track("VALVE1", F, [tab1, (78.5, tab1[1]), (78.5, 31.0), v1], 1.5)
-L.zone("VALVE1", F, outline=[(76.4, 21.6), (84.0, 21.6), (84.0, 28.6), (80.2, 28.6), (80.2, 34.2), (76.0, 34.2), (76.0, 28.6), (76.4, 28.6)], solid=True)
-L.track("VALVE2", F, [tab2, (86.7, tab2[1]), (86.7, 31.5), v2], 1.5)
-L.zone("VALVE2", F, outline=[(76.4, 7.6), (88.2, 7.6), (88.2, 34.2), (85.2, 34.2), (85.2, 14.4), (76.4, 14.4)], solid=True)
+v1, v2 = valve_pin[1], valve_pin[3]
+L.track("VALVE1", F, [tab1, (78.0, tab1[1]), (78.0, 29.4), v1], 1.5)
+L.zone("VALVE1", F, outline=[(76.4, 21.6), (84.0, 21.6), (84.0, 28.6), (79.0, 28.6), (79.0, 33.0), (74.9, 33.0), (74.9, 28.6), (76.4, 28.6)], solid=True)
+L.track("VALVE2", F, [tab2, (86.7, tab2[1]), (86.7, 30.0), v2], 1.5)
+L.zone("VALVE2", F, outline=[(76.4, 7.6), (88.2, 7.6), (88.2, 33.0), (85.2, 33.0), (85.2, 14.4), (76.4, 14.4)], solid=True)
 
 # --- Bus protection between the jacks -----------------------------------------------------------
 # RS485: each lane rises through a via straight into its TVS pad; the TVS's ground pad goes back to

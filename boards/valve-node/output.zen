@@ -18,8 +18,7 @@ GND = io(Ground)
 
 # 24 VAC side
 AC_B = io(Net, help="24 VAC b, the switched side of the supply")
-AC_COM = io(Net, help="Valve common: 24 VAC a behind the fuse")
-VALVE = io(Net, help="Valve terminal")
+VALVE = io(Net, help="To the valve terminal on the board; the valve's other wire goes to the fused common")
 
 LED_A = Net()
 GATE = Net()
@@ -65,14 +64,4 @@ Component(
     footprint=File("../../lib/kicad/footprints.pretty/SMDIP-4_W9.53mm.kicad_mod"),
     pins={"1": MON_LED, "2": AC_B, "3": GND, "4": MON},
     part=Part(mpn="LTV-814S-TA1", manufacturer="Lite-On"),
-)
-
-# Valve plug: pin 1 output, pin 2 common.
-Component(
-    name="J",
-    prefix="J",
-    symbol=Symbol("../../lib/kicad/symbols/Screw_Terminal_01x02.kicad_sym"),
-    footprint=File("../../lib/lcsc/lcsc.pretty/CONN-TH_2P-P5.08_KF2EDGR-5.08-2P.kicad_mod"),
-    pins={"Pin_1": VALVE, "Pin_2": AC_COM},
-    part=Part(mpn="KF2EDGR-5.08-2P", manufacturer="Cixi Kefa Elec"),
 )

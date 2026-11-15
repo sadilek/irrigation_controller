@@ -20,7 +20,7 @@ mSMD020-60V,TECHFUSE,C70108,extended,smt,0,resettable fuse 0.2 A 60 V 1812
 mSMD050-60V,TECHFUSE,C70113,extended,smt,0,resettable fuse 0.5 A 60 V 1812
 DSHP04TSGET,Kingtek,C40736,extended,smt,0,4-position DIP switch 1.27 mm
 RJHSE-5080,Amphenol ICC,C599441,extended,tht,0,RJ45 jack unshielded right angle
-KF2EDGR-5.08-2P,Cixi Kefa Elec,C441204,extended,tht,0,2-pole header 5.08 mm right angle; plug KF2EDGK-5.08-2P is C440880
+KF142R-5.08-4P,Cixi Kefa Elec,C475146,extended,tht,0,4-pole spring terminal 5.08 mm with push buttons; wire parallel to the board
 KF2EDGR-3.81-3P,Cixi Kefa Elec,C441183,extended,tht,0,3-pole header 3.81 mm right angle; plug KF2EDGK-3.81-3P is C440859
 CL31A106KBHNNNE,Samsung Electro-Mechanics,C13585,basic,smt,0,10 uF 50 V X5R 1206
 CC0805KKX7R0BB104,YAGEO,C106243,extended,smt,0,100 nF 100 V X7R 0805

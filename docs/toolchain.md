@@ -46,7 +46,7 @@ Run from the repository root. `BOARD` defaults to `throwaway`.
 | `make plots` | `build/<board>/plots/`: copper per side and an assembly drawing with reference designators (SVG), copper coloured by net class (`classes.svg`), and `<board>-1to1.pdf`, the board at true size for a paper test fit |
 | `make fab` | `build/<board>/fab/`: Gerber and drill zip, JLCPCB BOM, JLCPCB placement file (surface-mount and through-hole parts), board STEP |
 | `make enclosure` | `build/<board>/enclosure/`: the enclosure parts as STEP. Throwaway board: STL beside them. Valve node: STL per printed part in `print/` (with `board-dummy.stl` for a test fit), pictures in `views/` (with the real board once `make fab` has run), and `envelope.step` (about 40 s) |
-| `make collide` | Overlap volume of the populated board against each enclosure part; fails on overlap. Without a board STEP it uses `envelope.step`: the outline and connectors from `mech.json` as blocks |
+| `make collide` | Overlap volume of the populated board against each enclosure part; fails on overlap. Without a board STEP it uses `envelope.step`: the outline and connectors from `mech.json` as blocks. If the enclosure script wrote `plugs.step` (mated plugs as blocks), those are checked as well |
 | `make all` | All of the above in order |
 | `make verify` | The checks only, without touching committed files (what Obeya runs before landing) |
 | `make selftest` | Lowers the lid into the pin header (throwaway board) and into the bus jacks (valve node) and expects `collide` to fail; renames a net label in the valve node schematic and expects the comparison with the source to fail; draws a ground track near 24 VAC copper, under an optocoupler and under a screw head on a copy of the valve node board and expects DRC to name the rule each time |
@@ -230,8 +230,12 @@ Found while running the chain. Ordered by how much they matter for the real boar
     reaches the board only after `eda/<board>.kicad_pcb` and `eda/snapshot.layout.json` are
     deleted and `make apply layout` has run. `pcb apply` also resets the `Default` net class of
     the KiCad project from `lib/jlcpcb.zen` on every run; other classes survive.
-16. **Silkscreen from fetched footprints crosses pads and board edges.** The two connector
-    footprints were trimmed by hand ([`lib/README.md`](../lib/README.md)).
+16. **Silkscreen from fetched footprints crosses pads and board edges, and a fetched 3D model
+    can sit turned.** Three connector footprints were corrected by hand
+    ([`lib/README.md`](../lib/README.md)). The turned model passed the collision check.
+17. **The collision check knows only what is modelled.** The valve node's pluggable terminals
+    passed it while their plugs had no room; nobody had modelled a plug. Mated plugs are now
+    blocks the enclosure script writes, for the connectors that have them.
 
 Not exercised on either board: parts on the bottom side, panels, through-hole assembly by JLCPCB,
 and an actual upload to JLCPCB.

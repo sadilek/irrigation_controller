@@ -6,7 +6,9 @@ the mounting holes and the connector positions in
 
 Status: approved by the owner on 2026-11-14 as input to the layout (second version: a box the
 size of a surface-mounted junction box, no cable entry for the moisture sensor). The layout exists
-now ([`valve-node-layout.md`](valve-node-layout.md)); it moved the valve headers by 0.2 mm each.
+now ([`valve-node-layout.md`](valve-node-layout.md)). The valve wires end in a terminal block on the board
+instead of two pluggable screw terminals (owner, 2026-11-15): a mated plug did not fit in front of
+the board, see deviation 8.
 Nothing is printed yet; the test fit is part of the layout hold point. Three dimensions are assumed until the owner
 has measured them ([To measure](#to-measure)); they are parameters at the top of
 [`enclosure.py`](../boards/valve-node/enclosure.py), and one command rebuilds everything.
@@ -51,7 +53,7 @@ Why it has this shape:
   (93 mm).
 - **Each bus cable runs straight into its jack.** The cable is stiff and its aluminium strands
   break when bent ([`existing-system.md`](existing-system.md#cable)). The jacks and the valve
-  headers sit on one edge of the board, each opposite its entry: the plug is pushed through the
+  terminals sit on one edge of the board, each opposite its entry: the plug is pushed through the
   entry and into the jack along one line, with the nut loose.
 - **14 mm between the board's connector edge and the wall.** The plug stands 9.5 mm out of the
   jack; its rear end lies just inside the wall. The jack's latch is on top (seen in the 3D model
@@ -126,16 +128,16 @@ every side. No bought nut fits, and none is meant to.
 |---|---|---|
 | Board | 96 × 44 mm, corners 3 mm, 1.6 mm thick | See deviation 1. The same area as 75 × 56 mm |
 | Clearance to the walls | 2 mm on three sides, 14 mm on the connector edge | Board drops in without tilting; the rounded corners of the cavity clear the board's corners by 0.8 mm |
-| Mounting holes | (4, 4), (92, 4), (4, 40), (92, 26), 3.2 mm for M3 | The fourth sits behind the valve headers, which occupy that corner |
+| Mounting holes | (4, 4), (92, 4), (4, 40), (92, 26), 3.2 mm for M3 | The fourth sits behind the valve terminal block, which occupies that corner |
 | Bus jacks | Front face on the bottom edge (y = 44), centres at x = 17 and x = 51 | 34 mm apart: two 33 mm nuts side by side. Fixed: the entries are aligned with them |
-| Valve headers | Front face on the bottom edge, centres at x = 79.72 and x = 90.28 | Their entry is at x = 85. May move along the edge; the wires are flexible. The layout set them 0.4 mm apart instead of body against body |
+| Valve terminal block | Wire face on the bottom edge, 22.86 mm long, its middle at x = 84.3 | The entry is at x = 85; the block ends 0.3 mm before the board's right edge. Four poles: valve 1, common, valve 2, common |
 | Keep-out, top | 7 mm circle around each hole | Screw head |
 | Keep-out, bottom | 9 mm circle around each hole | Standoff, 8 mm |
 | Height above the board | 18 mm | Lid underside at 20.4 mm |
 | Depth below the board | 3.5 mm | Floor at 5 mm |
 
-All connectors are on one edge. From left to right: jack, jack, valve headers. The 24 VAC side of
-the board is its right part, behind the valve headers; the logic is the left part and the strip
+All connectors are on one edge. From left to right: jack, jack, valve terminal block. The 24 VAC side of
+the board is its right part, behind the valve terminals; the logic is the left part and the strip
 along the far edge. Whether the circuit fits on 96 × 44 mm with that split is for the layout to
 show; the area is that of the outline the specification proposed.
 
@@ -150,6 +152,7 @@ show; the area is that of the outline the specification proposed.
 | 5 | One entry per valve | One entry for all valve wires of a box, with a two-hole or four-hole insert | A third and fourth entry would each widen the box by 34 mm |
 | 6 | Nut of PETG | Nut of the box's material (ASA) | One material for all stiff parts; PETG remains the fallback for all of them |
 | 7 | Cable entries on two opposite walls | All on one wall | The owner asked for a box the size of a surface-mounted junction box; see deviation 1 |
+| 8 | Valve wires on pluggable screw terminals (specification, "Outline and connectors") | A spring terminal block with push buttons, soldered to the board | The owner asked how a plug comes out. A mated plug (17.6 mm long, 10.6 mm in front of the board) left 3.5 mm to the wall, needed 7 mm to come free, and its corner touched the lid's rib. The box stays as it is; details and the alternatives in [`valve-node-layout.md`](valve-node-layout.md), "The valve terminals" |
 
 ## Printing
 
@@ -195,9 +198,11 @@ The pictures on this page show the real board.
 5. **The height of the jack's plug opening was assumed** (7 mm above the board, the middle of a
    13.2 mm body). The section picture above now shows the jack's own 3D model: the drawn plug
    meets the opening. The bore is 15.5 mm for a 6 mm cable, so a few millimetres do not matter.
-6. **Plugs are not in the collision check.** The RJ45 plugs are drawn in the pictures; the valve
-   screw plugs are not modelled, and the 14 mm in front of the headers is the allowance for them.
-   If a plug needs more, the headers move back on the board.
+6. **Plugs were not in the collision check, and the valve plugs did not fit.** The 14 mm in
+   front of the valve headers were an allowance for plugs that nobody had measured. A mated screw
+   plug stands 10.6 mm out and needs 7 mm more to come free (deviation 8). The two RJ45 plugs are
+   now blocks in `build/valve-node/plugs.step`, and `make collide` checks them with the board.
+   Their size is still the assumed one ([To measure](#to-measure)).
 
 ## To measure
 
@@ -216,9 +221,9 @@ The owner, with a caliper, before the first print. Each value is one line at the
 - `mech.json` is the interface: outline, holes, connector positions with rotation, keep-outs,
   height limits. `tools/kilayout.py` reads outline and holes today; connectors and keep-outs are
   new keys for the layout script to use.
-- Connectors are keyed by their name in the Zener source (`J_IN`, `OUT1.J`), because Zener
+- Connectors are keyed by their name in the Zener source (`J_IN`, `J_VALVES`), because Zener
   renumbers reference designators.
-- The rotation is 0° for all four connectors: the footprints' plug side is +y, which is the
+- The rotation is 0° for all three connectors: the footprints' plug or wire side is +y, which is the
   board's bottom edge. Confirmed in the board render and in the section picture above.
 - When the layout moves a connector that is not `fixed`, it changes `mech.json`, and
   `make enclosure collide` has to pass again.

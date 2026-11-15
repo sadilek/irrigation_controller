@@ -154,6 +154,19 @@ first.
   cross-sections instead, which is valid. Intersecting two such thread solids with each other
   still returns nonsense (zero, or the whole volume); against plain bodies it is correct. Check a
   boolean's volume against a hand estimate whenever a thread is involved.
+- **A fetched 3D model can sit turned on a correct footprint.** The valve terminal block's pads
+  matched the manufacturer's drawing; its model stood turned by 180° and 2.8 mm off (offset and
+  rotation as `scripts/fetch-lcsc.sh` left them). The collision check passed with it. After
+  fetching a part, compare the model's outline in the board STEP with the drawing and look at a
+  render: which way does the opening face?
+- **A connector is not finished without its mating half.** The valve node's pluggable screw
+  terminals fitted; their plugs did not, and could not be pulled with the board in place. Model
+  the mated plug and the travel it needs to come free, and put it into the collision check
+  (`plugs.step` of `boards/valve-node/enclosure.py`).
+- **JLCPCB's parts catalogue is the source for stock and price.** The community mirror
+  (jlcsearch) missed parts that were in stock and returns at most 100 rows per query. The public
+  part pages (`jlcpcb.com/partdetail/C…`) and the catalogue search show stock, price, assembly
+  type and the datasheet.
 - **Zener does not refresh a footprint that is already on the board.** After changing a file in
   `lib/` (pads of the bus jack), `make apply` reported "layout updated" and the board kept the
   old pads. Delete `eda/<board>.kicad_pcb` and `eda/snapshot.layout.json`, then
