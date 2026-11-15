@@ -79,6 +79,16 @@ That distance was 0.45 mm with the footprint as fetched (pads 1.6 mm, holes 1.0 
 now 1.4 mm with 0.9 mm holes, which is what Amphenol's drawing asks for (0.89 mm), and the two
 plastic pegs are unplated holes of 3.25 mm; they were plated holes without a pad.
 
+The fetched footprint is from the EasyEDA library that LCSC's engineers draw for JLCPCB's parts.
+Its holes were 0.1 mm larger than Amphenol's, most likely as a margin for the board maker's
+tolerance, and that margin is gone now. What is left: JLCPCB makes a plated hole between 0.08 mm
+smaller and 0.13 mm larger than ordered (capabilities page, read 2026-11-15), so a 0.9 mm hole
+comes out between 0.82 and 1.03 mm. The jack's contact tails are 0.43 × 0.35 mm in its 3D model,
+0.55 mm across the diagonal, which leaves 0.27 mm in the smallest hole. The pad keeps a ring of
+0.25 mm around the hole, which is what JLCPCB recommends for a two-layer board; a 1.0 mm hole in
+a 1.4 mm pad would leave 0.20 mm. Neither the tolerance on Amphenol's drawing nor the tail's
+size was read from an Amphenol document; the 3D model came with the fetched footprint.
+
 ### The pass-through
 
 Eight wires go from jack to jack, and the two jacks have the same pin order, so every wire has to
@@ -301,6 +311,7 @@ The same print is the first sample for the water bath test
 |---|---|
 | JLCPCB, *What does your PCB assembly price include?*, help article, updated 2026-10-22 | Set-up, stencil, extended part, joint and hand-soldering fees |
 | JLCPCB, special offer for 1 to 2 layer boards up to 100 × 100 mm | Bare board price |
+| JLCPCB, *PCB manufacturing capabilities*, read 2026-11-15 | Tolerance of plated holes, recommended ring around a hole |
 | Amphenol, *Modular Jack, RJHSE Series*, RJHSE-508X page | Hole and peg diameters of the jack |
 | STMicroelectronics, *T4 series, 4 A triacs*, DocID7699 Rev 9, table 6, p. 3 | Copper area under the tab |
 | Texas Instruments, *THVD2410, THVD2450*, SLLSF20B, 11.1, p. 21 | TVS placement and return path |
