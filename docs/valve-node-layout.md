@@ -3,7 +3,7 @@
 The third of three hold points for the valve node. No board is ordered before the owner signed
 this page off, together with the renders, the reports and the test fit. Only the owner orders.
 
-Status: proposal, 2026-11-14. Nothing is ordered, nothing is printed.
+Status: proposal, 2026-11-15. Nothing is ordered, nothing is printed.
 
 The circuit is in [`valve-node-spec.md`](valve-node-spec.md) and
 [`valve-node-schematic.md`](valve-node-schematic.md), the box and the board outline in
@@ -35,12 +35,13 @@ track), [`mech.json`](../boards/valve-node/mech.json) (outline, holes, connector
 
 ![Top view](images/valve-node-layout-top.png)
 
-96 × 44 mm, two layers, every part on the top side. Outline, mounting holes and the four
-connectors on the lower edge come from the enclosure.
+96 × 44 mm, two layers, every part on the top side. The outline, the mounting holes and the
+positions of the two bus jacks and the valve terminal block are shared with the enclosure
+(`mech.json`).
 
 | Area | Parts | Why there |
 |---|---|---|
-| Right third | Triacs, snubbers, gate and monitor resistors, the valve terminal block | The 24 VAC side. Each triac's tab faces the board edge with the valve terminals |
+| Right third | Triacs, snubbers, gate and monitor resistors, the valve terminal block | The 24 VAC side. The terminal block stands at the far edge, its wire openings towards the cable entries. Output 2 sits behind it, output 1 in front of it, under the wires |
 | One column at x = 64 mm | The four optocouplers | The only parts that span the isolation gap. Their pin rows are 7.5 mm apart, and nothing else crosses that line |
 | Right of the OUT jack | 24 VAC TVS, valve fuse, the two spare-pair jumpers | The 24 VAC pair leaves the jack here, so the TVS is the first part on the pair |
 | Between the jacks | 12 V fuse, 12 V TVS, series diode; RS485 TVS just above | Every bus wire passes here on its way from jack to jack, so each TVS sits on the wire it protects |
@@ -61,12 +62,12 @@ DRC checks them on every run:
 | Rule | Value | How it is met |
 |---|---|---|
 | 24 VAC to anything else | 3.0 mm | The smallest distance on the board is 4.9 mm (a jumper pad to an optocoupler's unused pad). Along the gap, logic ends at x = 60.4 mm and 24 VAC starts at x = 67.8 mm |
-| Inside class 24 VAC | 0.5 mm, tracks 0.8 mm | All 24 VAC tracks are 0.8 mm, the two valve tracks 1.5 mm |
+| Inside class 24 VAC | 0.5 mm, tracks 0.8 mm | All 24 VAC tracks are 0.8 mm, the two tracks from a triac's tab to its terminal 1.5 and 1.2 mm |
 | No copper under the optocouplers | both layers | A strip of 6.8 mm between the pin rows, over the whole column |
 | Ground zone on the logic half only | | Two zones, both end at x = 60.4 mm and above the pass-through |
 | Bus power | 0.8 mm | +12 V and ground from jack to jack |
 | Spare pair | 3.0 mm to logic once it has left the pass-through | It can be bridged to the 24 VAC pair, so east of the OUT jack it is treated like it. Smallest distance there: 3.25 mm |
-| Triac cooling | at least 0.5 cm² under each tab | 0.71 cm² (output 1) and 1.36 cm² (output 2), each joined to its valve terminal |
+| Triac cooling | at least 0.5 cm² under each tab | 1.31 cm² (output 1) and 0.65 cm² (output 2), each joined to its valve terminal |
 
 ### The one exception: the jack
 
@@ -118,11 +119,27 @@ jumpers open it is connected to nothing.
 
 ### Valve outputs
 
-The two outputs are the same pattern, one above the other: optotriac, triac level with its gate
-pin (3 mm of straight gate track between the two pads), gate-to-A1 resistor beside it, the row of gate, monitor and
-snubber parts above. 24 VAC b reaches every part from a 0.8 mm trunk on the bottom layer through
-seven vias, so the top layer needs no crossing. The valve current flows trunk, via, triac, tab,
-copper area, valve terminal.
+The terminal block divides the 24 VAC side. Each output has its optotriac next to its triac and
+its monitor optocoupler next to the block, where the valve node is at hand on a pin.
+
+- **Output 2, behind the block.** Optotriac, gate-to-A1 resistor and gate lead lie on one line,
+  7 mm of gate track. The gate resistor reaches the tab between the triac's two leads. The tab's
+  copper area ends on the rear pin of pole 3. The monitor resistor reaches pole 3 on a track
+  under the block, between its two pin rows.
+- **Output 1, in front of the block.** The triac's tab points to the block and is joined to the
+  front pin of pole 1 by 13 mm of copper area with a 1.5 mm track in it. The triac's body keeps
+  9.8 mm from the block's wire openings ("The valve terminals"). The gate track is 22 mm long:
+  it passes the tab on the left and reaches the gate lead between tab and leads, with 0.6 mm on
+  each side. The gate-to-A1 resistor sits at the gate lead, the snubber beside the tab.
+- **The block's pins.** Every pole has a rear and a front pin. Poles 1, 2 and 4 join theirs on
+  the bottom layer, pole 3 on the top layer. That lets the fused common go from pole 2 to pole 4
+  on the bottom layer, across pole 3, and output 2's monitor track cross poles 1 and 2 on the
+  top layer.
+
+24 VAC b reaches every part from a 0.8 mm trunk on the bottom layer, between the optocouplers
+and the block, through eight vias. The valve current flows trunk, via, triac, tab, copper area,
+valve terminal. The fused common runs along the board's lower edge and up to pole 2, outside
+both outputs.
 
 ## The logic side
 
@@ -179,7 +196,8 @@ was blind. Both keep-outs are now explicit rules in the rule file, and both are 
 | 6 | Specification: one clearance for the 24 VAC class | A second class for the spare pair | Open jumpers leave it floating; bridged, it is 24 VAC. It gets the 3 mm wherever it is not between the bus lanes |
 
 Not changed: the pin assignment and the board outline. The schematic and the bill of materials
-changed in one place, the valve terminals.
+changed in one place, the valve terminals. One mounting hole moved with them, from (92, 26) to
+the corner at (92, 40).
 
 ## Fabrication data
 
@@ -251,19 +269,14 @@ at 5.08 mm, one push button per pole on top, the wire parallel to the board. Fro
 valve 1, common, valve 2, common. It replaces two pluggable screw terminals (owner, 2026-11-15).
 
 Why the plugs went. They were never modelled, and the owner asked how a plug comes out. With the
-plug's dimensions the answer was that it does not:
+plug's dimensions the answer was that it does not: a mated plug stood 10.6 mm in front of the
+board edge and left 3.5 mm to the wall, it needed 7 mm of travel to come free, the outer poles
+were 7.8 mm off the entry's axis, and one plug's corner touched the lid's centring rib by 0.1 mm.
 
-| | Pluggable screw terminal | Spring terminal block |
-|---|---|---|
-| In front of the board edge | The mated plug stands 10.6 mm out; 3.5 mm remain to the wall | Nothing: the block ends at the board edge, 14 mm remain |
-| Taking it out with the board in place | Needs 7 mm of travel, 3.6 mm more than there are | Not taken out; a wire is released by its button |
-| Wires from the entry | The outer poles are 7.8 mm off the entry's axis; a kink within 3.5 mm | 1.2 to 8.9 mm off the axis, over 14 mm of length |
-| Lid | The centring rib touched one plug's corner by 0.1 mm | 13.7 mm high under 18.8 mm |
-
-The alternatives were a box 8 mm deeper, the headers 8 mm further in on the board (a new 24 VAC
-corner), and terminals with latching levers (WAGO 2604-1104, in stock at JLCPCB at $5.76; the
-smaller 2601 is a pre-order part there; Kefa's lever type KF243 is 18.7 mm high). The owner chose
-the push-button block: it fits the box as it is, JLCPCB has it and solders it, and it costs $0.36.
+The alternatives were a box 8 mm deeper, the headers 8 mm further in on the board, and terminals
+with latching levers (WAGO 2604-1104, in stock at JLCPCB at $5.76; the smaller 2601 is a
+pre-order part there; Kefa's lever type KF243 is 18.7 mm high). The owner chose the push-button
+block: it fits the box as it is, JLCPCB has it and solders it, and it costs $0.36.
 
 | Property | Value | Source |
 |---|---|---|
@@ -272,19 +285,39 @@ the push-button block: it fits the box as it is, JLCPCB has it and solders it, a
 | Ratings | 250 V and 15 A (IEC, overvoltage category III), −40 to +105 °C | Kefa drawing |
 | Size | 22.86 × 14.2 mm, 13.7 mm high with the buttons, pins 3.3 mm | Kefa drawing |
 | Pins | Two per pole, 7.62 mm apart, holes 1.4 mm (+0.1) | Kefa drawing; the footprint has 1.5 mm, which JLCPCB makes between 1.42 and 1.63 mm |
+| Wire openings | 4 mm across, from 1.4 to 5.3 mm above the board | Measured in the 3D model that came with the footprint; the drawing does not dimension them |
 | At JLCPCB | C475146, extended, wave soldering, 933 in stock on 2026-11-15 | jlcpcb.com parts catalogue |
 
-On the board: the block's wire face is the board edge. The fused common runs between the two pin
-rows on the top layer; each pole's two pins are joined on the bottom layer. The block is 22.86 mm
-long and the board ends 0.3 mm beside it, so its middle is 1.3 mm left of the cable entry.
+### Where the block stands
 
-![Section through the valve entry](images/valve-node-layout-valve-entry.png)
+At the far side of the board, its wire openings towards the cable entries (owner, 2026-11-15).
+The first version of this layout had the block's wire face on the board edge, 14 mm from the
+entry wall. The owner doubted that four wires can be threaded within 14 mm and asked for the
+block to move back.
 
-The section cuts through the block's third pole; the two wires are drawn straight and stop short
-of the block.
+| | Block at the board edge | Block at the far side |
+|---|---|---|
+| Free wire between the entry wall and the block | 14 mm | 35.9 mm |
+| Where the wires lie | In front of the board | 22 mm of it over the board, above output 1 |
+| Under the wires | Nothing | Resistors and a capacitor, up to 1.3 mm high; the triac of output 1, 2.3 mm high, its body 9.8 mm in front of the openings (heights from the parts' 3D models) |
+| Mounting holes | (92, 26), behind the block | (92, 40), the corner the block left; all four holes are in the corners now |
+| Valve outputs | Both behind the block, the same pattern twice | One behind the block, one in front of it |
 
-To connect a wire: strip 11 mm, push it through the loose insert of the cable entry until it
-stands in front of its pole, hold the button down, push on, let go. The board comes out after
+The triac of output 1 stood 1.4 mm in front of the opening of pole 1 in the first arrangement at
+the far side. It is higher than the opening's lower edge, so a wire would have had to come in
+from above. It moved 7 mm towards the board edge. Within 9 mm of an opening only the triac's
+tab is left, 0.5 mm high.
+
+The screw of the upper right mounting hole sits behind the block; its head's keep-out ends 0.4 mm
+before the block's back. It is reached from above.
+
+![Section from the valve entry to the terminal block](images/valve-node-layout-valve-entry.png)
+
+The section cuts through the block's third pole. The wires are drawn straight from the insert to
+the openings; a real wire sags and lies on the parts.
+
+To connect a wire: strip 11 mm, push it through the loose insert of the cable entry and across
+the board, hold the button of its pole down, push the wire in, let go. The board comes out after
 the four wires are released the same way.
 
 ## Test fit
@@ -304,6 +337,7 @@ this outline and whether the cables arrive where the jacks are.
 | The four holes | each over its standoff; an M3 screw goes through |
 | Gap to the three walls without entries | 2 mm all around |
 | Jack blocks | each centred on its cable entry, 14 mm from the entry wall |
+| Valve block | at the far side, its front 36 mm from the entry wall; four wires pushed through the insert reach it over the board |
 | Lid | closes without touching a block (dummy only) |
 | A crimped bus cable | passes through an entry, nut off, and reaches the jack block in a straight line |
 
@@ -325,10 +359,12 @@ The same print is the first sample for the water bath test
 6. **The spare pair runs between the logic lanes** on the pass-through. Bridged to 24 VAC, it has
    0.65 mm to the ground lane on 34 mm of length. The specification allows it; it is the reason
    to bridge the spare pair only if the far valve really does not pull in.
-7. **A via sits in the microcontroller's exposed pad**, 0.3 mm drill, not plugged. Some solder
+7. **The valve wires lie on output 1.** Insulated wire on a triac and its resistors, all at
+   24 VAC. The wires are not held down and not in the collision check.
+8. **A via sits in the microcontroller's exposed pad**, 0.3 mm drill, not plugged. Some solder
    will wick into it. One via, under a part of 3 × 3 mm; it is the only way to tie that pad to
    the bottom ground.
-8. **No reference designators on the board.** Fault finding needs the assembly drawing
+9. **No reference designators on the board.** Fault finding needs the assembly drawing
    (`build/valve-node/plots/assembly-top.svg`) beside it.
 
 ![Assembly drawing](images/valve-node-layout-assembly.png)
@@ -340,7 +376,7 @@ The same print is the first sample for the water bath test
 | Test fit with a printed enclosure | Sign-off | Owner, before the order |
 | Rotations, stock and class in JLCPCB's preview | Order | Owner, while ordering; corrections go into `lib/jlcpcb-parts.csv` |
 | Price of lead-free HASL, shipping, board size limit of Economic assembly | Cost | Shown in JLCPCB's quote |
-| How the four valve wires thread into the terminal block in 14 mm, with the real wire | Handling | Owner, at the test fit: the block is a block on the dummy, the entry is real |
+| How the four valve wires handle on 36 mm of free length, with the real wire | Handling | Owner, at the test fit: the block is a block on the dummy, the entry is real |
 | The points listed in the specification's and the schematic's "Open points" | | unchanged |
 
 ## Sources

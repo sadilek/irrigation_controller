@@ -30,7 +30,7 @@ from pathlib import Path
 
 from build123d import (
     Align, Box, BuildPart, BuildSketch, Circle, Cone, Cylinder, Location, Locations, Mode, Plane, Pos,
-    RectangleRounded, Rot, export_step, export_stl, extrude, loft,
+    RectangleRounded, Rot, Sphere, Vector, export_step, export_stl, extrude, loft,
 )
 
 HERE = Path(__file__).resolve().parent
@@ -228,7 +228,7 @@ def nut():
 
 # --- Entries, all on the wall that faces the board's connector edge ---------------------------------
 bus_x = sorted(CONNECTORS[name]["at"][0] for name in ("J_IN", "J_OUT"))
-valve_x = 2 * bus_x[1] - bus_x[0]  # the third entry at the same spacing; the valve terminal block sits within a millimetre of it
+valve_x = 2 * bus_x[1] - bus_x[0]  # the third entry at the same spacing; the valve terminal block stands behind it, at the far side of the board
 ENTRIES = [(bus_x[0], "bus"), (bus_x[1], "bus"), (valve_x, "valve-4")]
 
 # --- Base ---------------------------------------------------------------------------------------
@@ -284,11 +284,12 @@ def compound(shapes):
 
 
 # --- Board envelope -------------------------------------------------------------------------------
-# Connector bodies in footprint coordinates (x0, x1, y0, y1, height above the board, pin length below).
+# Connector bodies in footprint coordinates (x0, x1, y0, y1, height above the board, pin length
+# below, y0 and y1 of the pin field).
 BODIES = {
-    "J_IN": (-7.87, 7.87, -6.49, 8.51, 13.2, 3.3),  # Amphenol RJHSE-5080
-    "J_OUT": (-7.87, 7.87, -6.49, 8.51, 13.2, 3.3),
-    "J_VALVES": (-10.87, 11.99, -5.61, 8.59, 13.7, 3.3),  # KF142R-5.08-4P, height with its push buttons (Kefa drawing KF142R-5.08 rev A)
+    "J_IN": (-7.87, 7.87, -6.49, 8.51, 13.2, 3.3, -2.0, 4.5),  # Amphenol RJHSE-5080
+    "J_OUT": (-7.87, 7.87, -6.49, 8.51, 13.2, 3.3, -2.0, 4.5),
+    "J_VALVES": (-10.87, 11.99, -5.61, 8.59, 13.7, 3.3, -4.9, 4.9),  # KF142R-5.08-4P, height with its push buttons (Kefa drawing KF142R-5.08 rev A)
 }
 
 
@@ -302,10 +303,10 @@ def to_model(name: str, lx: float, ly: float):
 
 
 def connector_block(name: str):
-    lx0, lx1, ly0, ly1, height, pins = BODIES[name]
+    lx0, lx1, ly0, ly1, height, pins, pin_y0, pin_y1 = BODIES[name]
     (ax, ay), (bx, by) = to_model(name, lx0, ly0), to_model(name, lx1, ly1)
     body = Pos(min(ax, bx), min(ay, by), T) * Box(abs(bx - ax), abs(by - ay), height, align=Align.MIN)
-    (px, py), (qx, qy) = to_model(name, lx0, -2.0), to_model(name, lx1, 4.5)  # pin field, generous
+    (px, py), (qx, qy) = to_model(name, lx0, pin_y0), to_model(name, lx1, pin_y1)  # pin field, generous
     below = Pos(min(px, qx), min(py, qy), -pins) * Box(abs(qx - px), abs(qy - py), pins, align=Align.MIN)
     return body, below
 
@@ -324,7 +325,8 @@ envelope = [board_plate.part] + [b for pair in blocks for b in pair]
 # What stands in front of the board's connector edge once the cables are plugged in. Not on the
 # board, so not in its STEP: written to plugs.step, which `make collide` checks as well. The valve
 # wires end in a terminal block on the board and add nothing here. (Pluggable screw terminals
-# stood there before: a mated plug reached to 3.5 mm before the wall and could not be pulled.)
+# stood at the board edge before: a mated plug reached to 3.5 mm before the wall and could not be
+# pulled.)
 BUS_PLUG_OUT = 9.5  # an RJ45 plug stands this far out of the jack (assumed with the plug's cross-section, see above)
 bus_plugs = [Pos(CONNECTORS[n]["at"][0] - 5.85, -H - BUS_PLUG_OUT, ENTRY_Z - 4) * Box(11.7, BUS_PLUG_OUT, 8.1, align=Align.MIN) for n in ("J_IN", "J_OUT")]
 
@@ -390,8 +392,18 @@ if not args.no_views and not args.lid_drop:
     entry_items = [(n, NUT) for n in nuts] + [(w, WASHER) for w in washers] + [(i, SOFT) for i in inserts]
     cables = [entry_frame(x) * Pos(0, 0, -(CABLE_SPACE - BUS_PLUG_OUT)) * Cylinder(BUS_CABLE_D / 2, 70, align=ZMIN) for x, p in ENTRIES if p == "bus"]
     plugs = bus_plugs
-    wire_in = CABLE_SPACE - 2.0  # drawn straight from the entry to just before the terminal block; a real wire bends a little to its pole
-    wires = [entry_frame(valve_x) * Pos(u, v, -wire_in) * Cylinder(VALVE_WIRE_D / 2, 70 + wire_in, align=ZMIN) for u, v in PATTERNS["valve-4"][1]]
+    # Valve wires: straight from the insert's holes to the block's wire openings, over the board.
+    WIRE_OPENING_Z = T + 3.3  # middle of an opening above the board's top (3D model of the KF142R)
+    WIRE_POLES = (-7.62, -2.54, 2.54, 7.62)  # the four openings, in the block's footprint coordinates
+    face = BODIES["J_VALVES"][3]
+    wires = []
+    for (u, v), pole in zip(sorted(PATTERNS["valve-4"][1]), WIRE_POLES):
+        start = Vector(valve_x + u, y0, ENTRY_Z + v)
+        px, py = to_model("J_VALVES", pole, face - 1.0)
+        end = Vector(px, py, WIRE_OPENING_Z)
+        wires.append(entry_frame(valve_x) * Pos(u, v, 0) * Cylinder(VALVE_WIRE_D / 2, 70, align=ZMIN))
+        wires.append(Location(Plane(origin=start, z_dir=end - start)) * Cylinder(VALVE_WIRE_D / 2, (end - start).length, align=ZMIN))
+        wires.append(Pos(start) * Sphere(VALVE_WIRE_D / 2))
     cable_items = [(c, CABLE) for c in cables] + [(p, (225, 225, 225)) for p in plugs] + [(w, (200, 60, 50)) for w in wires]
 
     def cut(items, keep):
@@ -414,9 +426,9 @@ if not args.no_views and not args.lid_drop:
     render(cut(everything, Pos(x_cut + 100, cy, 0) * Box(200, 400, 200)), V / "section.png", view=(-1, 0, 0), size=(1600, 640))
     near = Pos(x_cut + 100, y0 - 5, ENTRY_Z) * Box(200, 62, 60)
     render(cut(everything, near), V / "section-entry.png", view=(-1, 0, 0), size=(1600, 1100))
-    # The same through the valve entry, cut at the terminal block's third pole.
+    # The same through the valve entry and on to the terminal block, cut at the block's third pole.
     x_valve = CONNECTORS["J_VALVES"]["at"][0] + 2.54
-    render(cut(everything, Pos(x_valve + 100, y0 - 5, ENTRY_Z) * Box(200, 62, 60)), V / "section-valve.png", view=(-1, 0, 0), size=(1600, 1100))
+    render(cut(everything, Pos(x_valve + 100, cy, 0) * Box(200, 400, 200)), V / "section-valve.png", view=(-1, 0, 0), size=(1600, 640))
 
     # One bus entry taken apart, seen from outside. The washer is turned so that its slot shows.
     frame = entry_frame(bus_x[0])

@@ -93,21 +93,33 @@ L.place_connectors()  # J_IN, J_OUT, J_VALVES: positions shared with the enclosu
 X_OPTO = 64.0  # the isolation gap runs along this line; logic pins at x - 4.76, 24 VAC pins at x + 4.76
 X_AC = X_OPTO + 4.76
 X_LOGIC = X_OPTO - 4.76
-X_Q = 79.0  # triacs: leads towards the optocouplers, tab towards the board's right edge
+X_R = 71.1  # resistors: one column between the optocouplers and the valve terminal block
+X_TRUNK = 72.3  # 24 VAC b on the bottom layer, from the OUT jack up to both outputs
 
-# One band per output. Output 1 is the lower one, straight above its valve header.
-# y of the optotriac; the monitor optocoupler sits 7.04 mm above it, the triac level with its gate pin.
-BANDS = {"OUT1": 24.79, "OUT2": 10.70}
-for out, y in BANDS.items():
-    L.place(out + ".U_DRV", X_OPTO, y, rot=0, label=False)
-    L.place(out + ".U_MON", X_OPTO, y - 7.04, rot=180, label=False)
-    L.place(out + ".Q", X_Q, y + 0.26, rot=0, label=False)
-    L.place(out + ".R_GK", 71.4, y + 0.26, rot=90, label=False)
-    L.place(out + ".R_GATE", 73.2, y - 4.39, rot=180, label=False)
-    L.place(out + ".R_MON", 73.2, y - 6.49, rot=180, label=False)
-    L.place(out + ".R_SNUB", 77.0, y - 4.39, rot=0, label=False)
-    L.place(out + ".C_SNUB", 80.9, y - 4.39, rot=0, label=False)
-    L.place(out + ".R_LED", 56.5, y - 2.54, rot=0, label=False)
+# The valve terminal block stands at the far side of the board (mech.json), its wire openings
+# towards the cable entries: the wires pass over output 1 and have 36 mm of free length.
+# Output 2 sits in the strip behind the block, output 1 in front of it. In each pair of
+# optocouplers the optotriac is the one next to its triac.
+OPTO_Y = {"OUT2": {"U_DRV": 4.54, "U_MON": 11.58}, "OUT1": {"U_MON": 17.75, "U_DRV": 24.79}}
+for out, rows in OPTO_Y.items():
+    L.place(out + ".U_DRV", X_OPTO, rows["U_DRV"], rot=0, label=False)
+    L.place(out + ".U_MON", X_OPTO, rows["U_MON"], rot=180, label=False)
+    L.place(out + ".R_LED", 56.5, rows["U_DRV"] - 2.54, rot=0, label=False)
+    L.place(out + ".R_MON", X_R, rows["U_MON"] + 2.18, rot=90, label=False)  # upper pad level with the monitor's pin
+# Output 2: triac behind the block, leads towards the optotriac, snubber upright at its tab.
+L.place("OUT2.R_GATE", X_R, 2.91, rot=90, label=False)
+L.place("OUT2.R_GK", X_R, 6.25, rot=90, label=False)
+L.place("OUT2.Q", 80.5, 3.9, rot=0, label=False)
+L.place("OUT2.C_SNUB", 86.5, 2.25, rot=90, label=False)
+L.place("OUT2.R_SNUB", 86.5, 5.75, rot=90, label=False)
+# Output 1: triac in front of the block, tab towards it, leads towards the board edge; snubber and
+# gate-to-A1 resistor in a column beside it. The triac is 2.3 mm high and the wire openings begin
+# 1.4 mm above the board, so it keeps 8 mm from the block: a wire goes in straight.
+L.place("OUT1.R_GATE", 71.85, 23.2, rot=180, label=False)
+L.place("OUT1.Q", 77.3, 35.0, rot=90, label=False)
+L.place("OUT1.R_SNUB", 82.0, 32.4, rot=270, label=False)
+L.place("OUT1.C_SNUB", 82.0, 35.95, rot=270, label=False)
+L.place("OUT1.R_GK", 82.0, 39.3, rot=90, label=False)
 
 # 24 VAC protection, right where the pair leaves the OUT jack.
 L.place("D4", 63.0, 39.5, rot=90, label=False)
@@ -162,8 +174,8 @@ L.text("BUS IN", 17.0, 25.4, 1.2)
 L.text("24VAC! NO ETHERNET", 17.0, 27.4, 0.8)
 L.text("BUS OUT", 51.0, 27.5, 1.0)
 valve_pin_x = {n: L.pad("J_VALVES", n)[0] for n in (1, 2, 3, 4)}
-for n, label in ((1, "V1"), (2, "C"), (3, "V2"), (4, "C")):  # behind each pole of the valve terminal block
-    L.text(label, valve_pin_x[n], 29.25, 0.8)
+for n, label in ((1, "V1"), (2, "C"), (3, "V2"), (4, "C")):  # in front of each wire opening of the valve terminal block
+    L.text(label, valve_pin_x[n], 22.85, 0.8)
 L.text("SPARE", 66.9, 32.9, 0.8)
 L.text("SWAP A/B", 32.0, 17.4, 0.8)
 L.text("TERM", 24.9, 22.6, 0.8, align="right")
@@ -247,21 +259,23 @@ L.track("AC_A", F, [(65.3, 41.3), (f2_a[0], 41.3)], 0.8)
 jp2_sp, jp2_ac = L.pad("JP_SPARE_2", 1), L.pad("JP_SPARE_2", 2)
 L.track("AC_B", F, [(jp2_ac[0], jp2_ac[1] + 0.2), d4_b], 0.8)  # starts on the far half of the pad: 0.5 mm to the other one
 L.via("AC_B", jp2_ac[0], 34.8, 0.8, 0.4)
-X_TRUNK = 72.7
 L.track("AC_B", B, [(X_ACB_UP, q[2][1]), (jp2_ac[0], q[2][1]), (jp2_ac[0], 34.8)], 0.8)
-L.track("AC_B", B, [(jp2_ac[0], q[2][1]), (X_TRUNK, q[2][1]), (X_TRUNK, BANDS["OUT2"] - 8.31)], 0.8)
+L.track("AC_B", B, [(jp2_ac[0], q[2][1]), (X_TRUNK, q[2][1]), (X_TRUNK, L.pad("OUT2.Q", 1)[1])], 0.8)
+L.track("AC_B", B, [(X_TRUNK, q[2][1]), (X_TRUNK, L.pad("OUT1.Q", 1)[1])], 0.8)
 # Valve terminal block: poles 1 and 3 are the valve outputs, 2 and 4 the fused common. Each pole
-# has two pins, a rear and a front one. `L.pad` returns the rear one; the front one is 7.62 mm
-# nearer to the board edge and joined to it on the bottom layer.
+# has two pins, a rear and a front one, 7.62 mm apart. `L.pad` returns the rear one. Pole 3 joins
+# its pins on the top layer, the others on the bottom layer, so that the common can cross pole 3
+# below and output 2's monitor can cross poles 1 and 2 above.
 PIN_ROWS = 7.62
 valve_pin = {n: L.pad("J_VALVES", n) for n in (1, 2, 3, 4)}
-for n, net in ((1, "VALVE1"), (2, "AC_COM"), (3, "VALVE2"), (4, "AC_COM")):
-    x, y = valve_pin[n]
-    L.track(net, B, [(x, y), (x, y + PIN_ROWS)], 0.8)
-# Fused valve common: between the two pin rows, under the block, to the front pins of poles 2 and 4.
-y_com = valve_pin[2][1] + PIN_ROWS / 2
-L.track("AC_COM", F, [f2_com, (f2_com[0], y_com), (valve_pin[2][0], y_com), (valve_pin[2][0], valve_pin[2][1] + PIN_ROWS)], 0.8)
-L.track("AC_COM", F, [(valve_pin[2][0], y_com), (valve_pin[4][0], y_com), (valve_pin[4][0], valve_pin[4][1] + PIN_ROWS)], 0.8)
+front_pin = {n: (x, y + PIN_ROWS) for n, (x, y) in valve_pin.items()}
+for n, net, layer in ((1, "VALVE1", B), (2, "AC_COM", B), (3, "VALVE2", F), (4, "AC_COM", B)):
+    L.track(net, layer, [valve_pin[n], front_pin[n]], 0.8)
+y_mid = valve_pin[2][1] + PIN_ROWS / 2
+L.track("AC_COM", B, [(valve_pin[2][0], y_mid), (valve_pin[4][0], y_mid)], 0.8)
+# Fused valve common: along the board edge, then up past output 1 to the front pin of pole 2.
+X_COM, Y_COM = 85.2, 42.3
+L.track("AC_COM", F, [f2_com, (f2_com[0], Y_COM), (X_COM, Y_COM), (X_COM, front_pin[2][1] + X_COM - front_pin[2][0]), front_pin[2]], 0.8)
 # Spare pair: its lanes continue to the two open jumpers.
 jp1_sp, jp1_ac = L.pad("JP_SPARE_1", 1), L.pad("JP_SPARE_1", 2)
 L.track("SPARE_2", B, [(q[5][0], LANE["SPARE_2"]), (PASS_EDGE, LANE["SPARE_2"])], 0.5)
@@ -275,42 +289,69 @@ L.track("SPARE_1", F, [(jp1_sp[0], 32.6), jp1_sp], 0.5)
 L.track("AC_A", F, [(jp1_ac[0], jp1_ac[1] + 0.2), (jp1_ac[0], 37.3), (f2_a[0], 38.5), f2_a], 0.8)
 
 # --- Valve outputs ------------------------------------------------------------------------------
-for out, y in BANDS.items():
-    P = lambda part, pin: L.pad(out + "." + part, pin)
-    gate, opto, drv_gate, drv_opto = out + ".GATE", out + ".OPTO", P("U_DRV", 4), P("U_DRV", 6)
-    # Gate: optotriac to triac in a straight line, the gate-to-A1 resistor beside it.
-    L.track(gate, F, [drv_gate, P("Q", 3)], 0.8)
-    L.track(gate, F, [P("R_GK", 1), (P("R_GK", 1)[0], drv_gate[1])], 0.8)
-    # 24 VAC b comes up from the bottom-layer trunk next to the triac's A1 lead.
-    gk = P("R_GK", 2)
-    L.via("AC_B", X_TRUNK, gk[1], 0.8, 0.4)
-    L.track("AC_B", F, [gk, (X_TRUNK, gk[1]), (X_TRUNK, P("Q", 1)[1]), P("Q", 1)], 0.8)
-    mon_ac = P("U_MON", 2)
-    L.track("AC_B", F, [mon_ac, (70.9, mon_ac[1])], 0.8)
-    L.via("AC_B", 70.9, mon_ac[1], 0.8, 0.4)
-    L.track("AC_B", B, [(70.9, mon_ac[1]), (X_TRUNK, mon_ac[1])], 0.8)
-    snub_ac = P("C_SNUB", 2)
-    L.track("AC_B", F, [snub_ac, (83.2, snub_ac[1])], 0.8)
-    L.via("AC_B", 83.2, snub_ac[1], 0.8, 0.4)
-    L.track("AC_B", B, [(83.2, snub_ac[1]), (X_TRUNK, snub_ac[1])], 0.8)
-    # Optotriac and monitor to their resistors in the row above the triac.
-    r_opto, r_mon = P("R_GATE", 2), P("R_MON", 2)
-    L.track(opto, F, [drv_opto, (69.9, drv_opto[1]), (69.9 + drv_opto[1] - r_opto[1], r_opto[1]), r_opto], 0.8)
-    mon_led = P("U_MON", 1)
-    L.track(out + ".MON_LED", F, [mon_led, (70.6, mon_led[1]), (70.6 + mon_led[1] - r_mon[1], r_mon[1]), r_mon], 0.8)
-    # The valve node: both resistors, the snubber and the triac's tab.
-    valve = "VALVE" + out[-1]
-    L.track(valve, F, [P("R_MON", 1), P("R_GATE", 1), P("R_SNUB", 1), (P("R_SNUB", 1)[0], y - 3.0), (77.6, y - 2.2), (78.6, y - 1.2)], 0.8)
-    L.track(out + ".SNUB", F, [P("R_SNUB", 2), P("C_SNUB", 1)], 0.8)
+for out in OPTO_Y:  # what both have in common: the monitor's pins
+    mon_led, mon_ac = L.pad(out + ".U_MON", 1), L.pad(out + ".U_MON", 2)
+    L.track(out + ".MON_LED", F, [mon_led, L.pad(out + ".R_MON", 2)], 0.8)
+    L.track("AC_B", F, [mon_ac, (X_TRUNK, mon_ac[1])], 0.8)
+    L.via("AC_B", X_TRUNK, mon_ac[1], 0.8, 0.4)
 
-# Tab to valve terminal: a wide track inside a copper area that also cools the triac
-# (ST DocID7699 Rev 9: 70 K/W assumes 0.5 cm2 of copper under the tab).
-tab1, tab2 = L.pad("OUT1.Q", 2), L.pad("OUT2.Q", 2)
-v1, v2 = valve_pin[1], valve_pin[3]
-L.track("VALVE1", F, [tab1, (78.0, tab1[1]), (78.0, 29.4), v1], 1.5)
-L.zone("VALVE1", F, outline=[(76.4, 21.6), (84.0, 21.6), (84.0, 28.6), (79.0, 28.6), (79.0, 33.0), (74.9, 33.0), (74.9, 28.6), (76.4, 28.6)], solid=True)
-L.track("VALVE2", F, [tab2, (86.7, tab2[1]), (86.7, 30.0), v2], 1.5)
-L.zone("VALVE2", F, outline=[(76.4, 7.6), (88.2, 7.6), (88.2, 33.0), (85.2, 33.0), (85.2, 14.4), (76.4, 14.4)], solid=True)
+# Output 2, behind the block.
+P = lambda part, pin: L.pad("OUT2." + part, pin)
+a1, tab, g = P("Q", 1), P("Q", 2), P("Q", 3)
+gk_gate, gk_ac = P("R_GK", 1), P("R_GK", 2)
+# Gate: optotriac, gate-to-A1 resistor, triac in one line.
+L.track("OUT2.GATE", F, [P("U_DRV", 4), gk_gate, (g[0] - 1.1 - (gk_gate[1] - g[1]), gk_gate[1]), (g[0] - 1.1, g[1]), g], 0.8)
+L.track("OUT2.OPTO", F, [P("U_DRV", 6), P("R_GATE", 2)], 0.8)
+# 24 VAC b: up from the trunk at the resistor, and at the trunk's end to the A1 lead.
+L.track("AC_B", F, [gk_ac, (X_TRUNK, gk_ac[1])], 0.8)
+L.via("AC_B", X_TRUNK, gk_ac[1], 0.8, 0.4)
+X_A1_VIA = 73.3
+L.track("AC_B", B, [(X_TRUNK, a1[1]), (X_A1_VIA, a1[1])], 0.8)
+L.via("AC_B", X_A1_VIA, a1[1], 0.8, 0.4)
+L.track("AC_B", F, [(X_A1_VIA, a1[1]), a1], 0.8)
+# ... and on along the board edge on the bottom layer to the snubber capacitor.
+snub_ac, x_via = P("C_SNUB", 2), 87.7
+L.track("AC_B", B, [(X_A1_VIA, a1[1]), (x_via - (a1[1] - snub_ac[1]), a1[1]), (x_via, snub_ac[1])], 0.8)
+L.via("AC_B", x_via, snub_ac[1], 0.8, 0.4)
+L.track("AC_B", F, [snub_ac, (x_via, snub_ac[1])], 0.8)
+L.track("OUT2.SNUB", F, [P("R_SNUB", 2), P("C_SNUB", 1)], 0.8)
+# The valve node: gate resistor between the triac's leads to the tab; tab, snubber resistor, pole 3;
+# monitor resistor under the block, between its pin rows, to pole 3.
+r_gate, r_snub, r_mon = P("R_GATE", 1), P("R_SNUB", 1), P("R_MON", 1)
+L.track("VALVE2", F, [r_gate, (tab[0] - 2.2, r_gate[1])], 0.8)
+L.track("VALVE2", F, [(tab[0] + 1.7, r_snub[1]), (valve_pin[3][0], r_snub[1]), valve_pin[3]], 1.2)
+L.track("VALVE2", F, [r_mon, (valve_pin[3][0], r_mon[1])], 0.8)
+# A copper area that also cools the triac (ST DocID7699 Rev 9: 70 K/W assumes 0.5 cm2 of copper under the tab).
+L.zone("VALVE2", F, outline=[(77.9, 0.6), (85.2, 0.6), (85.2, 5.9), (88.2, 5.9), (88.2, 10.9), (85.0, 10.9), (85.0, 7.4), (77.9, 7.4)], solid=True)
+
+# Output 1, in front of the block.
+P = lambda part, pin: L.pad("OUT1." + part, pin)
+a1, tab, g = P("Q", 1), P("Q", 2), P("Q", 3)
+gk_gate, gk_ac = P("R_GK", 1), P("R_GK", 2)
+drv_gate, drv_opto = P("U_DRV", 4), P("U_DRV", 6)
+# Gate: past the tab, then between tab and leads to the gate lead and on to the gate-to-A1 resistor.
+Y_GAP = g[1] - 2.1  # 0.6 mm to the tab above and to the leads below
+L.track("OUT1.GATE", F, [drv_gate, (71.2, drv_gate[1]), (72.2, drv_gate[1] + 1.0), (72.2, Y_GAP - 1.0), (73.2, Y_GAP), (g[0], Y_GAP), g], 0.8)
+L.track("OUT1.GATE", F, [g, gk_gate], 0.8)
+r_opto = P("R_GATE", 2)
+L.track("OUT1.OPTO", F, [drv_opto, (r_opto[0] - (r_opto[1] - drv_opto[1]), drv_opto[1]), r_opto], 0.8)
+# 24 VAC b: up from the trunk's end to the A1 lead; a branch under the triac to the column beside it.
+snub_ac = P("C_SNUB", 2)
+L.via("AC_B", X_TRUNK, a1[1], 0.8, 0.4)
+L.track("AC_B", F, [(X_TRUNK, a1[1]), a1], 0.8)
+y_branch, x_via = (snub_ac[1] + gk_ac[1]) / 2, snub_ac[0] + 1.5
+L.track("AC_B", B, [(X_TRUNK, y_branch), (x_via, y_branch)], 0.8)
+L.via("AC_B", x_via, y_branch, 0.8, 0.4)
+L.track("AC_B", F, [(x_via, y_branch), (snub_ac[0], y_branch)], 0.8)
+L.track("AC_B", F, [snub_ac, gk_ac], 0.8)
+L.track("OUT1.SNUB", F, [P("R_SNUB", 2), P("C_SNUB", 1)], 0.8)
+# The valve node: pole 1 straight into the tab; gate and monitor resistors; tab to the snubber resistor.
+r_gate, r_snub, r_mon = P("R_GATE", 1), P("R_SNUB", 1), P("R_MON", 1)
+L.track("VALVE1", F, [front_pin[1], (front_pin[1][0], tab[1] - 2.2)], 1.5)
+L.track("VALVE1", F, [r_gate, (r_gate[0] + 0.84, r_gate[1] + 0.84), (front_pin[1][0], r_gate[1] + 0.84)], 0.8)
+L.track("VALVE1", F, [r_mon, (front_pin[1][0] - (r_mon[1] - front_pin[1][1]), r_mon[1]), front_pin[1]], 0.8)
+L.track("VALVE1", F, [(tab[0] + 2.2, r_snub[1]), r_snub], 0.8)
+L.zone("VALVE1", F, outline=[(74.0, 16.0), (79.3, 16.0), (79.3, 19.2), (80.4, 19.2), (80.4, 37.0), (74.0, 37.0)], solid=True)
 
 # --- Bus protection between the jacks -----------------------------------------------------------
 # RS485: each lane rises through a via straight into its TVS pad; the TVS's ground pad goes back to
@@ -348,7 +389,7 @@ L.zone("GND", F, outline=[(0.5, 0.5), (X_GND, 0.5), (X_GND, 26.4), (42.6, 26.4),
 L.zone("GND", B, outline=rect(0.5, 0.5, X_GND, 26.4))
 
 L.solid("J_UPDI", 3)
-for out in BANDS:  # ground pins between two neighbours and the isolation gap: no room for spokes
+for out in OPTO_Y:  # ground pins between two neighbours and the isolation gap: no room for spokes
     L.solid(out + ".U_DRV", 2)
     L.solid(out + ".U_MON", 3)
 
@@ -361,6 +402,7 @@ R = L.router((8.0, 0.6, X_GND - 0.1, 26.3))
 for net, (x, y) in fan:
     R.reserve(net, x, y)
 R.stitch("GND", ["C_MCU.2"])  # first, while there is room next to the microcontroller
+R.route("+5V", width=0.4, only=["C_MCU.1", "J_UPDI.2"])  # likewise: output 2's signals pass around this capacitor
 for net in ("TXD", "RXD", "XDIR", "ADDR1", "ADDR2", "ADDR3", "ADDR4", "UPDI",
             "DRIVE2", "MON2", "OUT2.LED_A", "DRIVE1", "MON1", "OUT1.LED_A", "LED", "LED_A",
             "RS_A", "RS_B", "BUS_A", "BUS_B", "TERM", "PB1", "PB4", "PB5", "PA3", "PA1"):

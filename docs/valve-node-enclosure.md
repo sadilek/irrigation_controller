@@ -8,7 +8,8 @@ Status: approved by the owner on 2026-11-14 as input to the layout (second versi
 size of a surface-mounted junction box, no cable entry for the moisture sensor). The layout exists
 now ([`valve-node-layout.md`](valve-node-layout.md)). The valve wires end in a terminal block on the board
 instead of two pluggable screw terminals (owner, 2026-11-15): a mated plug did not fit in front of
-the board, see deviation 8.
+the board, see deviation 8. The block stands at the far side of the board and the fourth mounting
+hole moved into the corner it left (owner, 2026-11-15).
 Nothing is printed yet; the test fit is part of the layout hold point. Three dimensions are assumed until the owner
 has measured them ([To measure](#to-measure)); they are parameters at the top of
 [`enclosure.py`](../boards/valve-node/enclosure.py), and one command rebuilds everything.
@@ -52,9 +53,11 @@ Why it has this shape:
   the box is as wide as three nuts side by side (114 mm) and as deep as the board plus one entry
   (93 mm).
 - **Each bus cable runs straight into its jack.** The cable is stiff and its aluminium strands
-  break when bent ([`existing-system.md`](existing-system.md#cable)). The jacks and the valve
-  terminals sit on one edge of the board, each opposite its entry: the plug is pushed through the
-  entry and into the jack along one line, with the nut loose.
+  break when bent ([`existing-system.md`](existing-system.md#cable)). The jacks sit on one edge
+  of the board, each opposite its entry: the plug is pushed through the entry and into the jack
+  along one line, with the nut loose. The valve wires are single flexible leads. Their terminal
+  block stands at the far side of the board, behind the third entry, so that 36 mm of each wire
+  are free to be held while it is pushed in.
 - **14 mm between the board's connector edge and the wall.** The plug stands 9.5 mm out of the
   jack; its rear end lies just inside the wall. The jack's latch is on top (seen in the 3D model
   of the RJHSE-5080 that the footprint carries), so with the lid off it is pressed from above. To
@@ -128,31 +131,30 @@ every side. No bought nut fits, and none is meant to.
 |---|---|---|
 | Board | 96 × 44 mm, corners 3 mm, 1.6 mm thick | See deviation 1. The same area as 75 × 56 mm |
 | Clearance to the walls | 2 mm on three sides, 14 mm on the connector edge | Board drops in without tilting; the rounded corners of the cavity clear the board's corners by 0.8 mm |
-| Mounting holes | (4, 4), (92, 4), (4, 40), (92, 26), 3.2 mm for M3 | The fourth sits behind the valve terminal block, which occupies that corner |
+| Mounting holes | (4, 4), (92, 4), (4, 40), (92, 40), 3.2 mm for M3 | The four corners. The fourth was at (92, 26) while the valve terminal block occupied its corner |
 | Bus jacks | Front face on the bottom edge (y = 44), centres at x = 17 and x = 51 | 34 mm apart: two 33 mm nuts side by side. Fixed: the entries are aligned with them |
-| Valve terminal block | Wire face on the bottom edge, 22.86 mm long, its middle at x = 84.3 | The entry is at x = 85; the block ends 0.3 mm before the board's right edge. Four poles: valve 1, common, valve 2, common |
+| Valve terminal block | Wire face at y = 22.1, towards the entries, 22.86 mm long, its middle at x = 84.3 | The entry is at x = 85 and 35.9 mm in front of the block; the block ends 0.3 mm before the board's right edge. Four poles: valve 1, common, valve 2, common. Why it is not on the edge: [`valve-node-layout.md`](valve-node-layout.md), "Where the block stands" |
 | Keep-out, top | 7 mm circle around each hole | Screw head |
 | Keep-out, bottom | 9 mm circle around each hole | Standoff, 8 mm |
 | Height above the board | 18 mm | Lid underside at 20.4 mm |
 | Depth below the board | 3.5 mm | Floor at 5 mm |
 
-All connectors are on one edge. From left to right: jack, jack, valve terminal block. The 24 VAC side of
-the board is its right part, behind the valve terminals; the logic is the left part and the strip
-along the far edge. Whether the circuit fits on 96 × 44 mm with that split is for the layout to
+All cables enter over one edge. From left to right: jack, jack, valve wires. The 24 VAC side of
+the board is its right part, around the valve terminal block; the logic is the left part. Whether the circuit fits on 96 × 44 mm with that split is for the layout to
 show; the area is that of the outline the specification proposed.
 
 ## Deviations from the specification
 
 | # | Specification | This design | Reason |
 |---|---|---|---|
-| 1 | Board about 75 × 52 mm, jacks side by side on one short edge, valve headers on the opposite one, holes in the four corners | 96 × 44 mm, all connectors on one long edge, jacks 34 mm apart | All cables through one wall makes the box 114 mm long instead of 190 mm. Two entries that a plug passes through cannot be closer than their nuts, so the jacks are 34 mm apart; the pass-through between them is about 18 mm long instead of a few millimetres, and the surge protection still sits between the jacks |
+| 1 | Board about 75 × 52 mm, jacks side by side on one short edge, valve headers on the opposite one, holes in the four corners | 96 × 44 mm, all cables over one long edge, jacks 34 mm apart | All cables through one wall makes the box 114 mm long instead of 190 mm. Two entries that a plug passes through cannot be closer than their nuts, so the jacks are 34 mm apart; the pass-through between them is about 18 mm long instead of a few millimetres, and the surge protection still sits between the jacks |
 | 2 | Valve inserts with a slit per hole | Closed holes | These wires have free ends and are pushed through. A closed hole seals better than a slit one, and only the bus cable carries a plug |
 | 3 | Cable entry and terminal on the edge for a moisture sensor | No entry and no terminal | Owner, 2026-11-14: the sensor never worked properly. The schematic dropped the input as well ([schematic deviation 5](valve-node-schematic.md#deviations-from-the-specification)) |
 | 4 | Entry: opening, insert, nut | A washer between nut and insert | See [Cable entries](#cable-entries) |
 | 5 | One entry per valve | One entry for all valve wires of a box, with a two-hole or four-hole insert | A third and fourth entry would each widen the box by 34 mm |
 | 6 | Nut of PETG | Nut of the box's material (ASA) | One material for all stiff parts; PETG remains the fallback for all of them |
 | 7 | Cable entries on two opposite walls | All on one wall | The owner asked for a box the size of a surface-mounted junction box; see deviation 1 |
-| 8 | Valve wires on pluggable screw terminals (specification, "Outline and connectors") | A spring terminal block with push buttons, soldered to the board | The owner asked how a plug comes out. A mated plug (17.6 mm long, 10.6 mm in front of the board) left 3.5 mm to the wall, needed 7 mm to come free, and its corner touched the lid's rib. The box stays as it is; details and the alternatives in [`valve-node-layout.md`](valve-node-layout.md), "The valve terminals" |
+| 8 | Valve wires on pluggable screw terminals (specification, "Outline and connectors") | A spring terminal block with push buttons, soldered to the board | The owner asked how a plug comes out. A mated plug (17.6 mm long, 10.6 mm in front of the board) left 3.5 mm to the wall, needed 7 mm to come free, and its corner touched the lid's rib. The box stays as it is. The block stands at the far side of the board, so each wire has 36 mm of free length. Details and the alternatives in [`valve-node-layout.md`](valve-node-layout.md), "The valve terminals" |
 
 ## Printing
 

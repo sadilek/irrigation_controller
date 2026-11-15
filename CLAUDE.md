@@ -162,7 +162,10 @@ first.
 - **A connector is not finished without its mating half.** The valve node's pluggable screw
   terminals fitted; their plugs did not, and could not be pulled with the board in place. Model
   the mated plug and the travel it needs to come free, and put it into the collision check
-  (`plugs.step` of `boards/valve-node/enclosure.py`).
+  (`plugs.step` of `boards/valve-node/enclosure.py`). A wire is a mating half too: a triac of
+  2.3 mm stood 1.4 mm in front of a terminal block's wire opening that begins 1.4 mm above the
+  board. DRC and the collision check passed; the render showed it. Keep the approach to a wire
+  opening free of parts higher than its lower edge.
 - **JLCPCB's parts catalogue is the source for stock and price.** The community mirror
   (jlcsearch) missed parts that were in stock and returns at most 100 rows per query. The public
   part pages (`jlcpcb.com/partdetail/C…`) and the catalogue search show stock, price, assembly
