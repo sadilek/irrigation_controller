@@ -34,6 +34,12 @@ both boards (`make all BOARD=valve-node`, about two minutes). No real board exis
 - **Only the owner orders.** Never upload to or order from JLCPCB or any shop.
 - **Print, don't buy.** Mechanical parts (enclosures, seals, inserts, holders) are 3D-printed by the
   owner in TPU or PETG wherever practical. Buy one only when printing cannot do the job.
+- **JLCPCB assembles every part.** Boards arrive fully assembled. Choose every electronic part from
+  the JLCPCB/LCSC catalogue, by function and rating, from any manufacturer rather than a specific
+  brand. Never plan a part the owner buys or solders himself.
+- **Every connector is shown in use.** For each connector, the enclosure and the layout show where
+  its cable enters, that the cable has room to bend from the entry to the plug, and that the plug
+  can be pulled out with the board installed.
 - **Hold points.** A board's next stage does not start before the owner signed off the previous
   one. Each hold point shows the reasoning, not just the result; the hard part of this project is
   switching 24 VAC and surviving surges on a long buried cable, not routing.
