@@ -128,7 +128,7 @@ places every order.
 - **Valve node:** specification, schematic, layout, fabrication data and enclosure are done and
   were signed off by 2026-11-15. A change made the same day (bus termination moved to the
   controller, nothing left to solder by hand) awaits sign-off of schematic and
-  layout. Nothing is printed or ordered yet, and no real board exists. The firmware is not written
+  layout. The enclosure had a first test print; nothing is ordered yet, and no real board exists. The firmware is not written
   yet.
 - **Controller:** not designed yet. Until it is, the new nodes run with the existing controller.
 

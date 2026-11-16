@@ -88,7 +88,7 @@ verify: check erc ## All checks without modifying committed files (zones as last
 	$(KICAD) pcb drc --severity-all --exit-code-violations -o $(OUT)/drc.rpt $(EDA)/$(BOARD).kicad_pcb $(QUIET)
 	@$(MAKE) --no-print-directory fab enclosure collide BOARD=$(BOARD)
 
-selftest: ## Prove the checks can fail: a lowered lid (both enclosures), a misplaced programming plug, a changed schematic, a logic track near 24 VAC
+selftest: ## Prove the checks can fail: a lowered lid (both enclosures), a misplaced programming plug, board supports without pin pockets, a changed schematic, a logic track near 24 VAC
 	uv run python boards/throwaway/enclosure.py --lid-drop 6 >/dev/null
 	@if uv run python tools/collide.py throwaway >/dev/null; then echo "selftest: collision NOT detected"; exit 1; else echo "selftest: collision detected as expected"; fi
 	uv run python boards/throwaway/enclosure.py >/dev/null
@@ -96,6 +96,8 @@ selftest: ## Prove the checks can fail: a lowered lid (both enclosures), a mispl
 	@if uv run python tools/collide.py valve-node >/dev/null; then echo "selftest: valve node collision NOT detected"; exit 1; else echo "selftest: valve node collision detected as expected"; fi
 	uv run python boards/valve-node/enclosure.py --no-views --updi-shift 1.27 >/dev/null
 	@if uv run python tools/collide.py valve-node >/dev/null; then echo "selftest: UPDI plug between its pins NOT detected"; exit 1; else echo "selftest: UPDI plug between its pins detected as expected"; fi
+	uv run python boards/valve-node/enclosure.py --no-views --no-pockets >/dev/null
+	@if uv run python tools/collide.py valve-node >/dev/null; then echo "selftest: board support on the pins NOT detected"; exit 1; else echo "selftest: board support on the pins detected as expected"; fi
 	uv run python boards/valve-node/enclosure.py --no-views >/dev/null
 	@tools/selftest-schematic.sh valve-node $(PCB)
 	@# A ground track 2.5 mm from the 24 VAC jumper pads, one under an optocoupler, one under a screw head.

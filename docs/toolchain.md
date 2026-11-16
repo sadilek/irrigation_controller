@@ -49,7 +49,7 @@ Run from the repository root. `BOARD` defaults to `throwaway`.
 | `make collide` | Overlap volume of the populated board against each enclosure part; fails on overlap. Without a board STEP it uses `envelope.step`: the outline and connectors from `mech.json` as blocks. If the enclosure script wrote `plugs.step` (mated plugs as blocks), those are checked as well |
 | `make all` | All of the above in order |
 | `make verify` | The checks only, without touching committed files (what Obeya runs before landing) |
-| `make selftest` | Lowers the lid into the pin header (throwaway board) and into the bus jacks (valve node) and expects `collide` to fail; renames a net label in the valve node schematic and expects the comparison with the source to fail; draws a ground track near 24 VAC copper, under an optocoupler and under a screw head on a copy of the valve node board and expects DRC to name the rule each time |
+| `make selftest` | Lowers the lid into the pin header (throwaway board) and into the bus jacks (valve node), moves the programming plug off its pins and fills the pin pockets of the board supports (valve node), and expects `collide` to fail each time; renames a net label in the valve node schematic and expects the comparison with the source to fail; draws a ground track near 24 VAC copper, under an optocoupler and under a screw head on a copy of the valve node board and expects DRC to name the rule each time |
 
 ## Schematic format: Zener
 

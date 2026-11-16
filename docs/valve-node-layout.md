@@ -7,8 +7,8 @@ Status: approved by the owner on 2026-11-15, then changed the same day by the ow
 termination, bias and the A/B swap jumpers left the node and JLCPCB populates the UPDI header, so
 that nothing on the node is soldered by hand ([The programming header](#the-programming-header),
 deviation 8). The changed schematic and layout are not signed off yet; until then the approved
-state no longer stands. Nothing is printed, nothing is ordered; the test fit is still open
-([Open points](#open-points)).
+state no longer stands. The enclosure had a first test print (2026-11-16), nothing is ordered;
+the test fit with a board is still open ([Open points](#open-points)).
 
 The circuit is in [`valve-node-spec.md`](valve-node-spec.md) and
 [`valve-node-schematic.md`](valve-node-schematic.md), the box and the board outline in
@@ -376,6 +376,7 @@ this outline and whether the cables arrive where the jacks are.
 | Jack blocks | each centred on its cable entry, 14 mm from the entry wall |
 | Valve block | at the far side, its front 36 mm from the entry wall; four wires pushed through the insert reach it over the board |
 | Lid | closes without touching a block (dummy only) |
+| Supports under the connectors | the dummy lies on them and on the standoffs at once, and does not rock; pressing a block does not bend it |
 | A crimped bus cable | passes through an entry, nut off, and reaches the jack block in a straight line |
 
 The same print is the first sample for the water bath test

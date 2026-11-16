@@ -22,7 +22,9 @@ Written to build/valve-node/:
 
 --lid-drop lowers the lid into the box; `make selftest` uses it to prove that the collision check
 fails when the lid hits a connector. --updi-shift moves the programming plug along the header;
-`make selftest` uses it to prove that a plug that does not sit on its pins is found.
+`make selftest` uses it to prove that a plug that does not sit on its pins is found. --no-pockets
+fills the pockets that the board supports leave around the pins; `make selftest` uses it to prove
+that the collision check sees the pins below the board.
 """
 import argparse
 import json
@@ -32,7 +34,7 @@ import warnings
 from pathlib import Path
 
 from build123d import (
-    Align, Box, BuildPart, BuildSketch, Circle, Cone, Cylinder, Location, Locations, Mode, Plane, Pos,
+    Align, Box, BuildPart, BuildSketch, Circle, Cylinder, Location, Locations, Mode, Plane, Polygon, Pos,
     RectangleRounded, Rot, Sphere, Vector, export_step, export_stl, extrude, loft,
 )
 
@@ -46,6 +48,7 @@ warnings.filterwarnings("ignore", message="Boolean operation unable to clean")
 args = argparse.ArgumentParser()
 args.add_argument("--lid-drop", type=float, default=0.0)
 args.add_argument("--updi-shift", type=float, default=0.0)
+args.add_argument("--no-pockets", action="store_true")
 args.add_argument("--no-views", action="store_true")
 args = args.parse_args()
 
@@ -112,6 +115,9 @@ NUT_D = 33.0
 NUT_WALL = 3.0  # end wall
 NUT_THREAD = 12.0
 SLIT_W = 0.4
+# Printing. The base lies on its floor, so the entries print lying down.
+FLAT_R = 11.8  # the boss's underside is cut flat this far below the axis, 0.2 mm into the thread's core:
+# the support under it comes off a plane instead of out of the thread
 
 x0, x1 = -GAP, W + GAP  # cavity
 y0, y1 = -H - CABLE_SPACE, GAP  # the entry wall is the one at y0, facing the board's connector edge
@@ -166,15 +172,40 @@ def seat_r(s: float) -> float:
 
 
 def entry_boss():
-    """What an entry adds to the wall (in the entry's frame)."""
+    """What an entry adds to the wall (in the entry's frame), with a flat underside."""
     neck = Cylinder(THREAD_D / 2, NECK_END, align=ZMIN)
-    return neck + Pos(0, 0, NECK_END) * external_thread(THREAD_D, BOSS_END - NECK_END)
+    boss = neck + Pos(0, 0, NECK_END) * external_thread(THREAD_D, BOSS_END - NECK_END)
+    return boss - Pos(0, -FLAT_R - 10, -1) * Box(THREAD_D + 2, 20, BOSS_END + 2, align=ZMIN)
+
+
+def teardrop(r: float, z: float):
+    """A circle of radius `r` with a flat roof (in the entry's frame: local y is up).
+
+    The roof is the circle's top tangent, from 45 degree flanks that touch the circle: nothing
+    overhangs more than 45 degrees, the roof is a bridge 0.83 r wide, and the opening is nowhere
+    narrower or higher than the circle.
+    """
+    k, t = math.sqrt(0.5), math.sqrt(2) - 1
+    with BuildSketch(Plane.XY.offset(z)) as sketch:
+        Circle(r)
+        Polygon((0, 0), (k * r, k * r), (t * r, r), (-t * r, r), (-k * r, k * r), align=None)
+    return sketch.sketch
+
+
+def teardrop_cone(s0: float, s1: float):
+    """The seat's shape between s0 and s1: the teardrop at radius seat_r(s), shrinking towards the inside."""
+    return loft([teardrop(seat_r(s0), s0), teardrop(seat_r(s1), s1)], ruled=True)
 
 
 def entry_bore():
-    """What an entry removes: a bore the plug passes through, widening into the conical seat."""
-    bore = Pos(0, 0, -1) * Cylinder(PLUG_BORE_D / 2, SEAT_START + 1.5, align=ZMIN)
-    seat = Pos(0, 0, SEAT_START) * Cone(seat_r(SEAT_START), seat_r(BOSS_END + 0.5), BOSS_END + 0.5 - SEAT_START, align=ZMIN)
+    """What an entry removes: a bore the plug passes through, widening into the seat.
+
+    Both lie down when the base is printed, so both have the flat roof of `teardrop`. The seat is a
+    cone over that shape, and the insert has the same shape: the roof and the flanks squeeze it as
+    the round part does, and it goes in only one way, roof up.
+    """
+    bore = extrude(teardrop(PLUG_BORE_D / 2, -1), amount=SEAT_START + 1.5 + 1)
+    seat = teardrop_cone(SEAT_START, BOSS_END + 0.5)
     return bore + seat
 
 
@@ -204,7 +235,7 @@ def holes(pattern: str, squeeze: float, z_from: float, length: float, slot: bool
 def insert(pattern: str):
     """Soft cone that the nut pushes into the seat (hand-tight position)."""
     length = BOSS_END + SQUEEZE - INSERT_START
-    body = Pos(0, 0, INSERT_START) * Cone(seat_r(INSERT_START), seat_r(INSERT_START + length), length, align=ZMIN)
+    body = teardrop_cone(INSERT_START, INSERT_START + length)
     cutter = holes(pattern, -0.2, INSERT_START, length, slot=False)
     return body - cutter if cutter is not None else body
 
@@ -325,6 +356,37 @@ with BuildPart() as board_plate:
     extrude(amount=T)
 blocks = [connector_block(name) for name in BODIES]
 envelope = [board_plate.part] + [b for pair in blocks for b in pair]
+
+# --- Board supports -------------------------------------------------------------------------------
+# The board rests on its four standoffs and spans 88 mm between them. Where a hand presses on it
+# (the push buttons of the valve terminal block, an RJ45 plug with its latch, the programming plug),
+# a block under the board carries the force to the floor, level with the standoffs. Each block
+# leaves a pocket around every pin and solder joint below the board. Rectangles and pins in
+# footprint coordinates; pins as (x, y, pad diameter), read from the footprints on the board.
+POCKET_GAP = 1.0  # from a pad's edge to the block: room for the solder fillet
+RJ45_PINS = [(-3.57 + 1.02 * i, 0.89 if i % 2 == 0 else -0.89, 1.4) for i in range(8)] + [(-6.35, 3.43, 3.25), (6.35, 3.43, 3.25)]  # 8 contacts, 2 plastic pegs
+SUPPORTS = {
+    "J_IN": ((-7.4, 7.4, -6.0, 8.0), RJ45_PINS),  # the jack's body, 0.5 mm inside the board edge
+    "J_OUT": ((-7.4, 7.4, -6.0, 8.0), RJ45_PINS),
+    "J_VALVES": ((-10.4, 11.5, -5.1, 8.1), [(x, y, 2.2) for x in (-7.62, -2.54, 2.54, 7.62) for y in (-3.81, 3.81)]),
+    "J_UPDI": ((-4.5, 4.5, -3.0, 8.1), [(0, 2.54 * k, 1.7) for k in range(3)]),  # wider than the header: the pockets leave 2.6 mm each side
+}
+
+
+def board_support(name: str):
+    (lx0, lx1, ly0, ly1), pins = SUPPORTS[name]
+    (ax, ay), (bx, by) = to_model(name, lx0, ly0), to_model(name, lx1, ly1)
+    block = Pos(min(ax, bx), min(ay, by), z_floor - 0.01) * Box(abs(bx - ax), abs(by - ay), STANDOFF + 0.01, align=Align.MIN)
+    if args.no_pockets:
+        return block
+    for lx, ly, d in pins:
+        px, py = to_model(name, lx, ly)
+        block = block - Pos(px, py, z_floor - 1) * Cylinder(d / 2 + POCKET_GAP, STANDOFF + 2, align=ZMIN)
+    return block
+
+
+supports = [board_support(name) for name in SUPPORTS]
+base = base + compound(supports)
 
 # --- Mated plugs ----------------------------------------------------------------------------------
 # What stands in front of the board's connector edge once the cables are plugged in. Not on the
@@ -477,4 +539,9 @@ if not args.no_views and not args.lid_drop:
     # The programming plug on its header, lid off, with what stands around it.
     ux, uy = to_model("J_UPDI", 0, 2.54)
     render(cut([(base, BODY)] + board_items + updi_items, Pos(ux, uy, 0) * Box(36, 26, 80)), V / "updi.png", view=(-0.9, -1.2, 0.9), size=(1400, 1000))
-    print(f"enclosure: 8 views -> build/{HERE.name}/views/")
+    # The floor without the board: standoffs and the supports under the connectors.
+    render([(base, BODY)], V / "supports.png", view=(-0.5, -0.9, 1.6), size=(1600, 1100))
+    # The entry wall from outside and a little below: the flat underside of each boss, the flat
+    # roof of each bore.
+    render([(base, BODY)], V / "entries-front.png", view=(0, -1, -0.25), up=(0, 0, 1), size=(1600, 800))
+    print(f"enclosure: 10 views -> build/{HERE.name}/views/")

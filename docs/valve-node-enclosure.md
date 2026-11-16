@@ -10,7 +10,11 @@ size of a surface-mounted junction box, no cable entry for the moisture sensor).
 instead of two pluggable screw terminals (owner, 2026-11-15): a mated plug did not fit in front of
 the board, see deviation 8. The block stands at the far side of the board and the fourth mounting
 hole moved into the corner it left (owner, 2026-11-15).
-Nothing is printed yet; the owner does the test fit before ordering the board. One dimension (the plug bore) is assumed until the owner
+The owner made a first test print on 2026-11-16. Three changes followed from it: the bosses of the
+cable entries have a flat underside for the support to come off, the bores have a flat roof that
+prints as a bridge ([Printing](#printing)), and the board rests on supports under the connectors
+it is pressed on ([Board supports](#board-supports)). They are not printed yet. The test fit with
+a board and the water bath test are still open. One dimension (the plug bore) is assumed until the owner
 has measured it ([To measure](#to-measure)); all three are parameters at the top of
 [`enclosure.py`](../boards/valve-node/enclosure.py), and one command rebuilds everything.
 
@@ -42,6 +46,7 @@ revision, and the model, not its output, is the source. The pictures on this pag
 | Outside | 114 × 93 × 34 mm over the nuts; the body alone is 114 × 74 mm |
 | Inside | 100 × 60 × 27 mm |
 | Walls and floor | 3 mm, solid pillars in the four corners |
+| Board | on four standoffs with heat-set inserts, and on four supports under the connectors |
 | Parts | Base, lid, gasket, three cable entries (nut, washer and insert each) |
 | Hardware | 4 screws M3 × 10 for the lid, 4 screws M3 × 6 for the board, 8 heat-set inserts M3 (4.6 mm outside, 5.7 mm long), all stainless or brass |
 | Material | ASA for base, lid, nuts and washers (PETG as fallback); TPU 95A for gasket and inserts |
@@ -113,6 +118,12 @@ pushes it in until the washer meets the tip of the boss; the cone squeezes the i
 on its radius, onto the cable and against the seat. Every hole is 0.2 mm smaller than the cable.
 As with the lid, the stop is a hard face and not a feeling.
 
+The seat is not quite round: its top is a flat roof between two 45° flanks (the bore's shape in
+[Printing](#printing)), so that it prints without support. The insert has the same shape. Every
+side of that shape, roof and flanks included, is a tangent to the round seat, so the cone squeezes
+the insert by the same 0.24 mm all around. The insert goes in one way only, roof up; on the bus
+insert that is where the slit is.
+
 Why a washer. The nut's opening has to be as large as the plug (15.5 mm), which leaves a ring of
 2 mm to press on a 20 mm insert; the soft material would bulge out through the opening. The
 washer closes the opening down to the cable. The bus washer has a slot from its rim to its centre,
@@ -122,6 +133,36 @@ passes through, is threaded over the plug before that.
 Why the thread is its own. A printed thread needs a coarse pitch and play
 ([`tools/printthread.py`](../tools/printthread.py)): 2.5 mm pitch, 1.2 mm deep, 0.3 mm of play on
 every side. No bought nut fits, and none is meant to.
+
+## Board supports
+
+![The floor without the board: standoffs and the four supports](images/valve-node-enclosure-supports.png)
+
+The board is screwed onto four standoffs in its corners and spans 88 mm between them. Before the
+test print, nothing else was under it. The push buttons of the valve terminal block take a firm
+press, an RJ45 plug is pushed in and its latch pressed down, and the programming plug is pushed
+onto its header. Each of them pressed the board down between the standoffs (owner, after
+the test print), and the board is not meant to carry that.
+
+Under each of these four connectors a block now stands on the floor, as high as the standoffs, so
+the board rests on it and the force goes into the floor. Each block covers the connector's body
+and leaves a pocket around every pin that comes through the board, 1 mm wider than the pad on
+every side, for the pin end and its solder fillet. The pin positions are those of the footprints
+on the board (`SUPPORTS` in `enclosure.py`).
+
+| Connector | Block under the board | What it carries |
+|---|---|---|
+| Valve terminal block | 22 × 13 mm, around 8 pins | The push buttons, pressed with a screwdriver or a fingertip |
+| Each RJ45 jack | 15 × 14 mm, around 8 contacts and 2 plastic pegs | Plugging in, pressing the latch |
+| Programming header | 9 × 11 mm, around 3 pins | Pushing the plug on |
+
+The bottom side of the board has no parts, only tracks, vias and the ground zone under solder
+mask, so a block may touch it anywhere outside the pockets. The collision check compares the
+blocks with the real board's pins; `make selftest` fills the pockets and expects it to fail. If a
+part ever moves to the bottom side, the check finds it.
+
+The blocks carry pressure from above. The force of pushing an RJ45 plug in is along the board and
+goes into the four screws, as before.
 
 ## Board outline
 
@@ -160,16 +201,35 @@ show; the area is that of the outline the specification proposed.
 
 | Part | Material | How it lies | Note |
 |---|---|---|---|
-| `base` | ASA | Floor down | Support only under the three bosses, 3 mm high. The underside of the rim slopes at 45° and needs none |
+| `base` | ASA | Floor down | Support only under the three bosses, 5 mm high, against their flat underside. The bores print as bridges, the underside of the rim slopes at 45°: neither needs support |
 | `lid` | ASA | Top face down | |
 | `nut-3x` | ASA | End wall down | Thread axis upright, no support |
 | `washer-*` | ASA | Flat | |
 | `gasket-tpu` | TPU 95A | Flat | 10 layers at 0.2 mm |
-| `insert-*-tpu` | TPU 95A | Large end down | 100 % infill |
+| `insert-*-tpu` | TPU 95A | Large end down | 100 % infill. Goes into the seat roof up |
 
 For water-tightness: at least 5 perimeters (the walls are then solid), 100 % infill for the base
 and the lid, 0.2 mm layers. The bosses print lying down, so their thread is the roughest surface
 of the print; the play is sized for that.
+
+![The entry wall from outside and below: flat underside of each boss, flat roof in each bore](images/valve-node-enclosure-entries-front.png)
+
+Two features of the cable entries exist for printing; the first test print (2026-11-16) needed
+support at both places, and it did not come off.
+
+- **Flat underside of the bosses.** A boss lies on its side, and its thread hangs 3.4 mm above the
+  bed. Support under a thread fills the grooves and can only be broken out, which took the thread
+  with it. The boss is now cut flat 11.8 mm below its axis (`FLAT_R`), 0.2 mm into the thread's
+  core, along its whole length from the wall to the tip. The support stands under a plane about
+  12 mm wide and comes off it. The nut loses the thread over about 53° at the bottom, a seventh of its
+  turn; it still runs on the rest, and the seal is in the seat, not in the thread.
+- **Flat roof in the bores.** The bore and the seat are round holes lying on their side. Their
+  top overhangs more than 45° and needed support inside, where it is hard to reach. Each now has
+  a flat roof between two 45° flanks that touch the circle (`teardrop` in `enclosure.py`): the
+  flanks print without support, the roof is a bridge of 6.4 mm in the bore and 6.4 to 8.0 mm in
+  the seat. The roof lies where the top of the circle was, so the opening is nowhere smaller
+  than before and the plug passes as it did. The seat's roof rises outwards by 9° with the cone;
+  the slicer prints it as a series of short bridges.
 
 ## Checks
 
@@ -178,6 +238,8 @@ of the print; the play is sized for that.
 | Every part is a valid solid | `enclosure.py` stops otherwise |
 | Populated board (STEP from the layout) against every part (`make collide BOARD=valve-node`) | no overlap |
 | The same with the lid lowered by 8 mm into the jacks (`make selftest`) | overlap reported, as it must be |
+| The same with the pockets of the board supports filled (`make selftest`) | overlap with the pins of all four connectors reported, as it must be |
+| Insert against seat (by hand, from the STEP files) | no overlap at hand-tight; pushed in by 1.5 mm, 154 mm³ per insert are compressed |
 | Nut against boss thread | By construction: the nut's thread is the boss's thread grown by 0.3 mm. OpenCascade returns wrong volumes when two thread solids are intersected, so this pair is not checked by the script |
 | Soft parts against stiff parts | Not checked: gasket and inserts are meant to be compressed |
 
@@ -189,10 +251,12 @@ The pictures on this page show the real board.
 
 ## What does not hold up yet
 
-1. **Nothing is printed.** Whether the slit bus insert, the printed gasket and the printed thread
-   seal is decided by the water bath test (24 h under water, paper towel inside), with the real
-   cable in the entries. Print one base, one lid and the entry parts before the board is ordered:
-   the same print is the test fit before the order.
+1. **The changes after the first test print are not printed.** Whether the slit bus insert, the
+   printed gasket and the printed thread seal is decided by the water bath test (24 h under
+   water, paper towel inside), with the real cable in the entries. Print one base, one lid and the
+   entry parts before the board is ordered: the same print is the test fit before the order.
+   Whether a flat-roofed insert seals at its two edges as well as a round one is part of that
+   test.
 2. **One dimension is assumed:** the plug bore ([To measure](#to-measure)).
 3. **The nuts are 1 mm apart.** They turn, but fingers do not fit between them; each is gripped
    from above and below.

@@ -24,7 +24,8 @@ fabrication data, the third hold point, on 2026-11-15. The same day the owner mo
 and bias of the bus to the controller, dropped the A/B swap jumpers and had the UPDI header
 populated, so that nothing on the node is soldered by hand. That changed schematic and layout;
 they are not signed off again yet, and until they are the approved state of 2026-11-15 no longer
-stands. Nothing is printed and nothing is ordered: the test fit and the order are the owner's. The whole chain runs for
+stands. The owner made a first test print of the enclosure on 2026-11-16; supports under the
+board and two changes for printing followed from it. Nothing is ordered: the test fit and the order are the owner's. The whole chain runs for
 both boards (`make all BOARD=valve-node`, about two minutes). No real board exists yet.
 
 ## Rules that are not negotiable
@@ -194,6 +195,13 @@ first.
 - **Two identical connectors side by side cannot be passed through without crossings.** Each wire
   crosses every other one once. Decide per wire on which side of the pins and on which layer it
   runs before placing anything (`docs/valve-node-layout.md`, "The pass-through").
+- **A printed part is designed for the way it lies on the bed.** The first test print of the valve
+  node's base needed support under the threads of the cable entries and inside their bores; it
+  could only be broken out, and took the thread with it. Look at every face that overhangs more
+  than 45° in the print orientation: give a thread on its side a flat underside for the support,
+  and a hole on its side a flat roof between 45° flanks (`teardrop` in
+  `boards/valve-node/enclosure.py`). A part pressed on from above (a connector, a button) needs
+  something under the board, not only the screws in its corners.
 - **No renderer is installed for build123d.** Pictures of an enclosure come from
   `tools/render3d.py` (numpy and Pillow, both already there). build123d's own `tessellate()`
   stops at a face the mesher left empty; the renderer meshes through OCP and skips it.
