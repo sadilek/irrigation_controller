@@ -36,7 +36,7 @@ enum Register {
   // Registers 0 to 4 are the map of the nodes this one replaces. New registers start here.
   REG_OUTPUT1_MONITOR = 5,  // bit 0: output driven, bit 1: fault (see MonitorBit)
   REG_OUTPUT2_MONITOR = 6,
-  REG_MOISTURE = 7,         // raw ADC value of the moisture input, 0 to 1023
+  REG_RESERVED = 7,         // reads 0; was meant for the moisture input, which the board dropped
   REG_VERSION = 8,
   REG_ADDRESS = 9,          // address read from the switch at reset
   REG_VALVE1_CLOSED_BY = 10,  // why valve 1 closed last (see ClosedBy)
@@ -77,7 +77,6 @@ class ValveNode {
   // Level of an output's monitor, sampled as often as possible: true while voltage lies across
   // the triac.
   void monitor(uint8_t output, bool voltage);
-  void set_moisture(uint16_t raw) { moisture_ = raw; }
 
   bool driven(uint8_t output) const { return setpoint_[output] != 0; }
   bool led(uint32_t now_ms) const;
@@ -111,7 +110,6 @@ class ValveNode {
   uint16_t setpoint_[OUTPUTS];
   Output output_[OUTPUTS];
   uint16_t errors_;
-  uint16_t moisture_;
   uint16_t uptime_minutes_;
   uint32_t minute_ms_;
   uint32_t now_ms_;

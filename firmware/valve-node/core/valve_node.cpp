@@ -34,7 +34,6 @@ void ValveNode::begin(uint8_t address, uint8_t reset_cause, uint32_t now_ms) {
   rx_overflow_ = false;
   last_byte_us_ = 0;
   errors_ = 0;
-  moisture_ = 0;
   uptime_minutes_ = 0;
   minute_ms_ = now_ms;
   now_ms_ = now_ms;
@@ -230,8 +229,6 @@ uint16_t ValveNode::reg(uint8_t index) const {
       if (output_[i].valid && output_[i].voltage == driven(i)) value |= MONITOR_FAULT;
       return value;
     }
-    case REG_MOISTURE:
-      return moisture_;
     case REG_VERSION:
       return FIRMWARE_VERSION;
     case REG_ADDRESS:

@@ -1,4 +1,4 @@
-// Valve node on the ATtiny1616: clock, pins, serial port, timer, ADC and watchdog around the core
+// Valve node on the ATtiny1616: clock, pins, serial port, timer and watchdog around the core
 // in core/valve_node.cpp. Written directly on avr-libc; no framework.
 // Pin assignment: docs/valve-node-spec.md, "Microcontroller and pin assignment".
 // Register and bit names: Microchip ATtiny1614/1616/1617 datasheet, DS40002204A.
@@ -12,7 +12,6 @@
 #include "valve_node.h"
 
 // Port A
-static const uint8_t MOISTURE = PIN1_bm;  // ADC0 input 1
 static const uint8_t LED = PIN2_bm;
 static const uint8_t DRIVE1 = PIN4_bm;
 static const uint8_t MONITOR1 = PIN5_bm;
@@ -130,9 +129,8 @@ int main() {
   VPORTA.DIR |= DRIVE1 | DRIVE2 | LED;
   PORTA.PIN5CTRL = PORT_PULLUPEN_bm;  // monitors: the optocoupler pulls low
   PORTA.PIN7CTRL = PORT_PULLUPEN_bm;
-  PORTA.PIN1CTRL = PORT_ISC_INPUT_DISABLE_gc;  // analog input
-  (void)MOISTURE;
   // Unused pins, on test pads: pull-up, so they do not float.
+  PORTA.PIN1CTRL = PORT_PULLUPEN_bm;
   PORTA.PIN3CTRL = PORT_PULLUPEN_bm;
   PORTB.PIN1CTRL = PORT_PULLUPEN_bm;
   PORTB.PIN4CTRL = PORT_PULLUPEN_bm;
@@ -151,16 +149,10 @@ int main() {
   TCB0.INTCTRL = TCB_CAPT_bm;
   TCB0.CTRLA = TCB_CLKSEL_CLKDIV1_gc | TCB_ENABLE_bm;  // periodic interrupt mode is the default
 
-  // ADC: 10 bit against the supply, 1.25 MHz conversion clock, input 1.
-  ADC0.CTRLC = ADC_SAMPCAP_bm | ADC_REFSEL_VDDREF_gc | ADC_PRESC_DIV4_gc;
-  ADC0.MUXPOS = ADC_MUXPOS_AIN1_gc;
-  ADC0.CTRLA = ADC_ENABLE_bm;
-
   serial_begin();
   node.begin(address, reset_cause, 0);
   sei();
 
-  uint32_t moisture_ms = 0;
   for (;;) {
     wdt_reset();
 
@@ -183,12 +175,5 @@ int main() {
     uint8_t in = VPORTA.IN;
     node.monitor(0, !(in & MONITOR1));
     node.monitor(1, !(in & MONITOR2));
-
-    // One conversion a second; the result is collected on a later pass, so the loop never waits.
-    if (ADC0.INTFLAGS & ADC_RESRDY_bm) node.set_moisture(ADC0.RES);  // reading clears the flag
-    if ((uint32_t)(now_ms - moisture_ms) >= 1000) {
-      moisture_ms = now_ms;
-      ADC0.COMMAND = ADC_STCONV_bm;
-    }
   }
 }

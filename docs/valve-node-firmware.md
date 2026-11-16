@@ -14,7 +14,7 @@ Sources are in [`firmware/valve-node/`](../firmware/valve-node/):
 | File | Content |
 |---|---|
 | `core/` | The core: Modbus RTU server, register map, valve logic. Plain C++ without hardware access |
-| `src/main.cpp` | The ATtiny1616 around the core: clock, pins, serial port, timer, ADC, watchdog |
+| `src/main.cpp` | The ATtiny1616 around the core: clock, pins, serial port, timer, watchdog |
 | `sim/sim.cpp` | Simulator: the same core as one or more nodes on a pseudo-terminal |
 | `test/test_node.cpp` | Unit tests of the core with a clock the test controls |
 | `bench.py`, `bench.html` | Test bench in the browser on top of the simulator |
@@ -36,7 +36,7 @@ uses 0 and 2 only. Everything new is in registers 5 to 13.
 | 4 | read | Communication errors since reset, wraps at 65535 |
 | 5 | read | Output 1 monitor: bit 0 = output driven, bit 1 = fault |
 | 6 | read | Output 2 monitor |
-| 7 | read | Moisture input, raw ADC value 0 to 1023 against the 5 V supply |
+| 7 | read | Reserved, reads 0. It was meant for the moisture input, which the board dropped |
 | 8 | read | Firmware version, major in the high byte, minor in the low byte: 0x0100 |
 | 9 | read | Address read from the switch at reset |
 | 10 | read | Why valve 1 closed last: 0 controller, 1 bus-loss timeout, 2 run-time limit, 3 the other valve was opened |
@@ -58,7 +58,6 @@ Monitor registers 5 and 6 take four values:
 The monitor reports and does nothing else: a fault closes no valve. For 100 ms after an output
 switched, the register reports no fault. An output without a solenoid reads 2; on a one-valve
 node that is register 6, always. Register 10 or 11 returns to 0 when its valve is opened again.
-Register 7 is meaningless while no sensor is connected: the input floats.
 
 ## Behaviour
 
@@ -146,13 +145,12 @@ the peripherals itself, in about 200 lines. Pins are those of the specification'
 | Outputs | Pins are inputs after reset, so the valves are closed; they are set low before they become outputs |
 | Monitors | Internal pull-ups. The optocoupler pulls the pin low around each peak of the mains half-wave. The main loop samples the pin on every pass; voltage counts as present if a low level was seen within 100 ms (ten half-waves at 50 Hz) |
 | Address switch | Internal pull-ups, read 2 ms after the pins are configured |
-| Moisture | ADC0 input 1, 10 bit against the supply; one conversion a second, collected on a later pass of the main loop |
-| Unused pins | PA3, PB1, PB4 and PB5 are inputs with pull-up |
+| Unused pins | PA1, PA3, PB1, PB4 and PB5 are inputs with pull-up |
 | Watchdog | 2 s period, started by the WDTCFG fuse and locked. If a chip was flashed without its fuses, the firmware starts the watchdog itself; in both cases it sets the lock bit first thing, so nothing later can stop it. The main loop resets it on every pass |
 | Brown-out reset | Highest level, 4.2 V nominal, set by fuse |
 | Storage | Nothing is stored. The EEPROM is unused |
 
-The main loop never waits. The build uses 3,176 of 16,384 bytes of flash and 319 of 2,048 bytes
+The main loop never waits. The build uses 3,060 of 16,384 bytes of flash and 317 of 2,048 bytes
 of RAM.
 
 Fuses are written by `make firmware-upload` and set in `firmware/valve-node/Makefile`: watchdog
@@ -176,7 +174,7 @@ simulator and test bench need only the computer's C++ compiler and Python.
 | `make selftest` | Among the other cases: builds the simulator with a 10 min bus-loss timeout and expects the bus test to fail |
 
 Programming: a USB serial adapter at 5 V with a resistor between its TX and RX (the
-"SerialUPDI" wiring that avrdude's `serialupdi` programmer expects), RX to the UPDI pad of the three-pad programming header, plus 5 V and ground.
+"SerialUPDI" wiring that avrdude's `serialupdi` programmer expects), RX to the UPDI pin of the programming header, plus 5 V and ground.
 The node is programmed once per board, with the bus unplugged or powered from the adapter alone.
 
 ### Simulator
@@ -196,7 +194,7 @@ opens or closes, with the reason. Faults for the monitor are set on its command 
 
 The simulator runs the firmware's logic, not the microcontroller. No simulator for the
 tinyAVR 1-series was at hand, so everything in `src/main.cpp` is tested on the first board: clock,
-pins, serial port, timer, ADC, watchdog and fuses.
+pins, serial port, timer, watchdog and fuses.
 
 ### What the tests check
 

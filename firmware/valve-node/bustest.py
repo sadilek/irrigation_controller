@@ -195,7 +195,6 @@ def check_read_only_registers(bus: Bus, a: int):
             bus.write(a, register, 0x1234)
     after = bus.read(a, 0, REG_COUNT)
     after[13] = before[13]  # the uptime may have advanced
-    after[7] = before[7]  # and the moisture reading may have moved
     equal(after, before, "registers after writing the read-only ones")
 
 

@@ -265,10 +265,9 @@ void test_monitor() {
 
 void test_diagnostic_registers() {
   start(7, 5000);
-  node.set_moisture(612);
   TEST_ASSERT_EQUAL(FIRMWARE_VERSION, node.reg(REG_VERSION));
   TEST_ASSERT_EQUAL(7, node.reg(REG_ADDRESS));
-  TEST_ASSERT_EQUAL(612, node.reg(REG_MOISTURE));
+  TEST_ASSERT_EQUAL(0, node.reg(REG_RESERVED));
   TEST_ASSERT_EQUAL(0x01, node.reg(REG_RESET_CAUSE));
   advance(185000);
   TEST_ASSERT_EQUAL(3, node.reg(REG_UPTIME_MINUTES));
