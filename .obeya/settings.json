@@ -1,11 +1,17 @@
 {
   "land": "main",
   "push": true,
-  "language": "en",
+  "checks": [
+    "make verify",
+    "make verify BOARD=valve-node",
+    "make selftest"
+  ],
   "setup": "scripts/setup.sh",
-  "checks": ["make verify", "make verify BOARD=valve-node", "make selftest"],
+  "language": "en",
   "app": {
-    "run": "There is no app to start. This repository produces files: `make all BOARD=<board>` (about 15 seconds for the throwaway board, two minutes for the valve node) runs the whole chain and writes everything to `build/<board>/`: the schematic PDF, ERC and DRC reports, board renders (`render-top.png`, `render-bottom.png`, `render-angle.png`), flat drawings under `plots/`, fabrication data under `fab/` and enclosure STEP/STL under `enclosure/`. To show work, put those outputs (renders, the schematic PDF converted to an image, the report summaries) on an HTML page for the owner; a board or enclosure is never shown by opening KiCad or a CAD program. `make help` lists one command per output; `docs/toolchain.md` explains the chain. Nothing runs in the background, so there is nothing to stop. Never upload to or order from JLCPCB."
+    "run": "There is no app to start. This repository produces files: `make all BOARD=<board>` runs the whole chain and writes everything to `build/<board>/`: the schematic PDF, ERC and DRC reports, board renders (`render-top.png`, `render-bottom.png`, `render-angle.png`), flat drawings under `plots/` (SVG), fabrication data under `fab/` and enclosure STEP/STL under `enclosure/`. The throwaway board takes about 15 seconds; the valve node takes about two minutes, so start it with run_in_background (`make all BOARD=valve-node > build/vn.log 2>&1; echo exit $?`) and end your turn until it reports back, instead of sleeping or polling the log. A rebuild gives every item in `boards/<board>/eda/<board>.kicad_pcb` new UUIDs (docs/toolchain.md, weakness 10): if `git diff` of that file shows only `uuid` lines, nothing moved; restore it with `git checkout -- boards/<board>/eda/` and commit it only after an intended change. To show work, put the outputs on an HTML page for the owner: the renders as they are, the SVG plots directly in `<img>` tags (no conversion needed), and the schematic PDF as PNGs from `pdftoppm -png -r 120 build/<board>/<board>.pdf build/<board>/schematic` (pdftoppm is installed; ImageMagick and mutool are not), plus the report summaries. A board or enclosure is never shown by opening KiCad or a CAD program. `make help` lists one command per output; `docs/toolchain.md` explains the chain. Never upload to or order from JLCPCB."
   },
-  "demo": { "language": "de" }
+  "demo": {
+    "language": "de"
+  }
 }
