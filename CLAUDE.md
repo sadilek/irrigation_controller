@@ -47,6 +47,10 @@ it has not run on a chip. No real board exists yet.
 - **JLCPCB assembles every part.** Boards arrive fully assembled. Choose every electronic part from
   the JLCPCB/LCSC catalogue, by function and rating, from any manufacturer rather than a specific
   brand. Never plan a part the owner buys or solders himself.
+- **Every polarised part shows its orientation.** ICs, optocouplers, diodes and connectors carry a
+  pin 1 or polarity mark on the silkscreen, so the owner can check each part's rotation in
+  JLCPCB's assembly preview (the parts to check: `docs/valve-node-layout.md`, "What the files
+  cannot guarantee").
 - **Every connector is shown in use.** For each connector, the enclosure and the layout show where
   its cable enters, that the cable has room to bend from the entry to the plug, and that the plug
   can be pulled out with the board installed.
