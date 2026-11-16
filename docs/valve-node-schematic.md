@@ -7,8 +7,9 @@ Status: signed off by the owner on 2026-11-14. The layout that follows it is des
 [`valve-node-layout.md`](valve-node-layout.md); it changed one thing, the valve terminals (deviation 12). Changed
 after sign-off, by the owner's decision: the moisture sensor input is gone (deviation 5). Changed
 after the layout sign-off, by the owner's decision of 2026-11-15: termination, bias and the A/B
-swap jumpers are gone and the UPDI header is populated (deviations 7, 8 and 13). That change is
-not signed off yet.
+swap jumpers are gone and the UPDI header is populated (deviations 7, 8 and 13). The owner signed
+that change off on 2026-11-16, together with the three parts replaced by the check before the
+order ([`valve-node-layout.md`](valve-node-layout.md), "Check before the order").
 
 The circuit and the reason for every part are in [`valve-node-spec.md`](valve-node-spec.md). This
 page says what the schematic adds to it, where it deviates, what was checked and what is handed

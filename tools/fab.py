@@ -7,6 +7,7 @@ manufacturer part numbers (the generated schematic does not carry them). Each pa
 to an LCSC number through lib/jlcpcb-parts.csv; an unmapped populated part is an error.
 """
 import csv
+import math
 import os
 import shutil
 import subprocess
@@ -78,6 +79,11 @@ def main(name):
         entry["refs"].append(ref)
         if part["assembly"] in ("smt", "tht"):  # JLCPCB drops a BOM line whose designators have no placement
             pos = centre(fp)
+            if part.get("position_offset"):  # in footprint coordinates, turned with the footprint
+                lx, ly = (float(v) for v in part["position_offset"].split())
+                a = math.radians(fp.GetOrientationDegrees())
+                pos = pcbnew.VECTOR2I(pos.x + pcbnew.FromMM(lx * math.cos(a) + ly * math.sin(a)),
+                                      pos.y + pcbnew.FromMM(-lx * math.sin(a) + ly * math.cos(a)))
             rot = (fp.GetOrientationDegrees() + float(part["rotation_offset"] or 0)) % 360
             cpl.append([ref, "%.4fmm" % pcbnew.ToMM(pos.x - origin.x), "%.4fmm" % -pcbnew.ToMM(pos.y - origin.y),
                         "Bottom" if fp.IsFlipped() else "Top", "%g" % rot])

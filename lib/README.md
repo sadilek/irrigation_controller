@@ -51,3 +51,4 @@ Every populated part on a board must have a row, otherwise `make fab` stops.
 | `class` | `basic`, `extended` (per-part setup fee) or `unverified`. Confirm on jlcpcb.com/parts before an order; community search mirrors are incomplete. |
 | `assembly` | `smt` (in BOM and placement file), `tht` (in BOM, through-hole assembly) or `none` (left out, soldered by hand). |
 | `rotation_offset` | Degrees added to the KiCad rotation in the placement file, for parts whose JLCPCB reel orientation differs from the KiCad footprint. Found in JLCPCB's placement preview, then recorded here so the fix is not repeated by hand per order. |
+| `position_offset` | `dx dy` in millimetres, in the footprint's own coordinates (before its rotation), added to the point the placement file gives. For a part whose model JLCPCB's preview shows off its pads; measured there. Empty for most parts. |

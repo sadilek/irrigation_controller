@@ -13,8 +13,10 @@ hole moved into the corner it left (owner, 2026-11-15).
 The owner made a first test print on 2026-11-16. Three changes followed from it: the bosses of the
 cable entries have a flat underside for the support to come off, the bores have a flat roof that
 prints as a bridge ([Printing](#printing)), and the board rests on supports under the connectors
-it is pressed on ([Board supports](#board-supports)). They are not printed yet. The test fit with
-a board and the water bath test are still open. One dimension (the plug bore) is assumed until the owner
+it is pressed on ([Board supports](#board-supports)). The owner printed them and did the test fit
+with the 1:1 paper print of the board on 2026-11-16: it fits; the pockets under the RJ45 jacks
+were mirrored and are corrected ([Board supports](#board-supports)). The water bath test is still
+open. One dimension (the plug bore) is assumed until the owner
 has measured it ([To measure](#to-measure)); all three are parameters at the top of
 [`enclosure.py`](../boards/valve-node/enclosure.py), and one command rebuilds everything.
 
@@ -151,8 +153,12 @@ the test print), and the board is not meant to carry that.
 Under each of these four connectors a block now stands on the floor, as high as the standoffs, so
 the board rests on it and the force goes into the floor. Each block covers the connector's body
 and leaves a pocket around every pin that comes through the board, 1 mm wider than the pad on
-every side, for the pin end and its solder fillet. The pin positions are those of the footprints
-on the board (`SUPPORTS` in `enclosure.py`).
+every side, for the pin end and its solder fillet. The pin positions are read from the footprint
+files in `lib/lcsc/` (`footprint_pads` in `enclosure.py`); the programming header's three pins are
+a straight row. Until 2026-11-16 the jack's contacts were a list typed by hand, with the two rows
+of its zigzag swapped: the owner saw on the print that the upper row of pockets stood further
+right, where the jack's upper row of pins is further left. The pockets of neighbouring contacts
+overlap into one slot, so the collision check passed with the wrong list.
 
 | Connector | Block under the board | What it carries |
 |---|---|---|

@@ -26,12 +26,12 @@ data ([`docs/valve-node-layout.md`](docs/valve-node-layout.md)). The owner signe
 fabrication data, the third hold point, on 2026-11-15. The same day the owner moved termination
 and bias of the bus to the controller, dropped the A/B swap jumpers and had the UPDI header
 populated, so that nothing on the node is soldered by hand. That changed schematic and layout;
-they are not signed off again yet, and until they are the approved state of 2026-11-15 no longer
-stands. The owner made a first test print of the enclosure on 2026-11-16; supports under the
+the owner signed both off again on 2026-11-16. The owner made a first test print of the enclosure on 2026-11-16; supports under the
 board and two changes for printing followed from it. The same day a check before the order
 (stock, a Codex review) replaced the status LED, the address switch and the valve fuse by
 equivalents and fixed the placement file ([`docs/valve-node-layout.md`](docs/valve-node-layout.md),
-"Check before the order"). Nothing is ordered: the test fit and the order are the owner's. The whole chain runs for
+"Check before the order"). The owner did the test fit with a paper print of the board the same
+day: it fits. Nothing is ordered yet; the order is the owner's. The whole chain runs for
 both boards (`make all BOARD=valve-node`, about two minutes). The valve node's firmware is written
 and tested against a simulated bus ([`docs/valve-node-firmware.md`](docs/valve-node-firmware.md));
 it has not run on a chip. No real board exists yet.
@@ -224,6 +224,10 @@ first.
   2022) and its avrdude are Intel binaries and do not run on Apple silicon without Rosetta;
   megaTinyCore ships the same compiler. The firmware is built with Homebrew's native avr-gcc 14
   and avrdude from a plain Makefile (owner's decision, 2026-11-14).
+- **Never retype pad positions; read them from the footprint.** The pockets under the RJ45 jacks
+  came from a hand-typed list with the two rows of the contacts' zigzag swapped. Neighbouring
+  pockets overlap into one slot, so the collision check passed; the owner saw it on the print.
+  `footprint_pads` in `boards/valve-node/enclosure.py` reads them from `lib/lcsc/`.
 - **No renderer is installed for build123d.** Pictures of an enclosure come from
   `tools/render3d.py` (numpy and Pillow, both already there). build123d's own `tessellate()`
   stops at a face the mesher left empty; the renderer meshes through OCP and skips it.

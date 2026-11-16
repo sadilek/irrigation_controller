@@ -6,12 +6,11 @@ owner orders, and only after the test fit.
 Status: approved by the owner on 2026-11-15, then changed the same day by the owner's decision:
 termination, bias and the A/B swap jumpers left the node and JLCPCB populates the UPDI header, so
 that nothing on the node is soldered by hand ([The programming header](#the-programming-header),
-deviation 8). The changed schematic and layout are not signed off yet; until then the approved
-state no longer stands. The check before the order (2026-11-16) replaced three parts by
-equivalents and removed the order number placeholder
-([Check before the order](#check-before-the-order-2026-11-16)). The enclosure had a first test
-print (2026-11-16), nothing is ordered; the test fit with a board is still open
-([Open points](#open-points)).
+deviation 8). The check before the order (2026-11-16) replaced three parts by equivalents and
+removed the order number placeholder
+([Check before the order](#check-before-the-order-2026-11-16)). The owner signed off the changed
+schematic and layout on 2026-11-16 and did the test fit the same day: the 1:1 paper print of the
+board on a printed base fits ([Test fit](#test-fit)). Nothing is ordered yet.
 
 The circuit is in [`valve-node-spec.md`](valve-node-spec.md) and
 [`valve-node-schematic.md`](valve-node-schematic.md), the box and the board outline in
@@ -236,6 +235,7 @@ gave KiCad's origin for all of them (found by the Codex review, below).
 | Order number on the board | JLCPCB adds no mark by default (help article *How to mark on PCB?*, updated 2026-05-22); the order form offers only "Remove Mark" and a 2D barcode, no order number. The placeholder `JLCJLCJLCJLC` on the bottom silkscreen would have been printed as text and is gone |
 | Board size for Economic assembly | 10 × 10 mm to 470 × 500 mm (JLCPCB PCB assembly capabilities); 96 × 44 mm needs no rails |
 | Second opinion: Codex (OpenAI, `codex exec`, read-only) on sources, BOM, placement file and Gerbers | Three findings. Placement points not in the middle of the part: fixed (above). Fabrication files older than the part changes made during the review: rebuilt. Valve fuse F2 rated 60 V below the 77.4 V clamp of D4: now the 72 V type ([specification](valve-node-spec.md#faults-on-the-24-vac-side)). Found fine: BOM against netlist, pin maps of the polarised parts, outline, plated and unplated holes, UPDI, UART, RS485 A/B against the bus pinout, decoupling, triac drive, snubbers |
+| JLCPCB's placement preview, first upload by the owner (2026-11-16) | Turned against the pads: U6 by 180°, J3, U2 and U4 by 90° (owner); U5 by 90° and D3 by 180°, with two leads over the single pad (read from the owner's screenshot). U6's model also stood 0.32 mm towards its tab. All six are corrected in `lib/jlcpcb-parts.csv` (`rotation_offset`, and `position_offset` for U6). Right as uploaded: C1, D2, D5, U1, U3, U7. In the preview the model's dot has to meet the pin 1 mark on the silkscreen; the board has one for U5, U6, U7, D3, Q1 and Q2 (a triangle) and a notch for the optocouplers, which their models cover |
 | Open points of the schematic page marked "before the order" | Tantalum capacitor C1 and fuse maker settled ([schematic](valve-node-schematic.md#open-points)) |
 
 ### Ordering
@@ -254,12 +254,10 @@ At jlcpcb.com, by the owner:
 4. In the placement preview look at every polarised part: series diode D2 (band), tantalum
    capacitor C1 (the marked end is +), LED D5 (cathode mark to ground), microcontroller U5,
    transceiver U7, regulator U6, RS485 TVS D3, optocouplers U1 to U4 (pin 1 dot towards the
-   logic side on U1 and U3, towards the 24 VAC side on U2 and U4), triacs Q1 and Q2 (tab), switch
-   SW1 (ON side), programming header J3 (its row along the board's long side, pin 1 next to the
-   address switch). The KiCad footprints of C1, D3, U5, U6 and U7 have a pin 1 that JLCPCB's
-   reels often hold turned by 90° or 180° (community table of JLCKicadTools); a part that shows
-   turned is rotated in the preview, and the correction goes into `rotation_offset` in
-   `lib/jlcpcb-parts.csv` afterwards.
+   logic side on U1 and U3, towards the 24 VAC side on U2 and U4), programming header J3 (its
+   row along the board's long side). A part that shows turned is rotated in the preview, and the
+   correction goes into `lib/jlcpcb-parts.csv` afterwards. The preview has no model for the
+   triacs Q1 and Q2 and the switch SW1; "Confirm Parts Placement" covers them.
 5. Through-hole parts (J1, J2, J3, J4): JLCPCB solders them; accept the fee for it.
 6. Check the quote against the cost estimate below, then pay.
 
@@ -389,6 +387,13 @@ fits mechanically and is not found by any check: the silkscreen names the pins.
 The owner does it before the order. No check here can say whether the real print holds a board of
 this outline and whether the cables arrive where the jacks are.
 
+Done on 2026-11-16 with the paper print (step 2) on a printed base: it fits. The owner saw one
+fault on the print: the pockets in the supports under the RJ45 jacks had the zigzag of the
+contacts mirrored, the upper row further right where the footprint has it further left. The
+pin list in `enclosure.py` was typed by hand with the rows swapped; the pockets overlap, so the
+collision check did not notice. The pins are now read from the footprint files
+([`valve-node-enclosure.md`](valve-node-enclosure.md), "Board supports").
+
 1. `make enclosure BOARD=valve-node`, then print from `build/valve-node/print/`: `base.stl`,
    `lid.stl` and `board-dummy.stl` (any material; the dummy is the outline with its four holes
    and the connectors as blocks of their real size, flat side down).
@@ -414,8 +419,11 @@ The same print is the first sample for the water bath test
 1. **No part was ever placed on these footprints.** Jack and valve terminal block are fetched
    LCSC footprints, corrected against the manufacturers' drawings by hand. The first assembled
    board is the test.
-2. **Placement rotations are unverified** (see "Fabrication data").
-3. **The test fit is not done.** The collision check compares models, not prints.
+2. **Placement rotations are checked in JLCPCB's preview, except three parts.** Six corrections
+   came from the first upload; the preview shows no model for Q1, Q2 and SW1, so their rotation is
+   left to JLCPCB's placement confirmation ("Check before the order").
+3. **The test fit was done with paper.** The owner laid the 1:1 print of the board on a printed
+   base (2026-11-16): it fits. Connectors, plugs and wires were not part of it.
 4. **The router has no second attempt.** A change in placement can leave a net without a way.
    The build then stops and prints a map; the fix is a position or the order of the nets in
    `layout.py`. It takes 45 seconds, most of `make layout`.
@@ -438,7 +446,7 @@ The same print is the first sample for the water bath test
 
 | Point | Needed for | Who, when |
 |---|---|---|
-| Test fit with a printed enclosure | Order | Owner, before the order |
+| Test fit with a printed enclosure | Order | Done 2026-11-16 by the owner, with the 1:1 paper print: it fits |
 | Rotations in JLCPCB's preview | Order | Owner, while ordering ([Ordering](#ordering), step 4); corrections go into `lib/jlcpcb-parts.csv`. Stock and class were checked on 2026-11-16 |
 | Price of lead-free HASL and shipping | Cost | Shown in JLCPCB's quote. The board size fits Economic assembly |
 | How the four valve wires handle on 36 mm of free length, with the real wire | Handling | Owner, at the test fit: the block is a block on the dummy, the entry is real |

@@ -29,6 +29,7 @@ that the collision check sees the pins below the board.
 import argparse
 import json
 import math
+import re
 import sys
 import warnings
 from pathlib import Path
@@ -365,11 +366,27 @@ envelope = [board_plate.part] + [b for pair in blocks for b in pair]
 # leaves a pocket around every pin and solder joint below the board. Rectangles and pins in
 # footprint coordinates; pins as (x, y, pad diameter), read from the footprints on the board.
 POCKET_GAP = 1.0  # from a pad's edge to the block: room for the solder fillet
-RJ45_PINS = [(-3.57 + 1.02 * i, 0.89 if i % 2 == 0 else -0.89, 1.4) for i in range(8)] + [(-6.35, 3.43, 3.25), (6.35, 3.43, 3.25)]  # 8 contacts, 2 plastic pegs
+
+
+def footprint_pads(name: str):
+    """(x, y, pad diameter) of every pad of an LCSC footprint in lib/, in footprint coordinates.
+
+    Read from the file rather than typed in: a hand-typed list of the jack's contacts had the
+    two rows of its zigzag mirrored (the upper row to the right instead of the left), and the
+    overlapping pockets hid it from the collision check. The owner saw it on the print.
+    """
+    text = (REPO / "lib" / "lcsc" / "lcsc.pretty" / (name + ".kicad_mod")).read_text()
+    pads = re.findall(r'\(pad "[^"]*" \w+ \w+\s*\(at (-?[\d.]+) (-?[\d.]+)(?: -?[\d.]+)?\)\s*\(size ([\d.]+) ([\d.]+)\)', text)
+    if not pads:
+        sys.exit("enclosure: no pads read from footprint %s" % name)
+    return [(float(x), float(y), max(float(w), float(h))) for x, y, w, h in pads]
+
+
+RJ45_PINS = footprint_pads("RJ45-TH_RJHSE-5080")  # 8 contacts in two rows, 2 plastic pegs
 SUPPORTS = {
     "J_IN": ((-7.4, 7.4, -6.0, 8.0), RJ45_PINS),  # the jack's body, 0.5 mm inside the board edge
     "J_OUT": ((-7.4, 7.4, -6.0, 8.0), RJ45_PINS),
-    "J_VALVES": ((-10.4, 11.5, -5.1, 8.1), [(x, y, 2.2) for x in (-7.62, -2.54, 2.54, 7.62) for y in (-3.81, 3.81)]),
+    "J_VALVES": ((-10.4, 11.5, -5.1, 8.1), footprint_pads("CONN-TH_4P-P5.08_KF142R-5.08-4P")),
     "J_UPDI": ((-4.5, 4.5, -3.0, 8.1), [(0, 2.54 * k, 1.7) for k in range(3)]),  # wider than the header: the pockets leave 2.6 mm each side
 }
 
