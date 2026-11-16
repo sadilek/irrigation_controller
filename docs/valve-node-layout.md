@@ -10,7 +10,9 @@ deviation 8). The check before the order (2026-11-16) replaced three parts by eq
 removed the order number placeholder
 ([Check before the order](#check-before-the-order-2026-11-16)). The owner signed off the changed
 schematic and layout on 2026-11-16 and did the test fit the same day: the 1:1 paper print of the
-board on a printed base fits ([Test fit](#test-fit)). Nothing is ordered yet.
+board on a printed base fits ([Test fit](#test-fit)). The owner ordered five assembled boards
+from JLCPCB the same day, with the files of commit "Valve node: pin 1 dots, placement of the
+parts the preview cannot show".
 
 The circuit is in [`valve-node-spec.md`](valve-node-spec.md) and
 [`valve-node-schematic.md`](valve-node-schematic.md), the box and the board outline in

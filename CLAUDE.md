@@ -31,10 +31,10 @@ board and two changes for printing followed from it. The same day a check before
 (stock, a Codex review) replaced the status LED, the address switch and the valve fuse by
 equivalents and fixed the placement file ([`docs/valve-node-layout.md`](docs/valve-node-layout.md),
 "Check before the order"). The owner did the test fit with a paper print of the board the same
-day: it fits. Nothing is ordered yet; the order is the owner's. The whole chain runs for
+day: it fits. The owner ordered five assembled boards from JLCPCB on 2026-11-16. The whole chain runs for
 both boards (`make all BOARD=valve-node`, about two minutes). The valve node's firmware is written
 and tested against a simulated bus ([`docs/valve-node-firmware.md`](docs/valve-node-firmware.md));
-it has not run on a chip. No real board exists yet.
+it has not run on a chip. No board has arrived yet.
 
 ## Rules that are not negotiable
 
