@@ -114,7 +114,6 @@ WASHER_D = 23.6
 NUT_D = 33.0
 NUT_WALL = 3.0  # end wall
 NUT_THREAD = 12.0
-SLIT_W = 0.4
 # Printing. The base lies on its floor, so the entries print lying down.
 FLAT_R = 11.8  # the boss's underside is cut flat this far below the axis, 0.2 mm into the thread's core:
 # the support under it comes off a plane instead of out of the thread
@@ -210,7 +209,10 @@ def entry_bore():
 
 
 # Hole patterns of the inserts: (diameter, [(u, v), ...], slit). A slit lets the insert go around a
-# cable that already carries a plug; wires with free ends are pushed through closed holes.
+# cable that already carries a plug; wires with free ends are pushed through closed holes. The
+# insert's slit is cut with a knife after printing, from the middle of its roof into the hole: a
+# printed slit of a few tenths in TPU closes up or strings, and a cut leaves no gap. So the model
+# of the insert has none; the washer's slot, as wide as the cable, is printed.
 PATTERNS = {
     "bus": (BUS_CABLE_D, [(0, 0)], True),
     "valve-2": (VALVE_WIRE_D, [(-2.5, 0), (2.5, 0)], False),
@@ -226,9 +228,8 @@ def holes(pattern: str, squeeze: float, z_from: float, length: float, slot: bool
     for u, v in points:
         c = Pos(u, v, z_from - 1) * Cylinder((d + squeeze) / 2, length + 2, align=ZMIN)
         cutter = c if cutter is None else cutter + c
-    if slit:
-        width = (d + squeeze) if slot else SLIT_W  # washer: a slot as wide as the hole; insert: a cut
-        cutter = cutter + Pos(0, 10, z_from - 1) * Box(width, 20, length + 2, align=ZMIN)
+    if slit and slot:
+        cutter = cutter + Pos(0, 10, z_from - 1) * Box(d + squeeze, 20, length + 2, align=ZMIN)
     return cutter
 
 

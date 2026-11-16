@@ -107,7 +107,7 @@ insert, a stiff washer and a nut. Only the insert and its washer differ.
 
 | Insert | Holes | Slit | Used for |
 |---|---|---|---|
-| `bus` | One, for the cable jacket | Yes | Each of the two bus cables |
+| `bus` | One, for the cable jacket | Yes, cut with a knife after printing | Each of the two bus cables |
 | `valve-2` | Two, one per wire | No | A box with one valve |
 | `valve-4` | Four | No | A box with two valves |
 | `blank` | None | No | An entry that is not used: the second bus entry of the last node on the cable |
@@ -123,6 +123,10 @@ The seat is not quite round: its top is a flat roof between two 45° flanks (the
 side of that shape, roof and flanks included, is a tangent to the round seat, so the cone squeezes
 the insert by the same 0.24 mm all around. The insert goes in one way only, roof up; on the bus
 insert that is where the slit is.
+
+The bus insert is printed as a closed ring and slit with a knife afterwards: one straight cut from
+the middle of the roof into the cable hole, along the whole insert. A printed slit of 0.4 mm in TPU
+closes up or strings (owner, 2026-11-16), and a cut leaves no gap to seal.
 
 Why a washer. The nut's opening has to be as large as the plug (15.5 mm), which leaves a ring of
 2 mm to press on a 20 mm insert; the soft material would bulge out through the opening. The
@@ -206,7 +210,7 @@ show; the area is that of the outline the specification proposed.
 | `nut-3x` | ASA | End wall down | Thread axis upright, no support |
 | `washer-*` | ASA | Flat | |
 | `gasket-tpu` | TPU 95A | Flat | 10 layers at 0.2 mm |
-| `insert-*-tpu` | TPU 95A | Large end down | 100 % infill. Goes into the seat roof up |
+| `insert-*-tpu` | TPU 95A | Large end down | 100 % infill. Goes into the seat roof up. The bus insert is printed closed and slit with a knife |
 
 For water-tightness: at least 5 perimeters (the walls are then solid), 100 % infill for the base
 and the lid, 0.2 mm layers. The bosses print lying down, so their thread is the roughest surface
