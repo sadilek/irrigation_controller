@@ -29,6 +29,24 @@ def field(fp, name):
     return fp.GetFieldText(name) if fp.HasField(name) else ""
 
 
+def centre(fp):
+    """The point the placement file gives for a part.
+
+    JLCPCB places its own footprint of the part by this point, and its footprints have their origin
+    in the middle of the part. A footprint fetched from LCSC (library lib/lcsc) is that footprint,
+    so its origin is used as it is. KiCad's footprints mostly have it there too, but not all: a pin
+    header has it on pin 1, a DPAK and a SOT-89 off the middle of their pads. For those the middle
+    of the pads' bounding box is used, which is the origin wherever KiCad already has it there.
+    """
+    if "lcsc" in fp.GetFPID().GetLibNickname().wx_str():
+        return fp.GetPosition()
+    boxes = [p.GetBoundingBox() for p in fp.Pads()]
+    if not boxes:
+        return fp.GetPosition()
+    return pcbnew.VECTOR2I(int((min(b.GetLeft() for b in boxes) + max(b.GetRight() for b in boxes)) / 2),
+                           int((min(b.GetTop() for b in boxes) + max(b.GetBottom() for b in boxes)) / 2))
+
+
 def main(name):
     pcb = os.path.join(REPO, "boards", name, "eda", name + ".kicad_pcb")
     out = os.path.join(REPO, "build", name, "fab")
@@ -59,7 +77,7 @@ def main(name):
         entry = bom.setdefault(key, {"refs": [], "comment": fp.GetValue(), "footprint": fp.GetFPID().GetLibItemName().wx_str(), "class": part["class"]})
         entry["refs"].append(ref)
         if part["assembly"] in ("smt", "tht"):  # JLCPCB drops a BOM line whose designators have no placement
-            pos = fp.GetPosition()
+            pos = centre(fp)
             rot = (fp.GetOrientationDegrees() + float(part["rotation_offset"] or 0)) % 360
             cpl.append([ref, "%.4fmm" % pcbnew.ToMM(pos.x - origin.x), "%.4fmm" % -pcbnew.ToMM(pos.y - origin.y),
                         "Bottom" if fp.IsFlipped() else "Top", "%g" % rot])

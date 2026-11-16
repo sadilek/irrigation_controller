@@ -199,12 +199,12 @@ Component(
     symbol=Symbol(SYM + "SW_DIP_x04.kicad_sym"),
     footprint=File(FP + "SW_DIP_SPSTx04_Slide_KingTek_DSHP04TS_W7.62mm_P1.27mm.kicad_mod"),
     pins={"1": ADDR[0], "2": ADDR[1], "3": ADDR[2], "4": ADDR[3], "5": GND, "6": GND, "7": GND, "8": GND},
-    part=Part(mpn="DSHP04TSGET", manufacturer="Kingtek"),
-    properties={"value": "DSHP04TSGET"},
+    part=Part(mpn="DSHP04TSGER", manufacturer="Kingtek"),
+    properties={"value": "DSHP04TSGER"},
 )
 
 Resistor(name="R_LED", value="1k", package="0603", mpn="0603WAF1001T5E", manufacturer="UNI-ROYAL", P1=LED, P2=LED_A)
-Led(name="D_STATUS", package="0603", color="green", mpn="19-217/GHC-YR1S2/3T", manufacturer="Everlight", A=LED_A, K=GND)
+Led(name="D_STATUS", package="0603", color="green", mpn="19-21/GHC-YR1S2/4T", manufacturer="Everlight", A=LED_A, K=GND)
 
 # --- 24 VAC -------------------------------------------------------------------------------------
 
@@ -217,15 +217,16 @@ Component(
     part=Part(mpn="SMBJ48CA", manufacturer="Littelfuse"),
     properties={"value": "SMBJ48CA"},
 )
-# F2 takes this node's valves off the 24 VAC pair when a solenoid or valve wire is shorted.
+# F2 takes this node's valves off the 24 VAC pair when a solenoid or valve wire is shorted. Tripped,
+# it carries the pair's voltage, up to D4's clamp level in a surge: the 72 V type, not the 60 V one.
 Component(
     name="F2",
     prefix="F",
     symbol=Symbol(SYM + "Polyfuse.kicad_sym"),
     footprint=File(FP + "Fuse_1812_4532Metric.kicad_mod"),
     pins={"1": AC_A, "2": AC_COM},
-    part=Part(mpn="mSMD050-60V", manufacturer="TECHFUSE"),
-    properties={"value": "0.5A 60V"},
+    part=Part(mpn="mSMD050-72V", manufacturer="TECHFUSE"),
+    properties={"value": "0.5A 72V"},
 )
 
 for i in range(OUTPUTS):

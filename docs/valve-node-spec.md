@@ -378,10 +378,17 @@ board helps.
 
 ### Faults on the 24 VAC side
 
-Fuse F2 (mSMD050-60V) sits between the 24 VAC pair and the valve commons of this node. It holds
+Fuse F2 (mSMD050-72V) sits between the 24 VAC pair and the valve commons of this node. It holds
 0.50 A at 25 °C and 0.35 A at 60 °C, and trips at 1.0 A (Techfuse mSMD series). One valve holds at
 0.21 A; the 0.37 A at switch-on last too short to trip it. A shorted solenoid or valve wire trips
 F2 and leaves the 24 VAC pair up for the other nodes (R10).
+
+Tripped by a short, F2 carries the pair's full voltage, 34 V peak, and in a surge up to the
+77.4 V at which D4 clamps 7.8 A. It is the 72 V type of the series, same body, same hold and trip
+currents (Sea & Land approval sheet *mSMD050-72V*); until 2026-11-16 it was the 60 V type. 72 V
+is still below D4's highest clamp level. Both have to come together, a short that has tripped F2
+and a large surge before it is repaired; no 1812 part with 0.5 A hold and more than 72 V was found
+at JLCPCB (2026-11-16).
 
 One requirement goes to the controller specification. The 24 VAC supply must not be able to
 deliver more than the triac's surge rating into a short at a node. The triac withstands 30 A for
@@ -629,11 +636,11 @@ Quantity is per board with two outputs populated.
 | D3 | PSM712-LF-T7 (ProTek) | 1 | C32677 | basic | 138,344 | $0.34 |
 | D4 | SMBJ48CA (Littelfuse) | 1 | C151264 | extended | 5,591 | $0.15 |
 | F1 | mSMD020-60V | 1 | C70108 | extended | 24,006 | $0.05 |
-| F2 | mSMD050-60V | 1 | C70113 | extended | 146,918 | $0.09 |
-| SW1 | DSHP04TSGET, 4-pole switch, 1.27 mm | 1 | C40736 | extended | 23,786 | $0.54 |
+| F2 | mSMD050-72V; until 2026-11-16 mSMD050-60V (C70113) | 1 | C50766783 | extended | 651 (2026-11-16) | $0.10 |
+| SW1 | DSHP04TSGER, 4-pole switch, 1.27 mm, on reel; until 2026-11-16 DSHP04TSGET (C40736, in tubes), which JLCPCB lists as no longer manufactured | 1 | C5301814 | extended | 2,373 (2026-11-16) | $0.60 |
 | C | 100 nF 100 V X7R 0805, snubber | 2 | C106243 | extended | 1,620,552 | $0.01 |
 | C | 10 µF 50 V X5R 1206, regulator input | 1 | C13585 | basic | 3,594,662 | $0.12 |
-| LED | Green 0603, already in `lib/jlcpcb-parts.csv` | 1 | C72043 | extended | not read | |
+| LED | Green 0603, Everlight 19-21/GHC-YR1S2/4T; until 2026-11-16 19-217/GHC-YR1S2/3T (C72043), out of stock and pre-order only | 1 | C2986048 | extended | 42,531 (2026-11-16) | $0.02 |
 | J1, J2 | RJ45 jack RJHSE-5080 (Amphenol) | 2 | C599441 | extended | 617 | $0.94 |
 | J3, J4 | 2-pole header 5.08 mm, right angle | 2 | C441204 | extended | 45,581 | $0.05 |
 | J5 | Pin header 1×3, 2.54 mm, straight (BOOMELE), UPDI; added 2026-11-15 | 1 | C49257 | extended | 220,193 | $0.03 |

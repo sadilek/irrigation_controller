@@ -28,7 +28,10 @@ and bias of the bus to the controller, dropped the A/B swap jumpers and had the 
 populated, so that nothing on the node is soldered by hand. That changed schematic and layout;
 they are not signed off again yet, and until they are the approved state of 2026-11-15 no longer
 stands. The owner made a first test print of the enclosure on 2026-11-16; supports under the
-board and two changes for printing followed from it. Nothing is ordered: the test fit and the order are the owner's. The whole chain runs for
+board and two changes for printing followed from it. The same day a check before the order
+(stock, a Codex review) replaced the status LED, the address switch and the valve fuse by
+equivalents and fixed the placement file ([`docs/valve-node-layout.md`](docs/valve-node-layout.md),
+"Check before the order"). Nothing is ordered: the test fit and the order are the owner's. The whole chain runs for
 both boards (`make all BOARD=valve-node`, about two minutes). The valve node's firmware is written
 and tested against a simulated bus ([`docs/valve-node-firmware.md`](docs/valve-node-firmware.md));
 it has not run on a chip. No real board exists yet.

@@ -162,7 +162,6 @@ L.check_all_placed()
 # --- Silkscreen ---------------------------------------------------------------------------------
 # Reference designators are hidden (60 parts on this board leave no room for them; the assembly
 # drawing has them). What is printed is what a person with the board in hand needs.
-S = pcbnew.B_SilkS
 L.text("BUS IN", 17.0, 25.4, 1.2)
 L.text("24VAC! NO ETHERNET", 17.0, 27.4, 0.8)
 L.text("BUS OUT", 51.0, 27.5, 1.0)
@@ -179,7 +178,6 @@ for label, name, dx, dy in (("5V", "TP_5V", 0, -1.5), ("GND", "TP_GND", 2.2, 0),
     L.text(label, x + dx, y + dy, 0.8)
 L.text("VALVE NODE", 14.0, 11.0, 1.5)
 L.text("rev A", 14.0, 13.6, 1.0)
-L.text("JLCJLCJLCJLC", 18.0, 12.0, 1.0, layer=S)  # where JLCPCB may print its order number
 L.ruler(23.0, 50.0)
 
 # --- Areas --------------------------------------------------------------------------------------

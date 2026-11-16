@@ -5993,7 +5993,7 @@
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Value" "DSHP04TSGET"
+		(property "Value" "DSHP04TSGER"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 317.375 72.5 0)
@@ -7919,7 +7919,7 @@
 				(font (size 1.27 1.27))
 			)
 		)
-		(property "Value" "0.5A 60V"
+		(property "Value" "0.5A 72V"
 			(show_name no)
 			(do_not_autoplace no)
 			(at 83.82 120.866 90)

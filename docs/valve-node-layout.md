@@ -7,8 +7,11 @@ Status: approved by the owner on 2026-11-15, then changed the same day by the ow
 termination, bias and the A/B swap jumpers left the node and JLCPCB populates the UPDI header, so
 that nothing on the node is soldered by hand ([The programming header](#the-programming-header),
 deviation 8). The changed schematic and layout are not signed off yet; until then the approved
-state no longer stands. The enclosure had a first test print (2026-11-16), nothing is ordered;
-the test fit with a board is still open ([Open points](#open-points)).
+state no longer stands. The check before the order (2026-11-16) replaced three parts by
+equivalents and removed the order number placeholder
+([Check before the order](#check-before-the-order-2026-11-16)). The enclosure had a first test
+print (2026-11-16), nothing is ordered; the test fit with a board is still open
+([Open points](#open-points)).
 
 The circuit is in [`valve-node-spec.md`](valve-node-spec.md) and
 [`valve-node-schematic.md`](valve-node-schematic.md), the box and the board outline in
@@ -219,22 +222,46 @@ the corner at (92, 40).
 | `valve-node-cpl-jlcpcb.csv` | 39 placements: 35 surface-mount parts and the 4 through-hole connectors |
 | `valve-node.step` | The populated board, used by the collision check |
 
-To choose when ordering: 2 layers, 1.6 mm, 1 oz copper, lead-free HASL, quantity 5; "Specify a
-location" for the order number (the text `JLCJLCJLCJLC` on the bottom silkscreen marks the
-place); assembly of the top side, Economic.
+The placement file gives the middle of each part, which is where JLCPCB's own footprints have
+their origin. For the footprints fetched from LCSC (bus jacks, valve terminal block) that is their
+origin; for KiCad's it is the middle of the pads, which differs from KiCad's origin on the pin
+header (2.54 mm, pin 1), the triacs (0.84 mm) and the regulator (0.3 mm). Until 2026-11-16 the file
+gave KiCad's origin for all of them (found by the Codex review, below).
 
-What the files cannot guarantee, to check in JLCPCB's own preview before paying:
+### Check before the order (2026-11-16)
 
-1. **Rotation of each polarised part.** JLCPCB's reel orientation differs from KiCad's for some
-   packages, and only their placement preview shows it. To look at: series diode D2, tantalum
-   capacitor C1 (the marked end is +), status LED D5, microcontroller U5, transceiver U7,
-   optocouplers U1 to U4 (pin 1 dot towards the logic side on U1 and U3, towards the 24 VAC side
-   on U2 and U4), triacs Q1 and Q2, regulator U6, RS485 TVS D3, switch SW1, programming header J3 (its row
-   runs along the board's long side, pin 1 next to the address switch). A wrong one is
-   corrected with `rotation_offset` in `lib/jlcpcb-parts.csv`, then `make fab` again.
-2. **Stock and class of every part**, as listed in the specification on 2026-11-14. The jack had
-   617 in stock.
-3. **Whether Economic assembly takes a board of 96 × 44 mm as it is** or adds rails. Not looked up.
+| Point | Result |
+|---|---|
+| Stock and class of every part, JLCPCB part pages | All in stock for five boards after three changes: the green LED 19-217/GHC (C72043) had none and could only be pre-ordered, 378 at least; it is now the 19-21/GHC (C2986048, 42,531). The switch DSHP04TSGET (C40736) is marked as no longer made; it is now the DSHP04TSGER (C5301814, 2,373), the same switch on a reel. Fewest in stock: the jack with 617 (255 orderable), the valve fuse with 651 |
+| Order number on the board | JLCPCB adds no mark by default (help article *How to mark on PCB?*, updated 2026-05-22); the order form offers only "Remove Mark" and a 2D barcode, no order number. The placeholder `JLCJLCJLCJLC` on the bottom silkscreen would have been printed as text and is gone |
+| Board size for Economic assembly | 10 × 10 mm to 470 × 500 mm (JLCPCB PCB assembly capabilities); 96 × 44 mm needs no rails |
+| Second opinion: Codex (OpenAI, `codex exec`, read-only) on sources, BOM, placement file and Gerbers | Three findings. Placement points not in the middle of the part: fixed (above). Fabrication files older than the part changes made during the review: rebuilt. Valve fuse F2 rated 60 V below the 77.4 V clamp of D4: now the 72 V type ([specification](valve-node-spec.md#faults-on-the-24-vac-side)). Found fine: BOM against netlist, pin maps of the polarised parts, outline, plated and unplated holes, UPDI, UART, RS485 A/B against the bus pinout, decoupling, triac drive, snubbers |
+| Open points of the schematic page marked "before the order" | Tantalum capacitor C1 and fuse maker settled ([schematic](valve-node-schematic.md#open-points)) |
+
+### Ordering
+
+At jlcpcb.com, by the owner:
+
+1. Upload `valve-node-gerbers.zip`. Keep what JLCPCB reads from it (2 layers, 96 × 44 mm) and
+   choose: FR-4, quantity 5, single PCB, 1.6 mm, any colour (green is the cheapest), lead-free
+   HASL, 1 oz, tented vias, "Mark on PCB" left empty.
+2. Switch on PCB Assembly: Economic, top side, quantity 5, and "Confirm Parts Placement" (JLCPCB's
+   engineers check the placement before production).
+3. Upload `valve-node-bom-jlcpcb.csv` and `valve-node-cpl-jlcpcb.csv`. Every one of the 27 lines
+   has to be matched to its LCSC number. JLCPCB lists the designators without a part as
+   not placed: H1 to H4 (mounting holes), JP1 and JP2 (open solder jumpers), TP1 to TP8 (test
+   pads). That is correct.
+4. In the placement preview look at every polarised part: series diode D2 (band), tantalum
+   capacitor C1 (the marked end is +), LED D5 (cathode mark to ground), microcontroller U5,
+   transceiver U7, regulator U6, RS485 TVS D3, optocouplers U1 to U4 (pin 1 dot towards the
+   logic side on U1 and U3, towards the 24 VAC side on U2 and U4), triacs Q1 and Q2 (tab), switch
+   SW1 (ON side), programming header J3 (its row along the board's long side, pin 1 next to the
+   address switch). The KiCad footprints of C1, D3, U5, U6 and U7 have a pin 1 that JLCPCB's
+   reels often hold turned by 90° or 180° (community table of JLCKicadTools); a part that shows
+   turned is rotated in the preview, and the correction goes into `rotation_offset` in
+   `lib/jlcpcb-parts.csv` afterwards.
+5. Through-hole parts (J1, J2, J3, J4): JLCPCB solders them; accept the fee for it.
+6. Check the quote against the cost estimate below, then pay.
 
 ## Cost estimate
 
@@ -412,8 +439,8 @@ The same print is the first sample for the water bath test
 | Point | Needed for | Who, when |
 |---|---|---|
 | Test fit with a printed enclosure | Order | Owner, before the order |
-| Rotations, stock and class in JLCPCB's preview | Order | Owner, while ordering; corrections go into `lib/jlcpcb-parts.csv` |
-| Price of lead-free HASL, shipping, board size limit of Economic assembly | Cost | Shown in JLCPCB's quote |
+| Rotations in JLCPCB's preview | Order | Owner, while ordering ([Ordering](#ordering), step 4); corrections go into `lib/jlcpcb-parts.csv`. Stock and class were checked on 2026-11-16 |
+| Price of lead-free HASL and shipping | Cost | Shown in JLCPCB's quote. The board size fits Economic assembly |
 | How the four valve wires handle on 36 mm of free length, with the real wire | Handling | Owner, at the test fit: the block is a block on the dummy, the entry is real |
 | The points listed in the specification's and the schematic's "Open points" | | unchanged |
 
