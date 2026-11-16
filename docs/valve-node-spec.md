@@ -470,8 +470,9 @@ the header was a footprint without a part.
 
 ## Behaviour (input for the firmware)
 
-The firmware has its own specification later. These points are fixed here because they are the
-answer to weaknesses of the existing system and because the hardware is sized for them.
+The firmware has its own specification, [`valve-node-firmware.md`](valve-node-firmware.md). These
+points are fixed here because they are the answer to weaknesses of the existing system and because
+the hardware is sized for them.
 
 | Behaviour | Value | Reason |
 |---|---|---|

@@ -10,6 +10,9 @@ Garden irrigation hardware: two custom boards and their 3D-printed enclosures.
   Modbus RTU over RS485 on a buried cable.
 - **Controller:** sits in a dry shed, powers the bus, bridges it to Home Assistant via ESPHome.
 
+The valve node's firmware (ATtiny1616, C++ on avr-libc without a framework) is in
+`firmware/valve-node/`.
+
 Boards are written as code (Zener), generated into KiCad 10 files, placed and routed by script, and
 fabricated and assembled by JLCPCB. Enclosures are modelled in build123d. An agent does all of it
 in files; the owner reviews each board at three hold points (specification, schematic, layout and
@@ -26,7 +29,9 @@ populated, so that nothing on the node is soldered by hand. That changed schemat
 they are not signed off again yet, and until they are the approved state of 2026-11-15 no longer
 stands. The owner made a first test print of the enclosure on 2026-11-16; supports under the
 board and two changes for printing followed from it. Nothing is ordered: the test fit and the order are the owner's. The whole chain runs for
-both boards (`make all BOARD=valve-node`, about two minutes). No real board exists yet.
+both boards (`make all BOARD=valve-node`, about two minutes). The valve node's firmware is written
+and tested against a simulated bus ([`docs/valve-node-firmware.md`](docs/valve-node-firmware.md));
+it has not run on a chip. No real board exists yet.
 
 ## Rules that are not negotiable
 
@@ -59,6 +64,7 @@ make setup                 # once per checkout: pinned tools into .tools/, Pytho
 make all BOARD=<board>     # whole chain: source -> KiCad files -> ERC -> layout -> DRC -> fab -> enclosure -> collision
 make verify BOARD=<board>  # all checks, no committed file is modified
 make help                  # every target with its output
+make firmware-test         # valve node firmware: unit tests and bus test against the simulator
 ```
 
 One target per output; the table is in [`docs/toolchain.md`](docs/toolchain.md). `BOARD` defaults
@@ -77,6 +83,7 @@ first.
 | `boards/<board>/layout.py` | Placement, design rules and routing (runs in KiCad's Python via `tools/kipython`) |
 | `boards/<board>/classmap.json` | Colours for the copper-by-net-class picture of `make plots`; optional |
 | `boards/<board>/enclosure.py` | Enclosure model (build123d, runs in the project venv via `uv run`) |
+| `firmware/valve-node/` | Valve node firmware: logic in `core/`, chip-specific code in `src/`, simulator in `sim/`, tests |
 | `boards/<board>/eda/` | Generated KiCad project, committed so the design opens without the toolchain |
 | `lib/` | Shared parts: copied KiCad symbols and footprints, LCSC footprints, JLCPCB design rules, part-number mapping ([`lib/README.md`](lib/README.md)) |
 | `tools/` | Shared scripts: layout helpers, grid router, fabrication outputs, collision check, self-tests, printable thread, renderer for enclosure pictures |
@@ -95,6 +102,7 @@ first.
 | What does the valve node's schematic add to the specification, what was checked, what goes to the layout? | [`docs/valve-node-schematic.md`](docs/valve-node-schematic.md) |
 | What does the valve node's enclosure look like, how does it seal, where do outline and connector positions come from? | [`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md) |
 | Where do the valve node's parts sit, how is 24 VAC kept from the logic, what does an order cost, how is the fit tried? | [`docs/valve-node-layout.md`](docs/valve-node-layout.md) |
+| What does the valve node do on the bus, which registers are new, how is the firmware built, tested and programmed? | [`docs/valve-node-firmware.md`](docs/valve-node-firmware.md) |
 | Why Zener and not KiCad files? | [`docs/toolchain.md`](docs/toolchain.md) "Schematic format" |
 | How do I add a part and map it to an LCSC number? | [`lib/README.md`](lib/README.md) |
 | Which license covers what, and what blocks publication? | [`docs/license.md`](docs/license.md) |
@@ -119,6 +127,9 @@ first.
 - Two routers. The throwaway board is routed by Freerouting (`Layout.autoroute`), the valve node
   by coordinates plus `tools/gridroute.py` (`Layout.router`). Why: `docs/toolchain.md`,
   "Routing".
+- Firmware logic lives in `firmware/valve-node/core/` and has no hardware access, so it
+  runs in the simulator and the tests unchanged. Anything that touches a pin or a peripheral goes
+  into `src/main.cpp`. After a firmware change run `make firmware firmware-test`.
 - KiCad ERC runs with two rules disabled (`lib_symbol_issues`, `power_pin_not_driven`), set in each
   board's `.kicad_pro`; the reason is in `docs/toolchain.md`. Do not disable further rules to get a
   clean report; fix the cause or record an explicit, explained exclusion.
@@ -202,6 +213,10 @@ first.
   and a hole on its side a flat roof between 45° flanks (`teardrop` in
   `boards/valve-node/enclosure.py`). A part pressed on from above (a connector, a button) needs
   something under the board, not only the screws in its corners.
+- **No PlatformIO or Arduino core for AVR firmware.** PlatformIO's AVR compiler (GCC 7.3 from
+  2022) and its avrdude are Intel binaries and do not run on Apple silicon without Rosetta;
+  megaTinyCore ships the same compiler. The firmware is built with Homebrew's native avr-gcc 14
+  and avrdude from a plain Makefile (owner's decision, 2026-11-14).
 - **No renderer is installed for build123d.** Pictures of an enclosure come from
   `tools/render3d.py` (numpy and Pillow, both already there). build123d's own `tessellate()`
   stops at a face the mesher left empty; the renderer meshes through OCP and skips it.

@@ -49,7 +49,8 @@ Run from the repository root. `BOARD` defaults to `throwaway`.
 | `make collide` | Overlap volume of the populated board against each enclosure part; fails on overlap. Without a board STEP it uses `envelope.step`: the outline and connectors from `mech.json` as blocks. If the enclosure script wrote `plugs.step` (mated plugs as blocks), those are checked as well |
 | `make all` | All of the above in order |
 | `make verify` | The checks only, without touching committed files (what Obeya runs before landing) |
-| `make selftest` | Lowers the lid into the pin header (throwaway board) and into the bus jacks (valve node), moves the programming plug off its pins and fills the pin pockets of the board supports (valve node), and expects `collide` to fail each time; renames a net label in the valve node schematic and expects the comparison with the source to fail; draws a ground track near 24 VAC copper, under an optocoupler and under a screw head on a copy of the valve node board and expects DRC to name the rule each time |
+| `make selftest` | Lowers the lid into the pin header (throwaway board) and into the bus jacks (valve node), moves the programming plug off its pins and fills the pin pockets of the board supports (valve node), and expects `collide` to fail each time; renames a net label in the valve node schematic and expects the comparison with the source to fail; draws a ground track near 24 VAC copper, under an optocoupler and under a screw head on a copy of the valve node board and expects DRC to name the rule each time; builds the firmware simulator with a wrong bus-loss timeout and expects the bus test to fail |
+| `make firmware`, `firmware-test`, `firmware-sim`, `firmware-bench`, `firmware-upload` | Valve node firmware: hex file, tests on the computer, simulated bus, test bench in the browser, programming. Not part of `make all`; see [`valve-node-firmware.md`](valve-node-firmware.md#build-test-program) |
 
 ## Schematic format: Zener
 
@@ -143,6 +144,7 @@ else on the machine (no shell profile edits, no URL handlers, no global packages
 | build123d | 0.13 (via `uv`, Python 3.12) | Enclosure CAD, STEP import for the collision check; `tools/render3d.py` draws the enclosure pictures with the numpy and Pillow it brings along |
 | easyeda2kicad | 1.0.1 (via `uvx`) | `scripts/fetch-lcsc.sh`: symbol, footprint, STEP model of an LCSC part |
 | Konnect | 0.13.0 | KiCad MCP server; installed, not part of the chain (see below) |
+| avr-gcc, avrdude | 14.4.0 with avr-libc 2.2.1; 8.3 (Homebrew, not installed by `setup.sh`: `brew tap osx-cross/avr && brew install osx-cross/avr/avr-gcc@14 avrdude`) | Firmware build and programming. Tests and simulator use the computer's own C++ compiler |
 
 ## Libraries and the JLCPCB mapping
 

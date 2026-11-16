@@ -17,9 +17,16 @@ KIPY := tools/kipython
 # KiCad's Python prints harmless SWIG and wxWidgets chatter; drop it, keep the exit status.
 FILTER := 2>&1 | grep -v -e 'memory leak' -e 'create wxApp' ; exit $${PIPESTATUS[0]}
 
+# Firmware: rules are in firmware/valve-node/Makefile; avr-gcc and avrdude come from Homebrew.
+FW := firmware/valve-node
+FWOUT := build/valve-node/firmware
+PORT ?=
+NODES ?= 1
+SPEED ?= 1
+
 SHELL := /bin/bash
 .SHELLFLAGS := -o pipefail -c
-.PHONY: help setup check apply arrange bom erc schematic layout drc render plots fab enclosure collide all verify selftest clean
+.PHONY: help setup check apply arrange bom erc schematic layout drc render plots fab enclosure collide all verify selftest clean firmware firmware-test firmware-sim firmware-bench firmware-upload
 
 help: ## List the targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/' | expand -t 12
@@ -82,13 +89,31 @@ enclosure: ## Enclosure parts as STEP and STL (valve node: also pictures) -> bui
 collide: ## Collision check: board STEP against the enclosure parts
 	uv run python tools/collide.py $(BOARD)
 
+firmware: ## Valve node firmware for the ATtiny1616 -> build/valve-node/firmware/valve-node.hex
+	@$(MAKE) --no-print-directory -C $(FW) hex
+
+firmware-test: ## Firmware checks on the computer: unit tests, then the bus test against the simulator
+	@$(MAKE) --no-print-directory -C $(FW) test sim
+	uv run python $(FW)/bustest.py
+
+firmware-sim: ## Simulated valve nodes on /tmp/valve-node-bus for mbpoll and others (NODES=1,2,3,4 SPEED=60)
+	@$(MAKE) --no-print-directory -C $(FW) sim
+	$(FWOUT)/sim --nodes $(NODES) --speed $(SPEED)
+
+firmware-bench: ## Test bench in the browser: four simulated nodes, polled like the controller does -> http://127.0.0.1:8485/
+	@$(MAKE) --no-print-directory -C $(FW) sim
+	uv run python $(FW)/bench.py
+
+firmware-upload: ## Program fuses and firmware over UPDI (PORT=<serial device of the UPDI adapter>)
+	@$(MAKE) --no-print-directory -C $(FW) upload PORT=$(PORT)
+
 all: apply erc schematic layout drc render plots fab enclosure collide ## The whole chain, source to checked outputs
 
 verify: check erc ## All checks without modifying committed files (zones as last filled by `make drc`)
 	$(KICAD) pcb drc --severity-all --exit-code-violations -o $(OUT)/drc.rpt $(EDA)/$(BOARD).kicad_pcb $(QUIET)
 	@$(MAKE) --no-print-directory fab enclosure collide BOARD=$(BOARD)
 
-selftest: ## Prove the checks can fail: a lowered lid (both enclosures), a misplaced programming plug, board supports without pin pockets, a changed schematic, a logic track near 24 VAC
+selftest: ## Prove the checks can fail: a lowered lid (both enclosures), a misplaced programming plug, board supports without pin pockets, a changed schematic, a logic track near 24 VAC, a wrong firmware timeout
 	uv run python boards/throwaway/enclosure.py --lid-drop 6 >/dev/null
 	@if uv run python tools/collide.py throwaway >/dev/null; then echo "selftest: collision NOT detected"; exit 1; else echo "selftest: collision detected as expected"; fi
 	uv run python boards/throwaway/enclosure.py >/dev/null
@@ -104,6 +129,8 @@ selftest: ## Prove the checks can fail: a lowered lid (both enclosures), a mispl
 	@$(KIPY) tools/selftest-drc.py valve-node GND F.Cu 60.0 31.0 60.0 33.0 "24 VAC to logic" $(FILTER)
 	@$(KIPY) tools/selftest-drc.py valve-node GND B.Cu 62.0 10.0 66.0 10.0 "no copper under the optocouplers" $(FILTER)
 	@$(KIPY) tools/selftest-drc.py valve-node GND F.Cu 6.5 2.0 6.5 6.0 "screw heads and standoffs" $(FILTER)
+	@$(MAKE) --no-print-directory -C $(FW) selftest-sim >/dev/null
+	@if uv run python $(FW)/bustest.py --simulator $(FWOUT)/sim-selftest >/dev/null; then echo "selftest: wrong bus-loss timeout NOT detected"; exit 1; else echo "selftest: wrong bus-loss timeout detected as expected"; fi
 
 clean: ## Remove generated outputs
 	rm -rf build

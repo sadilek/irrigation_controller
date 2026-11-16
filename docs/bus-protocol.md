@@ -107,8 +107,9 @@ frame shorter than 7 bytes seen on the bus, whoever it was addressed to, excepti
 an inconsistent byte count, receive buffer overflow. A 5-byte exception response from one node
 therefore also counts as an error on every other node.
 
-Extensions (valve current, soil moisture, firmware version) go into new registers from 5 upward;
-registers 0 to 4 keep their meaning.
+Extensions go into new registers from 5 upward; registers 0 to 4 keep their meaning. The new valve
+node's registers 5 to 13, and the few points where it deliberately differs from the behaviour
+described on this page, are in [`valve-node-firmware.md`](valve-node-firmware.md).
 
 ## Function codes
 

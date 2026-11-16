@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Valve node test bench</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: light-dark(#f4f5f2, #15181a);
+    --card: light-dark(#fff, #1f2427);
+    --line: light-dark(#d5d9d2, #364046);
+    --text: light-dark(#1b2420, #e4e9e6);
+    --muted: light-dark(#5d6a64, #96a39d);
+    --water: light-dark(#0b6fb8, #56b4f2);
+    --fault: light-dark(#b3261e, #ff8a80);
+    --ok: light-dark(#2a7a3b, #7fd18f);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 16px; background: var(--bg); color: var(--text); font: 14px/1.4 system-ui, sans-serif; }
+  main { max-width: 780px; margin: 0 auto; display: grid; gap: 12px; }
+  h1 { font-size: 18px; margin: 0; }
+  h2 { font-size: 15px; margin: 0; }
+  p { margin: 0; color: var(--muted); }
+  section, article { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; }
+  label { display: inline-flex; gap: 8px; align-items: center; cursor: pointer; }
+  input[type="checkbox"] { accent-color: var(--water); margin: 0; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--water); outline-offset: 2px; }
+  select, button { font: inherit; color: inherit; background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  .nodes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 560px) { .nodes { grid-template-columns: 1fr; } }
+  article { display: grid; gap: 8px; }
+  article header { display: flex; justify-content: space-between; align-items: baseline; }
+  .silent { color: var(--fault); }
+  .stale .valves, .stale dl { opacity: 0.45; }
+  .valve { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; align-items: center; border-top: 1px solid var(--line); padding-top: 8px; }
+  .lamp { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--muted); }
+  .open .lamp { background: var(--water); border-color: var(--water); }
+  .name { font-weight: 600; }
+  .detail { grid-column: 2 / 4; color: var(--muted); font-size: 13px; }
+  .detail.fault { color: var(--fault); font-weight: 600; }
+  .detail select { font-size: 12px; padding: 1px 4px; }
+  dl { display: grid; grid-template-columns: repeat(4, auto); gap: 0 12px; margin: 0; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 8px; }
+  dt, dd { margin: 0; }
+  dd { color: var(--text); font-variant-numeric: tabular-nums; }
+  ol { margin: 8px 0 0; padding: 0; list-style: none; font: 12px/1.5 ui-monospace, monospace; min-height: 9em; }
+  article { align-content: start; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Valve node test bench</h1>
+  <p>Four simulated nodes on one bus, running the firmware's logic. The page plays the controller: it polls every node every 5 s over Modbus and shows what the registers say.</p>
+
+  <section class="controls" aria-label="Bench controls">
+    <label><input type="checkbox" switch role="switch" id="polling" checked> Controller polls</label>
+    <label><input type="checkbox" switch role="switch" id="ac" checked> 24 VAC supply</label>
+    <label>Node clock
+      <select id="speed">
+        <option value="1">real time</option>
+        <option value="10">10 times faster</option>
+        <option value="60">60 times faster</option>
+        <option value="600">600 times faster</option>
+      </select>
+    </label>
+  </section>
+
+  <section>
+    <h2>Events</h2>
+    <ol id="events" aria-live="polite"></ol>
+  </section>
+
+  <div class="nodes" id="nodes"></div>
+
+</main>
+
+<template id="node">
+  <article>
+    <header><h2></h2><span class="status"></span></header>
+    <div class="valves"></div>
+    <dl>
+      <dt>Errors</dt><dd class="errors"></dd>
+      <dt>Uptime</dt><dd class="uptime"></dd>
+      <dt>Version</dt><dd class="version"></dd>
+      <dt>Reset cause</dt><dd class="reset"></dd>
+    </dl>
+  </article>
+</template>
+<template id="valve">
+  <div class="valve">
+    <span class="lamp"></span>
+    <span class="name"></span>
+    <button type="button"></button>
+    <span class="detail monitor"></span>
+    <span class="detail closed-by"></span>
+    <span class="detail">Bench:
+      <select aria-label="Injected fault">
+        <option value="none">solenoid connected</option>
+        <option value="open-wire">wire open</option>
+        <option value="dead-triac">triac does not fire</option>
+      </select>
+    </span>
+  </div>
+</template>
+
+<script>
+const MONITOR = ['closed, supply and solenoid present', 'open, triac conducts',
+  'FAULT: no voltage across the triac (supply, fuse, wire or solenoid)', 'FAULT: triac did not fire'];
+const CLOSED_BY = ['', 'closed by the bus-loss timeout', 'closed by the run-time limit', 'closed because the other valve opened'];
+
+const post = (body) => fetch('/', { method: 'POST', body: JSON.stringify(body) });
+const nodes = new Map();
+
+function build(address) {
+  const card = document.getElementById('node').content.firstElementChild.cloneNode(true);
+  card.querySelector('h2').textContent = `Node ${address}`;
+  const valves = [1, 2].map((output) => {
+    const row = document.getElementById('valve').content.firstElementChild.cloneNode(true);
+    row.querySelector('.name').textContent = `Valve ${output}`;
+    const button = row.querySelector('button');
+    button.addEventListener('click', () =>
+      post({ action: 'write', address, register: (output - 1) * 2, value: row.classList.contains('open') ? 0 : 0xFFFF }));
+    const select = row.querySelector('select');
+    select.addEventListener('change', () => post({ action: 'fault', address, output, kind: select.value }));
+    card.querySelector('.valves').append(row);
+    return row;
+  });
+  document.getElementById('nodes').append(card);
+  return { card, valves };
+}
+
+function render(state) {
+  for (const { address, registers } of state.nodes) {
+    if (!nodes.has(address)) nodes.set(address, build(address));
+    const { card, valves } = nodes.get(address);
+    const status = card.querySelector('.status');
+    status.textContent = registers ? `address switch ${registers[9]}` : 'no answer';
+    status.classList.toggle('silent', !registers);
+    card.classList.toggle('stale', !state.polling);
+    if (registers && !state.polling) status.textContent = 'not polled, last values shown';
+    if (!registers) continue;
+    valves.forEach((row, i) => {
+      const open = registers[1 + 2 * i] === 1;
+      row.classList.toggle('open', open);
+      row.querySelector('button').textContent = open ? 'Close' : 'Open';
+      const monitor = row.querySelector('.monitor');
+      monitor.textContent = `Monitor: ${MONITOR[registers[5 + i]]}`;
+      monitor.classList.toggle('fault', registers[5 + i] >= 2);
+      row.querySelector('.closed-by').textContent = open ? `setpoint 0x${registers[2 * i].toString(16).toUpperCase()}` : CLOSED_BY[registers[10 + i]];
+    });
+    card.querySelector('.errors').textContent = registers[4];
+    card.querySelector('.uptime').textContent = `${registers[13]} min`;
+    card.querySelector('.version').textContent = `${registers[8] >> 8}.${registers[8] & 0xFF}`;
+    card.querySelector('.reset').textContent = registers[12];
+  }
+  document.getElementById('polling').checked = state.polling;
+  document.getElementById('ac').checked = state.ac;
+  const speed = document.getElementById('speed');
+  if (document.activeElement !== speed) speed.value = state.speed;
+  document.getElementById('events').replaceChildren(...state.events.slice(-6).map((text) => {
+    const item = document.createElement('li');
+    item.textContent = text;
+    return item;
+  }));
+}
+
+document.getElementById('polling').addEventListener('change', (e) => post({ action: 'polling', on: e.target.checked }));
+document.getElementById('ac').addEventListener('change', (e) => post({ action: 'ac', on: e.target.checked }));
+document.getElementById('speed').addEventListener('change', (e) => post({ action: 'speed', speed: Number(e.target.value) }));
+
+async function refresh() {
+  try {
+    render(await (await fetch('/state')).json());
+  } catch (error) {
+    console.log('bench not reachable', error);
+  }
+  setTimeout(refresh, 250);
+}
+refresh();
+</script>
+</body>
+</html>

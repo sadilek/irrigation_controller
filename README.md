@@ -157,6 +157,7 @@ KiCad 10 without any of the tools above.
 | What did the schematic add, and what was checked? | [`docs/valve-node-schematic.md`](docs/valve-node-schematic.md) |
 | How does the enclosure seal, and how is it printed? | [`docs/valve-node-enclosure.md`](docs/valve-node-enclosure.md) |
 | Where do the parts sit, how is 24 V AC kept from the logic, what does an order cost? | [`docs/valve-node-layout.md`](docs/valve-node-layout.md) |
+| What does the valve node do on the bus, and how is its firmware built and tested? | [`docs/valve-node-firmware.md`](docs/valve-node-firmware.md) |
 | How do I add a part and map it to a JLCPCB part number? | [`lib/README.md`](lib/README.md) |
 | Which license covers what? | [`docs/license.md`](docs/license.md) |
 | Rules and conventions for agents and contributors | [`CLAUDE.md`](CLAUDE.md) |
