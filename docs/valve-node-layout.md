@@ -199,7 +199,7 @@ was blind. Both keep-outs are now explicit rules in the rule file, and both are 
 | 1 | Bus jack footprint as fetched: pads 1.6 mm, holes 1.0 mm, pegs as plated holes of 3.3 mm | Pads 1.4 mm, holes 0.9 mm, pegs unplated 3.25 mm | Amphenol's drawing (schematic page, "Handed to the layout"); 0.65 mm instead of 0.45 mm between the 24 VAC and +12 V pads; a track fits between two pads |
 | 2 | Two pluggable screw terminals for the valve wires (headers KF2EDGR-5.08-2P with loose plugs) | One spring terminal block with four poles and push buttons, KF142R-5.08-4P, soldered to the board | See "The valve terminals" below. The schematic changed with it |
 | 3 | Fuses and triacs: the manufacturers draw longer land patterns than KiCad's (schematic page) | KiCad's patterns kept | They are the IPC-7351 patterns for reflow, which is how JLCPCB solders them. The longer ones add toe length for hand and wave soldering. The triac's cooling comes from the copper area, not from the pad |
-| 4 | Silkscreen with reference designators | Function labels only: jacks, valves, jumpers, test pads, programming header | 54 footprints leave no room. The assembly drawing has the designators |
+| 4 | Silkscreen with reference designators | Function labels only: jacks, valves, jumpers, test pads, programming header; a dot beside pin 1 of each optocoupler (owner, 2026-11-16) | 54 footprints leave no room. The assembly drawing has the designators. The optocouplers' own mark, a notch, lies under the part, and JLCPCB checks a part's dot against a dot on the silkscreen |
 | 5 | Jack and terminal block silkscreen as fetched | Outline shortened to inside the board edge and off the pads | They drew over the edge and over pads; DRC reports both |
 | 7 | 3D model of the terminal block as fetched: turned by 180°, wire openings facing the triacs | Turned and moved to match the pads, which agree with Kefa's drawing | The pads were right, the model was not. Found in the render; the collision check had passed with the wrong one |
 | 6 | Specification: one clearance for the 24 VAC class | A second class for the spare pair | Open jumpers leave it floating; bridged, it is 24 VAC. It gets the 3 mm wherever it is not between the bus lanes |
@@ -235,7 +235,8 @@ gave KiCad's origin for all of them (found by the Codex review, below).
 | Order number on the board | JLCPCB adds no mark by default (help article *How to mark on PCB?*, updated 2026-05-22); the order form offers only "Remove Mark" and a 2D barcode, no order number. The placeholder `JLCJLCJLCJLC` on the bottom silkscreen would have been printed as text and is gone |
 | Board size for Economic assembly | 10 × 10 mm to 470 × 500 mm (JLCPCB PCB assembly capabilities); 96 × 44 mm needs no rails |
 | Second opinion: Codex (OpenAI, `codex exec`, read-only) on sources, BOM, placement file and Gerbers | Three findings. Placement points not in the middle of the part: fixed (above). Fabrication files older than the part changes made during the review: rebuilt. Valve fuse F2 rated 60 V below the 77.4 V clamp of D4: now the 72 V type ([specification](valve-node-spec.md#faults-on-the-24-vac-side)). Found fine: BOM against netlist, pin maps of the polarised parts, outline, plated and unplated holes, UPDI, UART, RS485 A/B against the bus pinout, decoupling, triac drive, snubbers |
-| JLCPCB's placement preview, first upload by the owner (2026-11-16) | Turned against the pads: U6 by 180°, J3, U2 and U4 by 90° (owner); U5 by 90° and D3 by 180°, with two leads over the single pad (read from the owner's screenshot). U6's model also stood 0.32 mm towards its tab. All six are corrected in `lib/jlcpcb-parts.csv` (`rotation_offset`, and `position_offset` for U6). Right as uploaded: C1, D2, D5, U1, U3, U7. In the preview the model's dot has to meet the pin 1 mark on the silkscreen; the board has one for U5, U6, U7, D3, Q1 and Q2 (a triangle) and a notch for the optocouplers, which their models cover |
+| JLCPCB's placement preview, first upload by the owner (2026-11-16) | Turned against the pads: U6 by 180°, J3, U2 and U4 by 90° (owner); U5 by 90° and D3 by 180°, with two leads over the single pad (read from the owner's screenshot). U6's model also stood 0.32 mm towards its tab. Right as uploaded: C1, D2, D5, U1, U3, U7. The preview has no model for Q1, Q2 and SW1 |
+| JLCPCB's own footprints, fetched from EasyEDA (`uvx easyeda2kicad@1.0.1 --footprint`, into a scratch directory) and laid onto ours pad by pad | JLCPCB places a part by its own footprint, so the turn and shift that bring that footprint onto ours are the correction. Checked against the preview first: the method gives the same turn for all nine parts the preview showed, and 0.59 mm for U6's shift where the preview showed 0.62 mm. For the three parts without a model: SW1 (via the DSHP04TSGET, C40736, same drawing; EasyEDA has no data for the DSHP04TSGER) turned by 90°; Q1 and Q2 (via another DPAK part, C53260817; none for the T410-600B) turned by 180°, the tab on the lead pads, and 0.78 mm towards the leads. All corrections are in `lib/jlcpcb-parts.csv` (`rotation_offset`, `position_offset` for U6 and the triacs) |
 | Open points of the schematic page marked "before the order" | Tantalum capacitor C1 and fuse maker settled ([schematic](valve-node-schematic.md#open-points)) |
 
 ### Ordering
@@ -257,7 +258,8 @@ At jlcpcb.com, by the owner:
    logic side on U1 and U3, towards the 24 VAC side on U2 and U4), programming header J3 (its
    row along the board's long side). A part that shows turned is rotated in the preview, and the
    correction goes into `lib/jlcpcb-parts.csv` afterwards. The preview has no model for the
-   triacs Q1 and Q2 and the switch SW1; "Confirm Parts Placement" covers them.
+   triacs Q1 and Q2 and the switch SW1; their corrections come from JLCPCB's footprints ("Check
+   before the order"). The optocouplers carry a silkscreen dot beside pin 1.
 5. Through-hole parts (J1, J2, J3, J4): JLCPCB solders them; accept the fee for it.
 6. Check the quote against the cost estimate below, then pay.
 
@@ -419,9 +421,9 @@ The same print is the first sample for the water bath test
 1. **No part was ever placed on these footprints.** Jack and valve terminal block are fetched
    LCSC footprints, corrected against the manufacturers' drawings by hand. The first assembled
    board is the test.
-2. **Placement rotations are checked in JLCPCB's preview, except three parts.** Six corrections
-   came from the first upload; the preview shows no model for Q1, Q2 and SW1, so their rotation is
-   left to JLCPCB's placement confirmation ("Check before the order").
+2. **Three placements rest on a stand-in footprint.** Q1, Q2 and SW1 have no model in JLCPCB's
+   preview and no footprint at EasyEDA; their corrections come from parts with the same package
+   ("Check before the order").
 3. **The test fit was done with paper.** The owner laid the 1:1 print of the board on a printed
    base (2026-11-16): it fits. Connectors, plugs and wires were not part of it.
 4. **The router has no second attempt.** A change in placement can leave a net without a way.

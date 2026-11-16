@@ -224,6 +224,12 @@ first.
   2022) and its avrdude are Intel binaries and do not run on Apple silicon without Rosetta;
   megaTinyCore ships the same compiler. The firmware is built with Homebrew's native avr-gcc 14
   and avrdude from a plain Makefile (owner's decision, 2026-11-14).
+- **JLCPCB places a part by its own footprint, not by ours.** Turn and shift in the placement
+  file are corrections between the two. Fetch JLCPCB's footprint with
+  `uvx easyeda2kicad@1.0.1 --footprint --lcsc_id=C… --output <scratch dir>` and fit it onto ours
+  pad by pad: on the valve node that gave the turn of all nine parts the preview showed, and the
+  shift of one within 0.03 mm. It also covers parts the preview shows without a model. Pad
+  numbers of two-pin parts (LED) can differ in meaning; check those by the polarity mark.
 - **Never retype pad positions; read them from the footprint.** The pockets under the RJ45 jacks
   came from a hand-typed list with the two rows of the contacts' zigzag swapped. Neighbouring
   pockets overlap into one slot, so the collision check passed; the owner saw it on the print.

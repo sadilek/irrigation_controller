@@ -10,7 +10,7 @@ B-2100S02P-A110,Ckmtw,C124375,extended,none,0,,pin header 1x2; soldered by hand
 ATTINY1616-MNR,Microchip,C507118,extended,smt,270,,ATtiny1616 VQFN-20
 THVD2410DR,Texas Instruments,C1849398,extended,smt,0,,RS485 transceiver SOIC-8
 HT7550-1,Holtek,C16106,extended,smt,180,-0.32 0,"5 V regulator SOT-89; JLCPCB ""preferred extended"""
-T410-600B-TR,STMicroelectronics,C2970064,extended,smt,0,,triac 600 V 4 A DPAK
+T410-600B-TR,STMicroelectronics,C2970064,extended,smt,180,-0.78 0,triac 600 V 4 A DPAK
 EL3053S1(TA)-V,Everlight,C7183129,extended,smt,0,,random-phase optotriac SMD-6
 LTV-814S-TA1,Lite-On,C125118,extended,smt,270,,AC optocoupler SMD-4
 SMBJ15CA-E3/52,Vishay,C435933,extended,smt,0,,TVS 15 V bidirectional SMB
@@ -22,7 +22,7 @@ mSMD020-60V,TECHFUSE,C70108,extended,smt,0,,resettable fuse 0.2 A 60 V 1812
 mSMD050-60V,TECHFUSE,C70113,extended,smt,0,,resettable fuse 0.5 A 60 V 1812
 mSMD050-72V,TECHFUSE,C50766783,extended,smt,0,,resettable fuse 0.5 A 72 V 1812; same body and ratings as the 60 V type
 DSHP04TSGET,Kingtek,C40736,extended,smt,0,,4-position DIP switch 1.27 mm in tubes; discontinued (JLCPCB 2026-11-16)
-DSHP04TSGER,Kingtek,C5301814,extended,smt,0,,4-position DIP switch 1.27 mm on reel; same drawing as DSHP04TSGET
+DSHP04TSGER,Kingtek,C5301814,extended,smt,270,,4-position DIP switch 1.27 mm on reel; same drawing as DSHP04TSGET
 RJHSE-5080,Amphenol ICC,C599441,extended,tht,0,,RJ45 jack unshielded right angle
 KF142R-5.08-4P,Cixi Kefa Elec,C475146,extended,tht,0,,4-pole spring terminal 5.08 mm with push buttons; wire parallel to the board
 KF2EDGR-3.81-3P,Cixi Kefa Elec,C441183,extended,tht,0,,3-pole header 3.81 mm right angle; plug KF2EDGK-3.81-3P is C440859

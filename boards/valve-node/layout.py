@@ -176,6 +176,13 @@ for label, name, dx, dy in (("5V", "TP_5V", 0, -1.5), ("GND", "TP_GND", 2.2, 0),
                             ("PB5", "TP_PB5", 2.4, 0), ("PB1", "TP_PB1", 0, -1.6), ("PA3", "TP_PA3", 0, -1.5), ("PA1", "TP_PA1", -2.1, 0)):
     x, y = L.pad(name, 1)
     L.text(label, x + dx, y + dy, 0.8)
+# Pin 1 of each optocoupler: a dot at the pin's outer corner. Their own mark, a notch in the
+# outline, lies under the part, and JLCPCB's placement preview compares the dot on a part with a
+# dot on the silkscreen. On the 24 VAC side the dots sit between the pin and the resistor beside it.
+for name, dx, dy in (("OUT2.U_DRV", -1.35, -1.24), ("OUT1.U_DRV", -1.35, -1.24),
+                     ("OUT2.U_MON", 1.19, 1.38), ("OUT1.U_MON", 1.19, 1.38)):
+    x, y = L.pad(name, 1)
+    L.dot(x + dx, y + dy)
 L.text("VALVE NODE", 14.0, 11.0, 1.5)
 L.text("rev A", 14.0, 13.6, 1.0)
 L.ruler(23.0, 50.0)

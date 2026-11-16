@@ -92,10 +92,11 @@ class Layout:
 
     # -- reset -----------------------------------------------------------------
     def clear(self):
-        """Remove everything this script owns: outline, tracks, vias, zones, rule areas, board texts."""
+        """Remove everything this script owns: outline, tracks, vias, zones, rule areas, board texts and silkscreen marks."""
         b = self.board
         doomed = list(b.GetTracks()) + list(b.Zones())
-        doomed += [d for d in b.GetDrawings() if d.GetLayer() in (pcbnew.Edge_Cuts, pcbnew.Cmts_User) or d.GetClass() == "PCB_TEXT"]
+        doomed += [d for d in b.GetDrawings() if d.GetLayer() in (pcbnew.Edge_Cuts, pcbnew.Cmts_User, pcbnew.F_SilkS, pcbnew.B_SilkS)
+                   or d.GetClass() == "PCB_TEXT"]
         for item in doomed:
             b.Remove(item)
         # KiCad 10.0.1: once Python frees an item removed from the board, pcbnew hands out untyped
@@ -348,6 +349,15 @@ class Layout:
             t.SetMirrored(True)
         self.board.Add(t)
         return t
+
+    def dot(self, x, y, diameter=0.5, layer=pcbnew.F_SilkS):
+        """A filled dot on the silkscreen, e.g. beside pin 1 of a part whose own mark lies under it."""
+        s = self._shape(layer)
+        s.SetShape(pcbnew.SHAPE_T_CIRCLE)
+        s.SetCenter(self.pt(x, y))
+        s.SetEnd(self.pt(x + diameter / 2, y))
+        s.SetFilled(True)
+        return s
 
     def save(self):
         pcbnew.SaveBoard(self.path, self.board)
