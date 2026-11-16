@@ -137,8 +137,19 @@ as wide as the cable, and is pushed onto the cable from the side; the nut, whose
 passes through, is threaded over the plug before that.
 
 Why the thread is its own. A printed thread needs a coarse pitch and play
-([`tools/printthread.py`](../tools/printthread.py)): 2.5 mm pitch, 1.2 mm deep, 0.3 mm of play on
+([`tools/printthread.py`](../tools/printthread.py)): 2.5 mm pitch, 1.2 mm deep, 0.5 mm of play on
 every side. No bought nut fits, and none is meant to.
+
+The play was 0.3 mm on paper until 2026-11-16 and less in the model. The printed nuts ran freely
+for the first turns and then took a lot of force to reach the stop, without insert (owner, after
+the first test print). Two causes. The thread is a loft through cross-sections, 8 per turn; between
+them the surface is an interpolation, and nut and boss came within 0.14 mm of each other. And the
+more turns are engaged, the more such spots rub. The loft now has 24 sections per turn, which
+keeps the closest point within 0.02 mm of the play, and the play is 0.5 mm.
+
+Only the nut has to be printed again. The play is cut into the nut alone; the boss's thread kept
+its profile and only became smoother. A new nut on a boss from the old loft keeps at least
+0.44 mm (measured on the solids, with the old 8 sections for the boss).
 
 ## Board supports
 
@@ -250,7 +261,8 @@ support at both places, and it did not come off.
 | The same with the lid lowered by 8 mm into the jacks (`make selftest`) | overlap reported, as it must be |
 | The same with the pockets of the board supports filled (`make selftest`) | overlap with the pins of all four connectors reported, as it must be |
 | Insert against seat (by hand, from the STEP files) | no overlap at hand-tight; pushed in by 1.5 mm, 154 mm³ per insert are compressed |
-| Nut against boss thread | By construction: the nut's thread is the boss's thread grown by 0.3 mm. OpenCascade returns wrong volumes when two thread solids are intersected, so this pair is not checked by the script |
+| Nut against boss thread | `enclosure.py` measures the distance between the two solids at hand-tight and stops below the play less 0.05 mm: 0.49 mm for a play of 0.5. A distance works where an intersection of two thread solids returns wrong volumes |
+| The same with the coarse loft of the first print (`make selftest`, `--thread-steps 8`) | reported, as it must be |
 | Soft parts against stiff parts | Not checked: gasket and inserts are meant to be compressed |
 
 The collision check uses the board STEP that `make fab` writes. Without it (a board that has no

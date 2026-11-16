@@ -182,7 +182,10 @@ first.
   cylinder gave an invalid solid with a wrong volume. `tools/printthread.py` lofts through
   cross-sections instead, which is valid. Intersecting two such thread solids with each other
   still returns nonsense (zero, or the whole volume); against plain bodies it is correct. Check a
-  boolean's volume against a hand estimate whenever a thread is involved.
+  boolean's volume against a hand estimate whenever a thread is involved. A loft is only the
+  profile at its sections: with 8 per turn, nut and boss came within 0.14 mm where the play was
+  0.3 mm, and the printed nuts bound. `distance_to` between two thread solids is correct; measure
+  the gap instead of trusting the construction.
 - **A fetched 3D model can sit turned on a correct footprint.** The valve terminal block's pads
   matched the manufacturer's drawing; its model stood turned by 180° and 2.8 mm off (offset and
   rotation as `scripts/fetch-lcsc.sh` left them). The collision check passed with it. After

@@ -214,8 +214,8 @@ Found while running the chain. Ordered by how much they matter for the real boar
 11. **The collision check finds overlap, not clearance.** A part 0.05 mm from a wall passes. It
     also reports solids by position, not by reference designator. Minimum-distance checking and
     names are small additions for the enclosure work. It is also blind where two thread solids
-    meet: OpenCascade returns wrong volumes for that pair, so nut against boss is right by
-    construction only ([`valve-node-enclosure.md`](valve-node-enclosure.md), "Checks").
+    meet: OpenCascade returns wrong volumes for that pair. Nut against boss is checked by
+    distance in `boards/valve-node/enclosure.py` instead ([`valve-node-enclosure.md`](valve-node-enclosure.md), "Checks").
 12. **Zener joins pins that share a name.** A symbol with two pins called `NC` gets one net for
     both, and the board would connect them. Copied symbols get distinct pin names
     (`scripts/copy-kicad.py … 3=NC3 5=NC5`). Generic modules (`Tvs`) also write their own value

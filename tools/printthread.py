@@ -18,12 +18,15 @@ from build123d import Align, BuildLine, BuildSketch, Cylinder, Plane, Spline, lo
 
 PITCH = 2.5
 DEPTH = 1.2  # radial height of the ridge
-PLAY = 0.3  # gap between rod and nut, radially and on each flank
+PLAY = 0.5  # gap between rod and nut, radially and on each flank
 CREST = 0.5  # width of the flat on top of the ridge
 ROOT = 1.5  # width of the ridge at its foot
 _MIN = (Align.CENTER, Align.CENTER, Align.MIN)
 _POINTS = 24  # points around the section
-_STEPS = 8  # sections per turn
+# Sections per turn. Between two sections the loft is a smooth interpolation, not the profile: with
+# 8, nut and boss came within 0.14 mm of each other at a play of 0.3 mm. With 24 the closest point
+# is within 0.02 mm of PLAY.
+STEPS = 24
 
 
 def nut_bore_d(major_d: float) -> float:
@@ -62,8 +65,8 @@ def _section(minor_r: float, crest: float, root: float, z: float):
 
 def _screw(minor_r: float, crest: float, root: float, length: float):
     """Thread solid from one turn below 0 to one turn above `length`; the caller cuts it to size."""
-    count = int(round((length + 2 * PITCH) / PITCH * _STEPS))
-    sections = [_section(minor_r, crest, root, -PITCH + i * PITCH / _STEPS) for i in range(count + 1)]
+    count = int(round((length + 2 * PITCH) / PITCH * STEPS))
+    sections = [_section(minor_r, crest, root, -PITCH + i * PITCH / STEPS) for i in range(count + 1)]
     return loft(sections)
 
 

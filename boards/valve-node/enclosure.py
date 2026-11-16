@@ -24,7 +24,9 @@ Written to build/valve-node/:
 fails when the lid hits a connector. --updi-shift moves the programming plug along the header;
 `make selftest` uses it to prove that a plug that does not sit on its pins is found. --no-pockets
 fills the pockets that the board supports leave around the pins; `make selftest` uses it to prove
-that the collision check sees the pins below the board.
+that the collision check sees the pins below the board. --thread-steps sets the sections per turn
+of the threads; `make selftest` uses the coarse loft of the first print (8) to prove that a thread
+with too little play is found.
 """
 import argparse
 import json
@@ -42,7 +44,8 @@ from build123d import (
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[1]
 sys.path.insert(0, str(REPO / "tools"))
-from printthread import PITCH, external_thread, internal_thread  # noqa: E402
+import printthread  # noqa: E402
+from printthread import PITCH, PLAY, external_thread, internal_thread  # noqa: E402
 
 warnings.filterwarnings("ignore", message="Boolean operation unable to clean")
 
@@ -51,7 +54,9 @@ args.add_argument("--lid-drop", type=float, default=0.0)
 args.add_argument("--updi-shift", type=float, default=0.0)
 args.add_argument("--no-pockets", action="store_true")
 args.add_argument("--no-views", action="store_true")
+args.add_argument("--thread-steps", type=int, default=printthread.STEPS)
 args = args.parse_args()
+printthread.STEPS = args.thread_steps
 
 mech = json.loads((HERE / "mech.json").read_text())
 W, H, T = (mech["board"][k] for k in ("width", "height", "thickness"))
@@ -308,6 +313,13 @@ gasket = ring(gasket_in, gasket_in + GASKET_W, RIM_Z - GROOVE_DEPTH, RIM_Z - GRO
 
 # --- Entry parts in place ---------------------------------------------------------------------------
 one_nut = nut()
+# The nut's thread is the boss's grown by PLAY, but the solids are lofts through sections and can
+# come closer than that between the sections. Measured on the solids themselves: a distance works
+# where a boolean between two thread solids does not.
+thread_gap = entry_boss().distance_to(one_nut)
+if thread_gap < PLAY - 0.05:
+    sys.exit(f"enclosure: nut thread comes within {thread_gap:.2f} mm of the boss thread, play is {PLAY} mm")
+print(f"enclosure: nut thread to boss thread {thread_gap:.2f} mm at the closest point (play {PLAY} mm)")
 nuts = [entry_frame(x) * one_nut for x, _ in ENTRIES]
 washers = [entry_frame(x) * washer(p) for x, p in ENTRIES]
 inserts = [entry_frame(x) * insert(p) for x, p in ENTRIES]
