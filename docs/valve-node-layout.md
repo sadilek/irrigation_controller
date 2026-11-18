@@ -239,6 +239,7 @@ gave KiCad's origin for all of them (found by the Codex review, below).
 | Second opinion: Codex (OpenAI, `codex exec`, read-only) on sources, BOM, placement file and Gerbers | Three findings. Placement points not in the middle of the part: fixed (above). Fabrication files older than the part changes made during the review: rebuilt. Valve fuse F2 rated 60 V below the 77.4 V clamp of D4: now the 72 V type ([specification](valve-node-spec.md#faults-on-the-24-vac-side)). Found fine: BOM against netlist, pin maps of the polarised parts, outline, plated and unplated holes, UPDI, UART, RS485 A/B against the bus pinout, decoupling, triac drive, snubbers |
 | JLCPCB's placement preview, first upload by the owner (2026-11-16) | Turned against the pads: U6 by 180°, J3, U2 and U4 by 90° (owner); U5 by 90° and D3 by 180°, with two leads over the single pad (read from the owner's screenshot). U6's model also stood 0.32 mm towards its tab. Right as uploaded: C1, D2, D5, U1, U3, U7. The preview has no model for Q1, Q2 and SW1 |
 | JLCPCB's own footprints, fetched from EasyEDA (`uvx easyeda2kicad@1.0.1 --footprint`, into a scratch directory) and laid onto ours pad by pad | JLCPCB places a part by its own footprint, so the turn and shift that bring that footprint onto ours are the correction. Checked against the preview first: the method gives the same turn for all nine parts the preview showed, and 0.59 mm for U6's shift where the preview showed 0.62 mm. For the three parts without a model: SW1 (via the DSHP04TSGET, C40736, same drawing; EasyEDA has no data for the DSHP04TSGER) turned by 90°; Q1 and Q2 (via another DPAK part, C53260817; none for the T410-600B) turned by 180°, the tab on the lead pads, and 0.78 mm towards the leads. All corrections are in `lib/jlcpcb-parts.csv` (`rotation_offset`, `position_offset` for U6 and the triacs) |
+| JLCPCB's corrected placement, "Confirm Parts Placement" after the order (2026-11-18), C1, C4 and D5 | C1 and D5 right. C1 (C7171): the band of the model, which marks + on a tantalum capacitor, and the magenta pin 1 mark sit on the left pad, which is +5V (pad 1 of `CP_EIA-3216-18_Kemet-A`, at 146.65, 124.6 in KiCad's coordinates); our silkscreen closes on the same end. D5 (C2986048): the model is white and shows no cathode mark; the magenta mark is JLCPCB's pad 1, which on its footprint `LED0603-R-RD` is the anode (+), the cathode being pad 2 at the chamfered end. At 180° it lands on the left pad, LED_A; the cathode lands on the right pad, GND, where our silkscreen bar is. On KiCad's `LED_0603_1608Metric` pad 1 is the cathode, so the two pad numbers mean opposite ends. C4, the other yellow model, is the ceramic 10 uF capacitor at VIN and has no polarity |
 | Open points of the schematic page marked "before the order" | Tantalum capacitor C1 and fuse maker settled ([schematic](valve-node-schematic.md#open-points)) |
 
 ### Ordering
@@ -255,9 +256,10 @@ At jlcpcb.com, by the owner:
    not placed: H1 to H4 (mounting holes), JP1 and JP2 (open solder jumpers), TP1 to TP8 (test
    pads). That is correct.
 4. In the placement preview look at every polarised part: series diode D2 (band), tantalum
-   capacitor C1 (the marked end is +), LED D5 (cathode mark to ground), microcontroller U5,
-   transceiver U7, regulator U6, RS485 TVS D3, optocouplers U1 to U4 (pin 1 dot towards the
-   logic side on U1 and U3, towards the 24 VAC side on U2 and U4), programming header J3 (its
+   capacitor C1 (the marked end is +), LED D5 (cathode towards ground; the preview's magenta dot
+   marks its anode), microcontroller U5, transceiver U7, regulator U6, RS485 TVS D3,
+   optocouplers U1 to U4 (pin 1 dot towards the logic side on U1 and U3, towards the 24 VAC
+   side on U2 and U4), programming header J3 (its
    row along the board's long side). A part that shows turned is rotated in the preview, and the
    correction goes into `lib/jlcpcb-parts.csv` afterwards. The preview has no model for the
    triacs Q1 and Q2 and the switch SW1; their corrections come from JLCPCB's footprints ("Check
