@@ -232,7 +232,9 @@ first.
   `uvx easyeda2kicad@1.0.1 --footprint --lcsc_id=C… --output <scratch dir>` and fit it onto ours
   pad by pad: on the valve node that gave the turn of all nine parts the preview showed, and the
   shift of one within 0.03 mm. It also covers parts the preview shows without a model. Pad
-  numbers of two-pin parts (LED) can differ in meaning; check those by the polarity mark.
+  numbers of two-pin parts (LED) can differ in meaning; check those by the polarity mark. A
+  part that looks the same turned by 180° (a pin header) shows a wrong turn in the preview only
+  by JLCPCB's pin 1 mark: J3's first correction set the row's direction and left pin 1 on GND.
 - **Never retype pad positions; read them from the footprint.** The pockets under the RJ45 jacks
   came from a hand-typed list with the two rows of the contacts' zigzag swapped. Neighbouring
   pockets overlap into one slot, so the collision check passed; the owner saw it on the print.
